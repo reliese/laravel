@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Created by Reliese Schema.
+ * Date: {{date}}
+ */
+
+namespace {{namespace}};
+
+use {{parent}} as Eloquent;
+
+/**
+ * Class {{class}}
+ * {{properties}}
+ *
+ * @package {{namespace}}
+ */
+class {{class}} extends Eloquent
+{
+{{body}}
+}

@@ -1,0 +1,44 @@
+{
+    "name": "reliese/laravel",
+    "description": "Reliese Components for Laravel Framework.",
+    "keywords": ["reliese", "laravel"],
+    "homepage": "http://cristianllanos.com",
+    "support": {
+        "issues": "https://github.com/reliese/laravel/issues",
+        "source": "https://github.com/reliese/laravel"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cristian Llanos",
+            "email": "cristianllanos@outlook.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.4",
+        "doctrine/dbal": "^2.5",
+        "illuminate/support": "^5.3",
+        "illuminate/database": "^5.3",
+        "illuminate/contracts": "^5.3",
+        "illuminate/filesystem": "^5.3",
+        "illuminate/console": "^5.3"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "~1.4",
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "~5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Reliese\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}
