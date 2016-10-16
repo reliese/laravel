@@ -1054,6 +1054,14 @@ class Model
     /**
      * @return bool
      */
+    public function usesHints()
+    {
+        return $this->config('hints', false);
+    }
+
+    /**
+     * @return bool
+     */
     public function doesNotUseBaseFiles()
     {
         return ! $this->usesBaseFiles();

@@ -346,7 +346,7 @@ class Factory
             $body .= $this->class->field('fillable', $model->getFillable(), ['before' => "\n"]);
         }
 
-        if ($model->hasHints()) {
+        if ($model->hasHints() && $model->usesHints()) {
             $body .= $this->class->field('hints', $model->getHints(), ['before' => "\n"]);
         }
 
