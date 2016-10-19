@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 18/09/16 08:36 PM
+ * Date: 18/09/16 08:36 PM.
  */
-
 namespace Reliese\Meta\MySql;
 
 use Illuminate\Support\Arr;

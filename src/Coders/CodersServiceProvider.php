@@ -29,7 +29,7 @@ class CodersServiceProvider extends ServiceProvider
             ], 'reliese-models');
 
             $this->commands([
-                CodeModelsCommand::class
+                CodeModelsCommand::class,
             ]);
         }
     }

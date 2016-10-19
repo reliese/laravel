@@ -2,13 +2,11 @@
 
 /**
  * Created by Cristian.
- * Date: 11/09/16 09:26 PM
+ * Date: 11/09/16 09:26 PM.
  */
-
 namespace Reliese\Coders\Model\Relations;
 
 use Illuminate\Support\Fluent;
-use Illuminate\Support\Str;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
 use Reliese\Support\Dumper;
@@ -59,9 +57,9 @@ abstract class HasOneOrMany implements Relation
      */
     public function body()
     {
-        $body = 'return $this->' . $this->method() . '(';
+        $body = 'return $this->'.$this->method().'(';
 
-        $body .= $this->related->getQualifiedUserClassName() . '::class';
+        $body .= $this->related->getQualifiedUserClassName().'::class';
 
         if ($this->needsForeignKey()) {
             $body .= ', '.Dumper::export($this->foreignKey());

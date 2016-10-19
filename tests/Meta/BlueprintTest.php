@@ -4,7 +4,7 @@ use Reliese\Meta\Blueprint;
 
 /**
  * Created by Cristian.
- * Date: 16/10/16 01:32 PM
+ * Date: 16/10/16 01:32 PM.
  */
 class BlueprintTest extends TestCase
 {

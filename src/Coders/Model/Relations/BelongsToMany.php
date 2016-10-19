@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 05/10/16 11:47 PM
+ * Date: 05/10/16 11:47 PM.
  */
-
 namespace Reliese\Coders\Model\Relations;
 
 use Illuminate\Database\Eloquent\Collection;
@@ -86,7 +85,7 @@ class BelongsToMany implements Relation
     {
         $body = 'return $this->belongsToMany(';
 
-        $body .= $this->reference->getQualifiedUserClassName() . '::class';
+        $body .= $this->reference->getQualifiedUserClassName().'::class';
 
         if ($this->needsPivotTable()) {
             $body .= ', '.Dumper::export($this->pivotTable());
@@ -104,7 +103,7 @@ class BelongsToMany implements Relation
 
         $fields = $this->getPivotFields();
 
-        if (!empty($fields)) {
+        if (! empty($fields)) {
             $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
         }
 
@@ -146,7 +145,7 @@ class BelongsToMany implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->parentRecordName() . '_id';
+        $defaultForeignKey = $this->parentRecordName().'_id';
 
         return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
     }
@@ -164,7 +163,7 @@ class BelongsToMany implements Relation
      */
     protected function needsOtherKey()
     {
-        $defaultOtherKey = $this->referenceRecordName() . '_id';
+        $defaultOtherKey = $this->referenceRecordName().'_id';
 
         return $this->otherKey() != $defaultOtherKey;
     }
@@ -212,6 +211,8 @@ class BelongsToMany implements Relation
      */
     private function parametrize($fields = [])
     {
-        return (string) implode(", ", array_map(function ($field) { return Dumper::export($field); }, $fields));
+        return (string) implode(', ', array_map(function ($field) {
+            return Dumper::export($field);
+        }, $fields));
     }
 }

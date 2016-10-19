@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 02/10/16 07:37 PM
+ * Date: 02/10/16 07:37 PM.
  */
-
 namespace Reliese\Meta;
 
 use ArrayIterator;
@@ -20,7 +19,7 @@ class SchemaManager implements IteratorAggregate
      * @var array
      */
     protected static $lookup = [
-        MySqlConnection::class => MySqlSchema::class
+        MySqlConnection::class => MySqlSchema::class,
     ];
 
     /**
@@ -49,7 +48,7 @@ class SchemaManager implements IteratorAggregate
      */
     public function boot()
     {
-        if ( ! $this->hasMapping()) {
+        if (! $this->hasMapping()) {
             throw new RuntimeException("There is no Schema Mapper registered for [{$this->type()}] connection.");
         }
 
@@ -111,7 +110,7 @@ class SchemaManager implements IteratorAggregate
     }
 
     /**
-     * Register a new connection mapper
+     * Register a new connection mapper.
      *
      * @param string $connection
      * @param string $mapper
@@ -122,7 +121,7 @@ class SchemaManager implements IteratorAggregate
     }
 
     /**
-     * Get Iterator for schemas
+     * Get Iterator for schemas.
      *
      * @return \ArrayIterator
      */

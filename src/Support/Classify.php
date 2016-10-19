@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 05/09/16 11:27 PM
+ * Date: 05/09/16 11:27 PM.
  */
-
 namespace Reliese\Support;
 
 use Illuminate\Support\Arr;
@@ -24,7 +23,7 @@ class Classify
     }
 
     /**
-     * Constant template
+     * Constant template.
      *
      * @param string $name
      * @param mixed $value
@@ -34,11 +33,12 @@ class Classify
     public function constant($name, $value)
     {
         $value = Dumper::export($value);
+
         return "\tconst $name = $value;\n";
     }
 
     /**
-     * Field template
+     * Field template.
      *
      * @param string $name
      * @param mixed $value
@@ -66,13 +66,14 @@ class Classify
     public function method($name, $body, $options = [])
     {
         $visibility = Arr::get($options, 'visibility', 'public');
+
         return "\n\t$visibility function $name()\n\t{\n\t\t$body\n\t}\n";
     }
 
     public function mixin($class)
     {
-        if (Str::startsWith("\\", $class)) {
-            $class = Str::replaceFirst("\\", '', $class);
+        if (Str::startsWith('\\', $class)) {
+            $class = Str::replaceFirst('\\', '', $class);
         }
 
         return "\tuse \\$class;\n";

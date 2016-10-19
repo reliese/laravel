@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 12/10/16 12:30 AM
+ * Date: 12/10/16 12:30 AM.
  */
-
 namespace Reliese\Database\Eloquent;
 
 trait BlamableBehavior

@@ -23,7 +23,7 @@ class CodeModelsCommand extends Command
      *
      * @var string
      */
-    protected $description = "Parse connection schema into models";
+    protected $description = 'Parse connection schema into models';
 
     /**
      * @var \Reliese\Coders\Model\Factory

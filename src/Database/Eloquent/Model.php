@@ -2,15 +2,14 @@
 
 /**
  * Created by Cristian.
- * Date: 01/10/16 03:02 PM
+ * Date: 01/10/16 03:02 PM.
  */
-
 namespace Reliese\Database\Eloquent;
 
 class Model extends \Illuminate\Database\Eloquent\Model
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function castAttribute($key, $value)
     {
@@ -42,7 +41,7 @@ class Model extends \Illuminate\Database\Eloquent\Model
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setAttribute($key, $value)
     {

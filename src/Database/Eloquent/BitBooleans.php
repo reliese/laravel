@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 09/10/16 07:34 PM
+ * Date: 09/10/16 07:34 PM.
  */
-
 namespace Reliese\Database\Eloquent;
 
 trait BitBooleans

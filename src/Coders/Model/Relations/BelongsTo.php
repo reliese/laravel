@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 05/09/16 11:41 PM
+ * Date: 05/09/16 11:41 PM.
  */
-
 namespace Reliese\Coders\Model\Relations;
 
 use Illuminate\Support\Fluent;
@@ -63,7 +62,7 @@ class BelongsTo implements Relation
     {
         $body = 'return $this->belongsTo(';
 
-        $body .= $this->related->getQualifiedUserClassName() . '::class';
+        $body .= $this->related->getQualifiedUserClassName().'::class';
 
         if ($this->needsForeignKey()) {
             $body .= ', '.Dumper::export($this->foreignKey());
@@ -148,7 +147,7 @@ class BelongsTo implements Relation
      */
     protected function otherKey($index = 0)
     {
-         return $this->command->references[$index];
+        return $this->command->references[$index];
     }
 
     /**
