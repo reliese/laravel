@@ -4,7 +4,7 @@ Reliese Laravel is a collection of Laravel Components which aim is
 to help the development process of Laravel applications by 
 providing some convenient code-generation capabilities.
 
-## Who does it work?
+## How does it work?
 
 You will need to import the `reliese/laravel` package via composer:
 
