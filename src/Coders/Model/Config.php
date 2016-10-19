@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 11/09/16 09:00 PM
+ * Date: 11/09/16 09:00 PM.
  */
-
 namespace Reliese\Coders\Model;
 
 use Illuminate\Support\Arr;

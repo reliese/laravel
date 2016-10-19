@@ -3,14 +3,13 @@
 namespace Reliese\Meta\MySql;
 
 use Illuminate\Database\Connection;
-use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Fluent;
 use Reliese\Meta\Blueprint;
 
 /**
  * Created by Cristian.
- * Date: 18/09/16 06:50 PM
+ * Date: 18/09/16 06:50 PM.
  */
 class Schema implements \Reliese\Meta\Schema
 {
@@ -42,7 +41,6 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function __construct($schema, $connection)
     {
-
         $this->schema = $schema;
         $this->connection = $connection;
 
@@ -80,11 +78,11 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $rows = $this->connection->select('SHOW TABLES FROM ' . $schema);
+        $rows = $this->connection->select('SHOW TABLES FROM '.$schema);
         $tables = Arr::flatten($rows);
 
         return array_diff($tables, [
-            'migrations'
+            'migrations',
         ]);
     }
 
@@ -93,7 +91,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillColumns(Blueprint $blueprint)
     {
-        $rows = $this->connection->select('SHOW FULL COLUMNS FROM ' . $blueprint->qualifiedTable());
+        $rows = $this->connection->select('SHOW FULL COLUMNS FROM '.$blueprint->qualifiedTable());
         foreach ($rows as $column) {
             $blueprint->withColumn(
                 $this->parseColumn($column)
@@ -116,7 +114,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-        $row = $this->connection->select('SHOW CREATE TABLE ' . $blueprint->qualifiedTable());
+        $row = $this->connection->select('SHOW CREATE TABLE '.$blueprint->qualifiedTable());
         $row = array_change_key_case($row[0]);
         $sql = $row['create table'];
         $sql = str_replace('`', '', $sql);
@@ -276,7 +274,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function table($table)
     {
-        if ( ! $this->has($table)) {
+        if (! $this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

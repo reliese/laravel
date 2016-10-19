@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 12/10/16 12:09 AM
+ * Date: 12/10/16 12:09 AM.
  */
-
 namespace Reliese\Database\Eloquent;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;

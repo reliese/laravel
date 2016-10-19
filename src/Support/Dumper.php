@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 11/09/16 05:18 PM
+ * Date: 11/09/16 05:18 PM.
  */
-
 namespace Reliese\Support;
 
 class Dumper
@@ -26,6 +25,7 @@ class Dumper
                 if (is_numeric($key)) {
                     return static::export($value, $tabs + 1);
                 }
+
                 return "'$key' => ".static::export($value, $tabs + 1);
             }, $value, $keys);
 

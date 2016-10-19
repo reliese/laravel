@@ -2,14 +2,12 @@
 
 /**
  * Created by Cristian.
- * Date: 19/09/16 11:58 PM
+ * Date: 19/09/16 11:58 PM.
  */
-
 namespace Reliese\Coders\Model;
 
 use Carbon\Carbon;
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
@@ -82,7 +80,7 @@ class Factory
      */
     protected function models()
     {
-        if ( ! isset($this->models)) {
+        if (! isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -108,7 +106,7 @@ class Factory
      */
     public function map($schema)
     {
-        if (!isset($this->schemas)) {
+        if (! isset($this->schemas)) {
             $this->on();
         }
 
@@ -260,7 +258,7 @@ class Factory
             if ($model->hasProperty($name)) {
                 continue;
             }
-            $annotations .= $this->class->annotation('property', $relation->hint() . " \$$name");
+            $annotations .= $this->class->annotation('property', $relation->hint()." \$$name");
         }
 
         return $annotations;
@@ -292,7 +290,7 @@ class Factory
         }
 
         // Separate constants from fields only if there are constants.
-        if (!empty($body)) {
+        if (! empty($body)) {
             $body .= "\n";
         }
 
@@ -375,11 +373,11 @@ class Factory
     {
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
 
-        if (!$this->files->isDirectory($modelsDirectory)) {
+        if (! $this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
-        return $this->path([$modelsDirectory, $model->getClassName() . '.php']);
+        return $this->path([$modelsDirectory, $model->getClassName().'.php']);
     }
 
     /**
@@ -412,7 +410,7 @@ class Factory
         $template = $this->prepareTemplate($model, 'user_model');
         $template = str_replace('{{namespace}}', $model->getNamespace(), $template);
         $template = str_replace('{{class}}', $model->getClassName(), $template);
-        $template = str_replace('{{parent}}', '\\' . $model->getBaseNamespace() . '\\' . $model->getClassName(), $template);
+        $template = str_replace('{{parent}}', '\\'.$model->getBaseNamespace().'\\'.$model->getClassName(), $template);
         $template = str_replace('{{body}}', $this->userFileBody($model), $template);
 
         $this->files->put($file, $template);

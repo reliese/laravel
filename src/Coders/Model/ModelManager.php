@@ -2,9 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 02/10/16 08:24 PM
+ * Date: 02/10/16 08:24 PM.
  */
-
 namespace Reliese\Coders\Model;
 
 use ArrayIterator;
@@ -43,7 +42,6 @@ class ModelManager implements IteratorAggregate
      */
     public function make($schema, $table, $mutators = [], $withRelations = true)
     {
-
         $mapper = $this->factory->makeSchema($schema);
 
         $blueprint = $mapper->table($table);
@@ -62,7 +60,7 @@ class ModelManager implements IteratorAggregate
     }
 
     /**
-     * Get Models iterator
+     * Get Models iterator.
      *
      * @return \ArrayIterator
      */
