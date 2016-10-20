@@ -1,5 +1,11 @@
 # Reliese Laravel
 
+[![StyleCI](https://styleci.io/repos/71080508/shield?style=flat)](https://styleci.io/repos/71080508)
+[![Latest Stable Version](https://poser.pugx.org/reliese/laravel/v/stable)](https://packagist.org/packages/reliese/laravel)
+[![Total Downloads](https://poser.pugx.org/reliese/laravel/downloads)](https://packagist.org/packages/reliese/laravel)
+[![Latest Unstable Version](https://poser.pugx.org/reliese/laravel/v/unstable)](https://packagist.org/packages/reliese/laravel)
+[![License](https://poser.pugx.org/reliese/laravel/license)](https://packagist.org/packages/reliese/laravel)
+
 Reliese Laravel is a collection of Laravel Components which aim is 
 to help the development process of Laravel applications by 
 providing some convenient code-generation capabilities.
@@ -12,7 +18,7 @@ You will need to import the `reliese/laravel` package via composer:
 composer require reliese/laravel
 ```
 
-#### Configuration
+### Configuration
 
 Add the service provider to your `config/app.php` file within the `providers` key:
 
@@ -27,7 +33,7 @@ Add the service provider to your `config/app.php` file within the `providers` ke
 ],
 // ...
 ```
-### Models
+## Models
 
 ![Generating models with artisan](https://cdn-images-1.medium.com/max/800/1*hOa2QxORE2zyO_-ZqJ40sA.png "Making artisan code my Eloquent models")
 
@@ -37,7 +43,7 @@ Add the `models.php` configuration file to your `config` directory:
 php artisan vendor:publish --tag=reliese-models
 ```
 
-#### Usage
+### Usage
 
 Assuming you have already configured your database, you are now all set to go.
 
@@ -65,14 +71,14 @@ php artisan code:models --connection=mysql
 php artisan code:models --schema=shop
 ```
 
-#### Customizing Model Scaffolding
+### Customizing Model Scaffolding
 
 To change the scaffolding behaviour you can make `config/models.php` configuration file
 fit your database needs. Check it out ;-)
 
-#### Tips
+### Tips
 
-##### 1. Keeping models changes
+#### 1. Keeping models changes
 
 You may want to generate your models as often as you change your database. In order
 not to lose you own model changes, you should set `base_files` to `true` in your `config/models.php`.
