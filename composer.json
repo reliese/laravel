@@ -16,12 +16,12 @@
     ],
     "require": {
         "php": ">=5.6.4",
-        "doctrine/dbal": "^2.5",
-        "illuminate/support": "^5.3",
-        "illuminate/database": "^5.3",
-        "illuminate/contracts": "^5.3",
-        "illuminate/filesystem": "^5.3",
-        "illuminate/console": "^5.3"
+        "doctrine/dbal": "~2.5",
+        "illuminate/support": "~5.3",
+        "illuminate/database": "~5.3",
+        "illuminate/contracts": "~5.3",
+        "illuminate/filesystem": "~5.3",
+        "illuminate/console": "~5.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
