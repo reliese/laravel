@@ -166,7 +166,7 @@ return [
         | You may want to customize your models and at the same time be
         | able to generate them as your tables change. For that, you
         | can enable base files. These files will be replaced whenever
-        | you generated them, but your customized files will not be touched.
+        | you generate them, but your customized files will not be touched.
         |
         */
 
@@ -204,7 +204,7 @@ return [
         |--------------------------------------------------------------------------
         |
         | When casting your models into arrays or json, the need to hide some
-        | attributes sometimes arise. If your tables have some filed you
+        | attributes sometimes arise. If your tables have some fields you
         | want to hide, you can define them bellow.
         | Some fields were defined for you.
         |
@@ -219,7 +219,7 @@ return [
         | Mass Assignment Guarded Attributes
         |--------------------------------------------------------------------------
         |
-        | You may want to protect some fields from mass assignment. You may
+        | You may want to protect some fields from mass assignment. You can
         | define them bellow. Some fields were defined for you.
         | Your fillable attributes will be those which are not in the list
         | excluding your models' primary keys.
@@ -246,7 +246,7 @@ return [
         */
 
         'casts' => [
-            '*Json' => 'json',
+            '*_json' => 'json',
         ],
 
         /*
