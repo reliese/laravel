@@ -29,6 +29,8 @@ Add the service provider to your `config/app.php` file within the `providers` ke
 ```
 ### Models
 
+![Generating models with artisan](https://cdn-images-1.medium.com/max/800/1*hOa2QxORE2zyO_-ZqJ40sA.png "Making artisan code my Eloquent models")
+
 Add the `models.php` configuration file to your `config` directory:
 
 ```shell
