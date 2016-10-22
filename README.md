@@ -79,7 +79,7 @@ fit your database needs. Check it out ;-)
 
 ### Tips
 
-#### 1. Keeping models changes
+#### 1. Keeping model changes
 
 You may want to generate your models as often as you change your database. In order
 not to lose you own model changes, you should set `base_files` to `true` in your `config/models.php`.
