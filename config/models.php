@@ -20,7 +20,7 @@ return [
         |--------------------------------------------------------------------------
         |
         | We need a location to store your new generated files. All files will be
-        | places within this directory. When you turn on base files they will
+        | placed within this directory. When you turn on base files, they will
         | be placed within a Base directory inside this location.
         |
         */
@@ -91,7 +91,7 @@ return [
         |--------------------------------------------------------------------------
         |
         | If your tables have CREATED_AT and UPDATED_AT timestamps you may
-        | enable them an your models you fill their values as needed.
+        | enable them and your models will fill their values as needed.
         | You can also specify which fields should be treated as timestamps
         | in case you don't follow the naming convention Eloquent uses.
         | If your table doesn't have these fields, timestamps will be
@@ -150,7 +150,7 @@ return [
         |
         | Here you may define how many models Eloquent should display when
         | paginating them. The default number is 15, so you might not
-        | this number in your models unless you change it.
+        | see this number in your models unless you change it.
         |
         */
 

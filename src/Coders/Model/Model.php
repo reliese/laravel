@@ -238,7 +238,8 @@ class Model
         // Track dates
         if ($cast == 'date' && $column->name != $this->getDeletedAtField()) {
             $this->dates[] = $column->name;
-        } // Track attribute casts
+        }
+        // Track attribute casts
         elseif ($cast != 'string') {
             $this->casts[$column->name] = $cast;
         }
