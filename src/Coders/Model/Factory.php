@@ -324,7 +324,7 @@ class Factory
             $body .= $this->class->field('dateFormat', $model->getDateFormat());
         }
 
-        if ($model->doesntUseSnakeAttributes()) {
+        if ($model->doesNotUseSnakeAttributes()) {
             $body .= $this->class->field('snakeAttributes', false, ['visibility' => 'public static']);
         }
 

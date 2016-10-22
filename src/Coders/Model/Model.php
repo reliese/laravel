@@ -431,6 +431,9 @@ class Model
         return $this->parentClass;
     }
 
+    /**
+     * @return string
+     */
     public function getQualifiedUserClassName()
     {
         return '\\'.$this->getNamespace().'\\'.$this->getClassName();
@@ -470,8 +473,8 @@ class Model
     public function usesTimestamps()
     {
         return $this->timestamps &&
-        $this->blueprint->hasColumn($this->getCreatedAtField()) &&
-        $this->blueprint->hasColumn($this->getUpdatedAtField());
+               $this->blueprint->hasColumn($this->getCreatedAtField()) &&
+               $this->blueprint->hasColumn($this->getUpdatedAtField());
     }
 
     /**
@@ -859,7 +862,7 @@ class Model
     /**
      * @return bool
      */
-    public function doesntUseSnakeAttributes()
+    public function doesNotUseSnakeAttributes()
     {
         return ! $this->usesSnakeAttributes();
     }
