@@ -13,6 +13,7 @@ providing some convenient code-generation capabilities.
 
 ## How does it work?
 
+This project expects that you are using Laravel 5.1 or above.
 You will need to import the `reliese/laravel` package via composer:
 
 ```shell
