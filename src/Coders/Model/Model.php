@@ -235,8 +235,14 @@ class Model
         // TODO: Check type cast is OK
         $cast = $column->type;
 
+        // Due to some casting problems when converting null to Carbon
+        // we are going to treat Soft Deletes field as string.
+        if ($column->name == $this->getDeletedAtField()) {
+            $cast = 'string';
+        }
+
         // Track dates
-        if ($cast == 'date' && $column->name != $this->getDeletedAtField()) {
+        if ($cast == 'date') {
             $this->dates[] = $column->name;
         }
         // Track attribute casts
