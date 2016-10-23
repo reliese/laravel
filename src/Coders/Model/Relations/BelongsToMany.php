@@ -72,10 +72,10 @@ class BelongsToMany implements Relation
     public function name()
     {
         if ($this->parent->usesSnakeAttributes()) {
-            return Str::snake(Str::plural($this->reference->getTable()));
+            return Str::snake(Str::plural(Str::singular($this->reference->getTable())));
         }
 
-        return Str::camel(Str::plural($this->reference->getTable()));
+        return Str::camel(Str::plural(Str::singular($this->reference->getTable())));
     }
 
     /**
