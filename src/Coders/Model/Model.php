@@ -235,7 +235,7 @@ class Model
         // TODO: Check type cast is OK
         $cast = $column->type;
 
-        // Due to some casting problems when converting null to Carbon
+        // Due to some casting problems when converting null to a Carbon instance,
         // we are going to treat Soft Deletes field as string.
         if ($column->name == $this->getDeletedAtField()) {
             $cast = 'string';
