@@ -289,6 +289,7 @@ class Factory
             $body .= $this->class->constant('DELETED_AT', $model->getDeletedAtField());
         }
 
+        $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
         if (! empty($body)) {
             $body .= "\n";
@@ -356,8 +357,8 @@ class Factory
             $body .= $this->class->method($constraint->name(), $constraint->body(), ['before' => "\n"]);
         }
 
-        // Make sure there is not an undesired line break at the end of the class body
-        $body = ltrim(rtrim($body, "\n"), "\n");
+        // Make sure there not undesired line breaks
+        $body = trim($body, "\n");
 
         return $body;
     }

@@ -44,6 +44,11 @@ class CodersServiceProvider extends ServiceProvider
         $this->registerModelFactory();
     }
 
+    /**
+     * Register Model Factory.
+     *
+     * @return void
+     */
     protected function registerModelFactory()
     {
         $this->app->singleton(ModelFactory::class, function ($app) {

@@ -45,10 +45,10 @@ return [
         | Parent Class
         |--------------------------------------------------------------------------
         |
-        | All Eloquent models should inherit from Eloquent Model class, however
-        | you can define your custom Eloquent model that suits your needs.
-        | As an example we have added one custom model for you which
-        | will allow you to create custom database casting.
+        | All Eloquent models should inherit from Eloquent Model class. However,
+        | you can define a custom Eloquent model that suits your needs.
+        | As an example one custom model has been added for you which
+        | will allow you to create custom database castings.
         |
         */
 
@@ -114,7 +114,7 @@ return [
         | Soft Deletes
         |--------------------------------------------------------------------------
         |
-        | If your tables support soft deletes with a DELETED_AT attributes,
+        | If your tables support soft deletes with a DELETED_AT attribute,
         | you can enable them here. You can also specify which field
         | should be treated as a soft delete attribute in case you
         | don't follow the naming convention Eloquent uses.
@@ -163,7 +163,7 @@ return [
         |
         | By default, your models will be generated in your models path, but
         | when you generate them again they will be replaced by new ones.
-        | You may want to customize your models and at the same time be
+        | You may want to customize your models and, at the same time, be
         | able to generate them as your tables change. For that, you
         | can enable base files. These files will be replaced whenever
         | you generate them, but your customized files will not be touched.

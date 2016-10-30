@@ -76,7 +76,7 @@ php artisan code:models --schema=shop
 ### Customizing Model Scaffolding
 
 To change the scaffolding behaviour you can make `config/models.php` configuration file
-fit your database needs. Check it out ;-)
+fit your database needs. [Check it out](https://github.com/reliese/laravel/blob/master/config/models.php) ;-)
 
 ### Tips
 
