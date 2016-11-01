@@ -78,8 +78,9 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $rows = $this->connection->select('SHOW TABLES FROM '.$schema);
-        $tables = Arr::flatten($rows);
+        $rows = $this->connection->select('SHOW FULL TABLES FROM '.$schema.' WHERE Table_type=\'BASE TABLE\'');
+        $names = array_column($rows, 'Tables_in_' . $schema);
+        $tables = Arr::flatten($names);
 
         return array_diff($tables, [
             'migrations',
