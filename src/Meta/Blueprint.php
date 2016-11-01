@@ -7,7 +7,6 @@
 namespace Reliese\Meta;
 
 use Illuminate\Support\Fluent;
-use Illuminate\Support\Str;
 
 class Blueprint
 {
