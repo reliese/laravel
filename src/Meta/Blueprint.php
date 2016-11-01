@@ -120,22 +120,6 @@ class Blueprint
     }
 
     /**
-     * @param $pattern
-     *
-     * @return bool
-     */
-    public function columnIs($pattern)
-    {
-        foreach ($this->columns as $column => $data) {
-            if (Str::is($pattern, $column)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param string $name
      *
      * @return \Illuminate\Support\Fluent
