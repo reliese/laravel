@@ -203,7 +203,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * Wrap within backticks
+     * Wrap within backticks.
      *
      * @param string $table
      *
