@@ -35,21 +35,21 @@ Add the service provider to your `config/app.php` file within the `providers` ke
 ],
 // ...
 ```
-### Configuration for Local Environment
+### Configuration for local environment only
 
-If you wish to only generators on your local environment, install via composer using --dev option.
+If you wish to enable generators only for your local environment, you should install it via composer using the --dev option like this:
 
 ```shell
 composer require reliese/laravel --dev
 ```
 
-Now add the provider in app/Providers/AppServiceProvider.php file.
+Then you'll need to register the provider in `app/Providers/AppServiceProvider.php` file.
 
-```shell
+```php
 public function register()
 {
     if ($this->app->environment() == 'local') {
-        $this->app->register( \Reliese\Coders\CodersServiceProvider::class );
+        $this->app->register(\Reliese\Coders\CodersServiceProvider::class);
     }
 }
 ```
