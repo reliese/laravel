@@ -1033,7 +1033,7 @@ class Model
      */
     public function isPrimaryKey(Fluent $command)
     {
-        foreach ($this->primaryKeys->columns as $column) {
+        foreach ((array) $this->primaryKeys->columns as $column) {
             if (! in_array($column, $command->columns)) {
                 return false;
             }
