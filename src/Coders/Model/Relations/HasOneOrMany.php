@@ -4,12 +4,13 @@
  * Created by Cristian.
  * Date: 11/09/16 09:26 PM.
  */
+
 namespace Reliese\Coders\Model\Relations;
 
+use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
 
 abstract class HasOneOrMany implements Relation
 {

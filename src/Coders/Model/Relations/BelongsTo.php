@@ -4,13 +4,14 @@
  * Created by Cristian.
  * Date: 05/09/16 11:41 PM.
  */
+
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
+use Reliese\Support\Dumper;
+use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
 
 class BelongsTo implements Relation
 {

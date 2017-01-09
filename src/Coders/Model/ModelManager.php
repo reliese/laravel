@@ -4,11 +4,12 @@
  * Created by Cristian.
  * Date: 02/10/16 08:24 PM.
  */
+
 namespace Reliese\Coders\Model;
 
 use ArrayIterator;
-use Illuminate\Support\Arr;
 use IteratorAggregate;
+use Illuminate\Support\Arr;
 
 class ModelManager implements IteratorAggregate
 {

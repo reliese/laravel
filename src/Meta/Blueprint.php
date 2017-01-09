@@ -4,6 +4,7 @@
  * Created by Cristian.
  * Date: 18/09/16 08:19 PM.
  */
+
 namespace Reliese\Meta;
 
 use Illuminate\Support\Fluent;

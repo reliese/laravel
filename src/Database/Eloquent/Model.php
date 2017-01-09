@@ -4,6 +4,7 @@
  * Created by Cristian.
  * Date: 01/10/16 03:02 PM.
  */
+
 namespace Reliese\Database\Eloquent;
 
 class Model extends \Illuminate\Database\Eloquent\Model

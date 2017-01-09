@@ -2,12 +2,12 @@
 
 namespace Reliese\Coders;
 
+use Reliese\Support\Classify;
+use Reliese\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use Reliese\Coders\Console\CodeModelsCommand;
-use Reliese\Coders\Model\Config;
 use Reliese\Coders\Model\Factory as ModelFactory;
-use Reliese\Support\Classify;
 
 class CodersServiceProvider extends ServiceProvider
 {

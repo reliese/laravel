@@ -2,10 +2,10 @@
 
 namespace Reliese\Meta\MySql;
 
-use Illuminate\Database\Connection;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
 use Reliese\Meta\Blueprint;
+use Illuminate\Support\Fluent;
+use Illuminate\Database\Connection;
 
 /**
  * Created by Cristian.

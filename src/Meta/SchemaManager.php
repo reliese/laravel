@@ -4,14 +4,15 @@
  * Created by Cristian.
  * Date: 02/10/16 07:37 PM.
  */
+
 namespace Reliese\Meta;
 
 use ArrayIterator;
-use Illuminate\Database\ConnectionInterface;
-use Illuminate\Database\MySqlConnection;
-use IteratorAggregate;
-use Reliese\Meta\MySql\Schema as MySqlSchema;
 use RuntimeException;
+use IteratorAggregate;
+use Illuminate\Database\MySqlConnection;
+use Illuminate\Database\ConnectionInterface;
+use Reliese\Meta\MySql\Schema as MySqlSchema;
 
 class SchemaManager implements IteratorAggregate
 {
