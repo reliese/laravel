@@ -80,11 +80,8 @@ class Schema implements \Reliese\Meta\Schema
     {
         $rows = $this->connection->select('SHOW FULL TABLES FROM '.$this->wrap($schema).' WHERE Table_type="BASE TABLE"');
         $names = array_column($rows, 'Tables_in_'.$schema);
-        $tables = Arr::flatten($names);
 
-        return array_diff($tables, [
-            'migrations',
-        ]);
+        return Arr::flatten($names);
     }
 
     /**
