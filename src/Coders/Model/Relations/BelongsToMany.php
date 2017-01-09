@@ -4,14 +4,15 @@
  * Created by Cristian.
  * Date: 05/10/16 11:47 PM.
  */
+
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
+use Reliese\Support\Dumper;
+use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
+use Illuminate\Database\Eloquent\Collection;
 
 class BelongsToMany implements Relation
 {

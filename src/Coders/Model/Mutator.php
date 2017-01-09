@@ -4,6 +4,7 @@
  * Created by Cristian.
  * Date: 10/10/16 11:46 PM.
  */
+
 namespace Reliese\Coders\Model;
 
 use Reliese\Meta\Blueprint;

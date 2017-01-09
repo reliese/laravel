@@ -4,11 +4,12 @@
  * Created by Cristian.
  * Date: 18/09/16 08:36 PM.
  */
+
 namespace Reliese\Meta\MySql;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
+use Illuminate\Support\Fluent;
 
 class Column implements \Reliese\Meta\Column
 {

@@ -4,6 +4,7 @@
  * Created by Cristian.
  * Date: 04/10/16 11:32 PM.
  */
+
 namespace Reliese\Coders\Model\Relations;
 
 use Illuminate\Support\Str;

@@ -4,15 +4,16 @@
  * Created by Cristian.
  * Date: 11/09/16 12:11 PM.
  */
+
 namespace Reliese\Coders\Model;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
-use Reliese\Coders\Model\Relations\BelongsTo;
-use Reliese\Coders\Model\Relations\ReferenceFactory;
 use Reliese\Meta\Blueprint;
+use Illuminate\Support\Fluent;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Reliese\Coders\Model\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use Reliese\Coders\Model\Relations\ReferenceFactory;
 
 class Model
 {
