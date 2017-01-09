@@ -1,5 +1,10 @@
 # Release Notes
 
+## v0.0.12 (2017-01-08)
+
+### Fixed
+ - Error when table with relationships does not have a primary key [#11](https://github.com/reliese/laravel/issues/11)
+
 ## v0.0.11 (2016-11-01)
 
 ### Added
