@@ -61,7 +61,6 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function load()
     {
-        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $tables = $this->fetchTables($this->schema);
         foreach ($tables as $table) {
             $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
@@ -78,7 +77,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $rows = $this->connection->select('SHOW FULL TABLES FROM '.$this->wrap($schema).' WHERE Table_type="BASE TABLE"');
+        $rows = $this->arraify($this->connection->select('SHOW FULL TABLES FROM '.$this->wrap($schema).' WHERE Table_type="BASE TABLE"'));
         $names = array_column($rows, 'Tables_in_'.$schema);
 
         return Arr::flatten($names);
@@ -89,7 +88,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillColumns(Blueprint $blueprint)
     {
-        $rows = $this->connection->select('SHOW FULL COLUMNS FROM '.$this->wrap($blueprint->qualifiedTable()));
+        $rows = $this->arraify($this->connection->select('SHOW FULL COLUMNS FROM '.$this->wrap($blueprint->qualifiedTable())));
         foreach ($rows as $column) {
             $blueprint->withColumn(
                 $this->parseColumn($column)
@@ -112,7 +111,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-        $row = $this->connection->select('SHOW CREATE TABLE '.$this->wrap($blueprint->qualifiedTable()));
+        $row = $this->arraify($this->connection->select('SHOW CREATE TABLE '.$this->wrap($blueprint->qualifiedTable())));
         $row = array_change_key_case($row[0]);
         $sql = $row['create table'];
         $sql = str_replace('`', '', $sql);
@@ -120,6 +119,18 @@ class Schema implements \Reliese\Meta\Schema
         $this->fillPrimaryKey($sql, $blueprint);
         $this->fillIndexes($sql, $blueprint);
         $this->fillRelations($sql, $blueprint);
+    }
+
+	/**
+	 * Quick little hack since it is no longer possible to set PDO's fetch mode
+	 * to PDO::FETCH_ASSOC.
+	 *
+	 * @param $data
+	 * @return mixed
+	 */
+    protected function arraify($data)
+    {
+    	return json_decode(json_encode($data), true);
     }
 
     /**
