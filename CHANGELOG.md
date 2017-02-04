@@ -1,5 +1,10 @@
 # Release Notes
 
+## v0.0.13 (2017-02-04)
+
+### Fixed
+ - Error when using setFetchMode on Laravel Connection [#13](https://github.com/reliese/laravel/issues/11)
+
 ## v0.0.12 (2017-01-08)
 
 ### Fixed
