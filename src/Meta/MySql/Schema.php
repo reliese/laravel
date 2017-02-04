@@ -121,16 +121,16 @@ class Schema implements \Reliese\Meta\Schema
         $this->fillRelations($sql, $blueprint);
     }
 
-	/**
-	 * Quick little hack since it is no longer possible to set PDO's fetch mode
-	 * to PDO::FETCH_ASSOC.
-	 *
-	 * @param $data
-	 * @return mixed
-	 */
+    /**
+     * Quick little hack since it is no longer possible to set PDO's fetch mode
+     * to PDO::FETCH_ASSOC.
+     *
+     * @param $data
+     * @return mixed
+     */
     protected function arraify($data)
     {
-    	return json_decode(json_encode($data), true);
+        return json_decode(json_encode($data), true);
     }
 
     /**
