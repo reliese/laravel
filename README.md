@@ -108,7 +108,7 @@ When you enable this feature your models will inherit their base configurations 
 base models. You should avoid adding code to your base models, since you
 will lose all changes when they are generated again.
 
-> Note: You will end up with to models for the same table and you may think it is a horrible idea 
+> Note: You will end up with two models for the same table and you may think it is a horrible idea 
 to have two classes for the same thing. However, it is up to you
 to decide whether this approach gives value to your project :-)
 
