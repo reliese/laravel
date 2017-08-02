@@ -153,6 +153,11 @@ class Model
     protected $hasCrossDatabaseRelationships = false;
 
     /**
+     * @var string
+     */
+    protected $tablePrefix = '';
+
+    /**
      * ModelClass constructor.
      *
      * @param \Reliese\Meta\Blueprint $blueprint
@@ -193,6 +198,9 @@ class Model
 
         // Dates settings
         $this->withDateFormat($this->config('date_format', $this->getDefaultDateFormat()));
+
+        // Table Prefix settings
+        $this->withTablePrefix($this->config('table_prefix', $this->getDefaultTablePrefix()));
 
         return $this;
     }
@@ -460,7 +468,7 @@ class Model
      */
     public function getRecordName()
     {
-        return Str::singular($this->blueprint->table());
+        return Str::singular($this->removeTablePrefix($this->blueprint->table()));
     }
 
     /**
@@ -640,8 +648,35 @@ class Model
      */
     public function needsTableName()
     {
-        return $this->blueprint->table() != Str::plural($this->getRecordName()) ||
+        return $this->shouldRemoveTablePrefix() || $this->blueprint->table() != Str::plural($this->getRecordName()) ||
                $this->shouldQualifyTableName();
+    }
+
+    /**
+     * @return string
+     */
+    public function shouldRemoveTablePrefix()
+    {
+        return !empty($this->tablePrefix);
+    }
+
+    /**
+     * @param string $tablePrefix
+     */
+    public function withTablePrefix($tablePrefix)
+    {
+        $this->tablePrefix = $tablePrefix;
+    }
+
+    /**
+     * @param string $table
+     */
+    public function removeTablePrefix($table)
+    {
+        if (($this->shouldRemoveTablePrefix()) && (substr($table,0,strlen($this->tablePrefix)) == $this->tablePrefix)) {
+          $table = substr($table,strlen($this->tablePrefix));
+        }
+        return $table;
     }
 
     /**
@@ -818,6 +853,14 @@ class Model
     public function getDefaultDateFormat()
     {
         return 'Y-m-d H:i:s';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultTablePrefix()
+    {
+        return '';
     }
 
     /**
