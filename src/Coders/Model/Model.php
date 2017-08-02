@@ -358,8 +358,12 @@ class Model
     /**
      * @return string
      */
-    public function getTable()
+    public function getTable($andRemovePrefix=false)
     {
+        if ($andRemovePrefix)
+        {
+            return $this->removeTablePrefix($this->blueprint->table());
+        }
         return $this->blueprint->table();
     }
 
