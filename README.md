@@ -58,10 +58,11 @@ public function register()
 
 ![Generating models with artisan](https://cdn-images-1.medium.com/max/800/1*hOa2QxORE2zyO_-ZqJ40sA.png "Making artisan code my Eloquent models")
 
-Add the `models.php` configuration file to your `config` directory:
+Add the `models.php` configuration file to your `config` directory and clear the config cache:
 
 ```shell
 php artisan vendor:publish --tag=reliese-models
+php artisan config:clear
 ```
 
 ### Usage
