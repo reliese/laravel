@@ -677,7 +677,7 @@ class Model
     public function removeTablePrefix($table)
     {
         if (($this->shouldRemoveTablePrefix()) && (substr($table, 0, strlen($this->tablePrefix)) == $this->tablePrefix)) {
-          $table = substr($table, strlen($this->tablePrefix));
+            $table = substr($table, strlen($this->tablePrefix));
         }
         return $table;
     }
