@@ -264,6 +264,17 @@ return [
         'except' => [
             'migrations',
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Table Prefix
+        |--------------------------------------------------------------------------
+        |
+        | If you have a prefix on your table names but don't want it in the model
+        | and relation names, specify it here.
+        |
+        */
+        'table_prefix' => '',
     ],
 
     /*

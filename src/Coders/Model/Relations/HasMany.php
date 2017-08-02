@@ -26,10 +26,10 @@ class HasMany extends HasOneOrMany
     public function name()
     {
         if ($this->parent->usesSnakeAttributes()) {
-            return Str::snake(Str::plural(Str::singular($this->related->getTable())));
+            return Str::snake(Str::plural(Str::singular($this->related->getTable(true))));
         }
 
-        return Str::camel(Str::plural(Str::singular($this->related->getTable())));
+        return Str::camel(Str::plural(Str::singular($this->related->getTable(true))));
     }
 
     /**
