@@ -358,10 +358,9 @@ class Model
     /**
      * @return string
      */
-    public function getTable($andRemovePrefix=false)
+    public function getTable($andRemovePrefix = false)
     {
-        if ($andRemovePrefix)
-        {
+        if ($andRemovePrefix) {
             return $this->removeTablePrefix($this->blueprint->table());
         }
         return $this->blueprint->table();
@@ -661,7 +660,7 @@ class Model
      */
     public function shouldRemoveTablePrefix()
     {
-        return !empty($this->tablePrefix);
+        return ! empty($this->tablePrefix);
     }
 
     /**
@@ -677,8 +676,8 @@ class Model
      */
     public function removeTablePrefix($table)
     {
-        if (($this->shouldRemoveTablePrefix()) && (substr($table,0,strlen($this->tablePrefix)) == $this->tablePrefix)) {
-          $table = substr($table,strlen($this->tablePrefix));
+        if (($this->shouldRemoveTablePrefix()) && (substr($table, 0, strlen($this->tablePrefix)) == $this->tablePrefix)) {
+          $table = substr($table, strlen($this->tablePrefix));
         }
         return $table;
     }
