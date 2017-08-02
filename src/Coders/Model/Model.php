@@ -363,6 +363,7 @@ class Model
         if ($andRemovePrefix) {
             return $this->removeTablePrefix($this->blueprint->table());
         }
+        
         return $this->blueprint->table();
     }
 
