@@ -7,8 +7,6 @@
 
 namespace Reliese\Meta\Sqlite;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Fluent;
 
 class Column implements \Reliese\Meta\Column
@@ -73,14 +71,10 @@ class Column implements \Reliese\Meta\Column
             }
         }
 
-
-
         if ($attributes['type'] == 'int') {
             $attributes['unsigned'] = $this->metadata->getUnsigned();
         }
     }
-
-
 
     /**
      * @param \Illuminate\Support\Fluent $attributes
@@ -95,7 +89,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseAutoincrement(Fluent $attributes)
     {
-            $attributes['autoincrement'] = $this->metadata->getAutoincrement();
+        $attributes['autoincrement'] = $this->metadata->getAutoincrement();
     }
 
     /**
@@ -121,5 +115,4 @@ class Column implements \Reliese\Meta\Column
     {
         $attributes['comment'] = $this->metadata->getComment();
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace Reliese\Meta\Sqlite;
 
-
 use Reliese\Meta\Blueprint;
 use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
@@ -44,7 +43,7 @@ class Schema implements \Reliese\Meta\Schema
         $this->schema = $schema;
         $this->connection = $connection;
         /* Sqlite has a bool type that doctrine isn't registering */
-        $this->connection->getDoctrineConnection()->getDatabasePlatform()->registerDoctrineTypeMapping("bool","boolean");
+        $this->connection->getDoctrineConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('bool', 'boolean');
         $this->load();
     }
 
@@ -70,22 +69,20 @@ class Schema implements \Reliese\Meta\Schema
             $this->fillConstraints($blueprint);
             $this->tables[$table] = $blueprint;
         }
-
     }
 
     /**
      * @return array
      * @internal param string $schema
-     *
      */
     protected function fetchTables()
     {
         $names = $this->manager()->listTableNames();
 
-        return array_diff($names,[
-            "sqlite_master",
-            "sqlite_sequence",
-            "sqlite_stat1"
+        return array_diff($names, [
+            'sqlite_master',
+            'sqlite_sequence',
+            'sqlite_stat1',
         ]);
     }
 
@@ -118,7 +115,6 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-
         $this->fillPrimaryKey($blueprint);
         $this->fillIndexes($blueprint);
 
@@ -148,7 +144,7 @@ class Schema implements \Reliese\Meta\Schema
         $key = [
             'name' => 'primary',
             'index' => '',
-            'columns' => $indexes["primary"]->getColumns(),
+            'columns' => $indexes['primary']->getColumns(),
         ];
 
         $blueprint->withPrimaryKey(new Fluent($key));
@@ -161,7 +157,7 @@ class Schema implements \Reliese\Meta\Schema
     protected function fillIndexes(Blueprint $blueprint)
     {
         $indexes = $this->manager()->listTableIndexes($blueprint->table());
-        unset($indexes["primary"]);
+        unset($indexes['primary']);
 
         foreach ($indexes as $setup) {
             $index = [
@@ -182,7 +178,7 @@ class Schema implements \Reliese\Meta\Schema
         $relations = $this->manager()->listTableForeignKeys($blueprint->table());
 
         foreach ($relations as $setup) {
-            $table = ["database" => "", "table"=>$setup->getForeignTableName()];
+            $table = ['database' => '', 'table'=>$setup->getForeignTableName()];
 
             $relation = [
                 'name' => 'foreign',
@@ -196,7 +192,6 @@ class Schema implements \Reliese\Meta\Schema
         }
     }
 
-
     /**
      * @param \Illuminate\Database\Connection $connection
      *
@@ -204,7 +199,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     public static function schemas(Connection $connection)
     {
-        return ["database"];
+        return ['database'];
     }
 
     /**
