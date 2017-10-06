@@ -148,7 +148,7 @@ class Factory
         $file = $this->fillTemplate($template, $model);
 
         if ($model->indentWithSpace()) {
-            $file = preg_replace('/\t+/', str_repeat(' ', $model->indentWithSpace()), $file);
+            $file = str_replace("\t", str_repeat(' ', $model->indentWithSpace()), $file);
         }
 
         $this->files->put($this->modelPath($model, $model->usesBaseFiles() ? ['Base'] : []), $file);
