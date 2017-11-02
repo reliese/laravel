@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    
     /*
     |--------------------------------------------------------------------------
     | Default Configurations
@@ -11,9 +11,9 @@ return [
     | that will be generated from any database.
     |
     */
-
+    
     '*' => [
-
+        
         /*
         |--------------------------------------------------------------------------
         | Model Files Location
@@ -24,9 +24,9 @@ return [
         | be placed within a Base directory inside this location.
         |
         */
-
+        
         'path' => app_path('Models'),
-
+        
         /*
         |--------------------------------------------------------------------------
         | Model Namespace
@@ -37,9 +37,9 @@ return [
         | similar to the path of your models defined above.
         |
         */
-
+        
         'namespace' => 'App\Models',
-
+        
         /*
         |--------------------------------------------------------------------------
         | Parent Class
@@ -51,9 +51,9 @@ return [
         | will allow you to create custom database castings.
         |
         */
-
+        
         'parent' => Reliese\Database\Eloquent\Model::class,
-
+        
         /*
         |--------------------------------------------------------------------------
         | Traits
@@ -66,12 +66,12 @@ return [
         | an example of how you can customize your models.
         |
         */
-
+        
         'use' => [
             // Reliese\Database\Eloquent\BitBooleans::class,
             // Reliese\Database\Eloquent\BlamableBehavior::class,
         ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Model Connection
@@ -82,9 +82,9 @@ return [
         | models will have the connection property filled.
         |
         */
-
-        'connection' => false,
-
+        
+        'connection' => FALSE,
+        
         /*
         |--------------------------------------------------------------------------
         | Timestamps
@@ -98,9 +98,9 @@ return [
         | disabled for your model.
         |
         */
-
-        'timestamps' => true,
-
+        
+        'timestamps' => TRUE,
+        
         // 'timestamps' => [
         //     'enabled' => true,
         //     'fields' => [
@@ -108,7 +108,7 @@ return [
         //         'UPDATED_AT' => 'updated_at',
         //     ]
         // ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Soft Deletes
@@ -122,14 +122,14 @@ return [
         | disabled for your model.
         |
         */
-
-        'soft_deletes' => true,
-
+        
+        'soft_deletes' => TRUE,
+        
         // 'soft_deletes' => [
         //     'enabled' => true,
         //     'field' => 'deleted_at',
         // ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Date Format
@@ -140,9 +140,9 @@ return [
         | models unless you change it to a more convenient value.
         |
         */
-
+        
         'date_format' => 'Y-m-d H:i:s',
-
+        
         /*
         |--------------------------------------------------------------------------
         | Pagination
@@ -153,9 +153,9 @@ return [
         | see this number in your models unless you change it.
         |
         */
-
+        
         'per_page' => 15,
-
+        
         /*
         |--------------------------------------------------------------------------
         | Base Files
@@ -169,9 +169,9 @@ return [
         | you generate them, but your customized files will not be touched.
         |
         */
-
-        'base_files' => false,
-
+        
+        'base_files' => FALSE,
+        
         /*
         |--------------------------------------------------------------------------
         | Snake Attributes
@@ -182,9 +182,9 @@ return [
         | that behaviour and use camel case attributes in your models.
         |
         */
-
-        'snake_attributes' => true,
-
+        
+        'snake_attributes' => TRUE,
+        
         /*
         |--------------------------------------------------------------------------
         | Qualified Table Names
@@ -194,10 +194,15 @@ return [
         | MySQL), you can make sure your models take into account their
         | respective database schema.
         |
+        | Can Either be NULL, FALSE or TRUE
+        | TRUE: Schema name will be prepended on the table
+        | FALSE:Table name will be set without schema name.
+        | NULL: Table name will follow laravel pattern,
+        |   i.e if class name(plural) matches table name, then table name will not be added
         */
-
-        'qualified_tables' => false,
-
+        
+        'qualified_tables' => FALSE,
+        
         /*
         |--------------------------------------------------------------------------
         | Hidden Attributes
@@ -209,11 +214,11 @@ return [
         | Some fields were defined for you.
         |
         */
-
+        
         'hidden' => [
             '*secret*', '*password', '*token',
         ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Mass Assignment Guarded Attributes
@@ -225,11 +230,11 @@ return [
         | excluding your models' primary keys.
         |
         */
-
+        
         'guarded' => [
             // 'created_by', 'updated_by'
         ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Casts
@@ -244,11 +249,11 @@ return [
         | modify them to fit your needs.
         |
         */
-
+        
         'casts' => [
             '*_json' => 'json',
         ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Excluded Tables
@@ -260,11 +265,11 @@ return [
         | filled for you, since you may not want a model for it.
         |
         */
-
-        'except' => [
+        
+        'except'       => [
             'migrations',
         ],
-
+        
         /*
         |--------------------------------------------------------------------------
         | Table Prefix
@@ -276,7 +281,7 @@ return [
         */
         'table_prefix' => '',
     ],
-
+    
     /*
     |--------------------------------------------------------------------------
     | Database Specifics
@@ -288,7 +293,7 @@ return [
     | These values will override those defined in the section above.
     |
     */
-
+    
     // 'shop' => [
     //     'path' => app_path(),
     //     'namespace' => 'App',
