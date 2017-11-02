@@ -1110,6 +1110,14 @@ class Model
     }
 
     /**
+     * @return int
+     */
+    public function indentWithSpace()
+    {
+        return (int) $this->config('indent_with_space', 0);
+    }
+
+    /**
      * @return bool
      */
     public function usesHints()

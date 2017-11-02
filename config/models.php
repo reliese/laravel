@@ -187,6 +187,19 @@ return [
         
         /*
         |--------------------------------------------------------------------------
+        | Indent options
+        |--------------------------------------------------------------------------
+        |
+        | As default indention is done with tabs, but you can change it by setting
+        | this to the amount of spaces you that you want to use for indentation.
+        | Usually you will use 4 spaces instead of tabs.
+        |
+        */
+
+        'indent_with_space' => 0,
+
+        /*
+        |--------------------------------------------------------------------------
         | Qualified Table Names
         |--------------------------------------------------------------------------
         |
