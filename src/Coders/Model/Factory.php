@@ -344,7 +344,7 @@ class Factory
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
 
-        if (!$model->usesTimestamps()) {
+        if (! $model->usesTimestamps()) {
             $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
         }
 
@@ -400,7 +400,7 @@ class Factory
     {
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
 
-        if (!$this->files->isDirectory($modelsDirectory)) {
+        if (! $this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
@@ -424,7 +424,7 @@ class Factory
      */
     public function needsUserFile(Model $model)
     {
-        return !$this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
+        return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**
