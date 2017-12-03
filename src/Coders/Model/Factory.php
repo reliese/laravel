@@ -8,12 +8,12 @@
 namespace Reliese\Coders\Model;
 
 use Carbon\Carbon;
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Reliese\Support\Classify;
 
 class Factory
 {
@@ -81,7 +81,7 @@ class Factory
      */
     protected function models()
     {
-        if (! isset($this->models)) {
+        if (!isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -107,14 +107,14 @@ class Factory
      */
     public function map($schema)
     {
-        if (! isset($this->schemas)) {
+        if (!isset($this->schemas)) {
             $this->on();
         }
 
         $mapper = $this->makeSchema($schema);
 
         foreach ($mapper->tables() as $blueprint) {
-            if ($this->shouldNotExclude($blueprint)) {
+            if ($this->shouldTakeOnly($blueprint) && $this->shouldNotExclude($blueprint)) {
                 $this->create($mapper->schema(), $blueprint->table());
             }
         }
@@ -131,6 +131,26 @@ class Factory
             if (Str::is($pattern, $blueprint->table())) {
                 return false;
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param \Reliese\Meta\Blueprint $blueprint
+     *
+     * @return bool
+     */
+    protected function shouldTakeOnly(Blueprint $blueprint)
+    {
+        if ($patterns = $this->config($blueprint, 'only', [])) {
+            foreach ($patterns as $pattern) {
+                if (Str::is($pattern, $blueprint->table())) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         return true;
@@ -183,6 +203,7 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
+     *
      * @todo: Delegate workload to SchemaManager and ModelManager
      *
      * @return array
@@ -199,9 +220,7 @@ class Factory
         // TODO: ModelManager should do this
         foreach ($references as &$related) {
             $blueprint = $related['blueprint'];
-            $related['model'] = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table())
-                                ? $model
-                                : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
+            $related['model'] = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table()) ? $model : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
         }
 
         return $references;
@@ -212,6 +231,7 @@ class Factory
      * @param string $name
      *
      * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function prepareTemplate(Model $model, $name)
     {
@@ -296,7 +316,7 @@ class Factory
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
-        if (! empty($body)) {
+        if (!empty($body)) {
             $body .= "\n";
         }
 
@@ -322,7 +342,7 @@ class Factory
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
 
-        if (! $model->usesTimestamps()) {
+        if (!$model->usesTimestamps()) {
             $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
         }
 
@@ -370,7 +390,6 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
-     *
      * @param array $custom
      *
      * @return string
@@ -379,7 +398,7 @@ class Factory
     {
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
 
-        if (! $this->files->isDirectory($modelsDirectory)) {
+        if (!$this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
@@ -403,11 +422,13 @@ class Factory
      */
     public function needsUserFile(Model $model)
     {
-        return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
+        return !$this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**
      * @param \Reliese\Coders\Model\Model $model
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function createUserFile(Model $model)
     {

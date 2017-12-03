@@ -279,8 +279,24 @@ return [
         |
         */
 
-        'except'       => [
+        'except' => [
             'migrations',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Specified Tables
+        |--------------------------------------------------------------------------
+        |
+        | When performing the generation of models you may want to take some of
+        | them, because you want a model for them or any other reason.
+        | You can define those tables bellow. The migrations table was
+        | filled for you, since you may not want a model for it.
+        |
+        */
+
+        'only' => [
+            // 'users',
         ],
 
         /*
@@ -292,6 +308,7 @@ return [
         | and relation names, specify it here.
         |
         */
+
         'table_prefix' => '',
     ],
 
@@ -316,6 +333,7 @@ return [
     //         Reliese\Database\Eloquent\BitBooleans::class,
     //     ],
     //     'except' => ['migrations'],
+    //     'only' => ['users'],
     //      // Table Specifics Bellow:
     //     'user' => [
     //      // Don't use any default trait
