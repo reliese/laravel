@@ -81,7 +81,7 @@ class Factory
      */
     protected function models()
     {
-        if (!isset($this->models)) {
+        if (! isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -107,7 +107,7 @@ class Factory
      */
     public function map($schema)
     {
-        if (!isset($this->schemas)) {
+        if (! isset($this->schemas)) {
             $this->on();
         }
 
@@ -220,7 +220,9 @@ class Factory
         // TODO: ModelManager should do this
         foreach ($references as &$related) {
             $blueprint = $related['blueprint'];
-            $related['model'] = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table()) ? $model : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
+            $related['model'] = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table())
+                                ? $model
+                                : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
         }
 
         return $references;
@@ -316,7 +318,7 @@ class Factory
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
-        if (!empty($body)) {
+        if (! empty($body)) {
             $body .= "\n";
         }
 
