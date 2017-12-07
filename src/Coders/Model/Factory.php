@@ -229,7 +229,6 @@ class Factory
      */
     protected function fillTemplate($template, Model $model)
     {
-        $template = str_replace('{{date}}', Carbon::now()->toRssString(), $template);
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
         $template = str_replace('{{parent}}', $model->getParentClass(), $template);
         $template = str_replace('{{properties}}', $this->properties($model), $template);
