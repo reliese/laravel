@@ -239,7 +239,7 @@ class Blueprint
      *
      * @return array
      */
-    public function references(Blueprint $table)
+    public function references(self $table)
     {
         $references = [];
 

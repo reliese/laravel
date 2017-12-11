@@ -7,7 +7,6 @@
 
 namespace Reliese\Coders\Model;
 
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
 use Reliese\Support\Classify;
