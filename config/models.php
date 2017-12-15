@@ -279,8 +279,22 @@ return [
         |
         */
 
-        'except'       => [
+        'except' => [
             'migrations',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Specified Tables
+        |--------------------------------------------------------------------------
+        |
+        | You can specify specific tables. This will generate the models only
+        | for selected tables, ignoring the rest.
+        |
+        */
+
+        'only' => [
+            // 'users',
         ],
 
         /*
@@ -292,6 +306,7 @@ return [
         | and relation names, specify it here.
         |
         */
+
         'table_prefix' => '',
     ],
 
@@ -316,6 +331,7 @@ return [
     //         Reliese\Database\Eloquent\BitBooleans::class,
     //     ],
     //     'except' => ['migrations'],
+    //     'only' => ['users'],
     //      // Table Specifics Bellow:
     //     'user' => [
     //      // Don't use any default trait
