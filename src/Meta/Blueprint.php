@@ -269,7 +269,7 @@ class Blueprint
                 }
             }
         }
-        
+
         return false;
     }
 }
