@@ -263,10 +263,8 @@ class Blueprint
         foreach ($this->unique as $index) {
 
             // We only need to consider cases, when UNIQUE KEY is presented by only ONE column
-            if(sizeof($index->columns) === 1 && isset($index->columns[0]))
-            {
-                if(in_array($index->columns[0], $constraint->columns))
-                {
+            if (sizeof($index->columns) === 1 && isset($index->columns[0])) {
+                if (in_array($index->columns[0], $constraint->columns)) {
                     return true;
                 }
             }
