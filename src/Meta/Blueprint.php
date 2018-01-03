@@ -260,17 +260,16 @@ class Blueprint
      */
     public function isUniqueKey(Fluent $constraint)
     {
-        $is = false;
-
         foreach ($this->unique as $index) {
-            foreach ($index->columns as $column) {
-                $is &= in_array($column, $constraint->columns);
-            }
-            if ($is) {
-                return true;
+
+            // We only need to consider cases, when UNIQUE KEY is presented by only ONE column
+            if (count($index->columns) === 1 && isset($index->columns[0])) {
+                if (in_array($index->columns[0], $constraint->columns)) {
+                    return true;
+                }
             }
         }
 
-        return $is;
+        return false;
     }
 }
