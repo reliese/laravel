@@ -320,14 +320,15 @@ return [
         |               (post.author --> user.id)
                             generates Post::user() and User::posts()
         |
-        | 'foreign_key' Use the foreign key as the relation name. If the foreign
-        |               contains the other key as a suffix, it is removed.
-        |               (post.author --> user.id)
-        |                   generates Post::author() and User::posts_author()
-        |               (post.author_id --> user.id)
-        |                   generates Post::author() and User::posts_author()
-        |               (post.user_id --> user.id)
-        |                   generates Post::user() and User::posts()
+        | 'foreign_key' Use the foreign key as the relation name.
+        |                   (post.author --> user.id)
+        |                       generates Post::author() and User::posts_author()
+        |               Column id's are ignored.
+        |                   (post.author_id --> user.id)
+        |                       generates the same as above.
+        |               When the foreign key is redundant, it is omited.
+        |                   (post.user_id --> user.id)
+        |                       generates User::posts() and not User::posts_user()
         */
 
         'relation_name_strategy' => 'related',
