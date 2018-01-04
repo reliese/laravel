@@ -158,6 +158,12 @@ class Model
     protected $tablePrefix = '';
 
     /**
+     * @var string
+     */
+    protected $relationNameStrategy = '';
+
+
+    /**
      * ModelClass constructor.
      *
      * @param \Reliese\Meta\Blueprint $blueprint
@@ -201,6 +207,9 @@ class Model
 
         // Table Prefix settings
         $this->withTablePrefix($this->config('table_prefix', $this->getDefaultTablePrefix()));
+
+        // Relation name settings
+        $this->withRelationNameStrategy($this->config('relation_name_strategy', $this->getDefaultRelationNameStrategy()));
 
         return $this;
     }
@@ -419,6 +428,14 @@ class Model
     public function getNamespace()
     {
         return $this->namespace;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRelationNameStrategy()
+    {
+        return $this->relationNameStrategy;
     }
 
     /**
@@ -673,6 +690,14 @@ class Model
     }
 
     /**
+     * @param string $relationNameStrategy
+     */
+    public function withRelationNameStrategy($relationNameStrategy)
+    {
+        $this->relationNameStrategy = $relationNameStrategy;
+    }
+
+    /**
      * @param string $table
      */
     public function removeTablePrefix($table)
@@ -866,6 +891,14 @@ class Model
     public function getDefaultTablePrefix()
     {
         return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultRelationNameStrategy()
+    {
+        return 'related';
     }
 
     /**

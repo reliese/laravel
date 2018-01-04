@@ -308,6 +308,26 @@ return [
         */
 
         'table_prefix' => '',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Relation Name Strategy
+        |--------------------------------------------------------------------------
+        |
+        | How the relations should be named in your models.
+        |
+        | 'related'     Use the related table as the relation name.
+        |               (post.author -> user.id) will be called 'user'
+        |
+        | 'foreign_key' Use the foreign key as the relation name. If the foreign
+        |               contains the other key as a suffix, it is removed.
+        |               (post.author -> user.id) will be called 'author'
+        |               (user.author_id -> user.id) will be called 'author'
+        |               (user.country_code -> country.code) will be called 'country'
+        */
+
+        'relation_name_strategy' => 'related',
+        // 'relation_name_strategy' => 'foreign_key',
     ],
 
     /*
