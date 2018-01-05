@@ -162,7 +162,6 @@ class Model
      */
     protected $relationNameStrategy = '';
 
-
     /**
      * ModelClass constructor.
      *
