@@ -308,6 +308,31 @@ return [
         */
 
         'table_prefix' => '',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Relation Name Strategy
+        |--------------------------------------------------------------------------
+        |
+        | How the relations should be named in your models.
+        |
+        | 'related'     Use the related table as the relation name.
+        |               (post.author --> user.id)
+                            generates Post::user() and User::posts()
+        |
+        | 'foreign_key' Use the foreign key as the relation name.
+        |                   (post.author --> user.id)
+        |                       generates Post::author() and User::posts_author()
+        |               Column id's are ignored.
+        |                   (post.author_id --> user.id)
+        |                       generates the same as above.
+        |               When the foreign key is redundant, it is omited.
+        |                   (post.user_id --> user.id)
+        |                       generates User::posts() and not User::posts_user()
+        */
+
+        'relation_name_strategy' => 'related',
+        // 'relation_name_strategy' => 'foreign_key',
     ],
 
     /*

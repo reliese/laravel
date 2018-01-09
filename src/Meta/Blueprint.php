@@ -52,17 +52,23 @@ class Blueprint
     protected $primaryKey;
 
     /**
+     * @var bool
+     */
+    protected $isView;
+
+    /**
      * Blueprint constructor.
      *
      * @param string $connection
      * @param string $schema
      * @param string $table
      */
-    public function __construct($connection, $schema, $table)
+    public function __construct($connection, $schema, $table, $isView = false)
     {
         $this->connection = $connection;
         $this->schema = $schema;
         $this->table = $table;
+        $this->isView = $isView;
     }
 
     /**
@@ -271,5 +277,13 @@ class Blueprint
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isView()
+    {
+        return $this->isView;
     }
 }
