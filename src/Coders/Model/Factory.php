@@ -319,7 +319,7 @@ class Factory
             $excludedConstants[] = $model->getDeletedAtField();
         }
 
-        if ($this->config($model->getBlueprint(), 'with_property_constants', false)) {
+        if ($model->usesPropertyConstants()) {
             // Take all properties and exclude already added constants with timestamps.
             $properties = array_keys($model->getProperties());
             $properties = array_diff($properties, $excludedConstants);
@@ -328,7 +328,6 @@ class Factory
                 $body .= $this->class->constant(strtoupper($property), $property);
             }
         }
-
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.

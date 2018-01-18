@@ -252,6 +252,8 @@ class Model
         // TODO: Check type cast is OK
         $cast = $column->type;
 
+        $propertyName = $this->usesPropertyConstants() ? 'self::'.strtoupper($column->name) : $column->name;
+
         // Due to some casting problems when converting null to a Carbon instance,
         // we are going to treat Soft Deletes field as string.
         if ($column->name == $this->getDeletedAtField()) {
@@ -260,26 +262,26 @@ class Model
 
         // Track dates
         if ($cast == 'date') {
-            $this->dates[] = $column->name;
+            $this->dates[] = $propertyName;
         }
         // Track attribute casts
         elseif ($cast != 'string') {
-            $this->casts[$column->name] = $cast;
+            $this->casts[$propertyName] = $cast;
         }
 
         foreach ($this->config('casts', []) as $pattern => $casting) {
             if (Str::is($pattern, $column->name)) {
-                $this->casts[$column->name] = $cast = $casting;
+                $this->casts[$propertyName] = $cast = $casting;
                 break;
             }
         }
 
         if ($this->isHidden($column->name)) {
-            $this->hidden[] = $column->name;
+            $this->hidden[] = $propertyName;
         }
 
         if ($this->isFillable($column->name)) {
-            $this->fillable[] = $column->name;
+            $this->fillable[] = $propertyName;
         }
 
         $this->mutate($column->name);
@@ -1139,6 +1141,14 @@ class Model
     public function usesBaseFiles()
     {
         return $this->config('base_files', false);
+    }
+
+    /**
+     * @return bool
+     */
+    public function usesPropertyConstants()
+    {
+        return $this->config('with_property_constants', false);
     }
 
     /**
