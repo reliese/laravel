@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Illuminate\Database\Eloquent\Collection;
+use Reliese\Support\Dumper;
 
 class BelongsToMany implements Relation
 {
@@ -50,8 +50,13 @@ class BelongsToMany implements Relation
      * @param \Reliese\Coders\Model\Model $pivot
      * @param \Reliese\Coders\Model\Model $reference
      */
-    public function __construct(Fluent $parentCommand, Fluent $referenceCommand, Model $parent, Model $pivot, Model $reference)
-    {
+    public function __construct(
+        Fluent $parentCommand,
+        Fluent $referenceCommand,
+        Model $parent,
+        Model $pivot,
+        Model $reference
+    ) {
         $this->parentCommand = $parentCommand;
         $this->referenceCommand = $referenceCommand;
         $this->parent = $parent;
@@ -64,7 +69,7 @@ class BelongsToMany implements Relation
      */
     public function hint()
     {
-        return '\\'.Collection::class;
+        return '\\' . Collection::class;
     }
 
     /**
@@ -86,26 +91,32 @@ class BelongsToMany implements Relation
     {
         $body = 'return $this->belongsToMany(';
 
-        $body .= $this->reference->getQualifiedUserClassName().'::class';
+        $body .= $this->reference->getQualifiedUserClassName() . '::class';
 
         if ($this->needsPivotTable()) {
-            $body .= ', '.Dumper::export($this->pivotTable());
+            $body .= ', ' . Dumper::export($this->pivotTable());
         }
 
         if ($this->needsForeignKey()) {
-            $body .= ', '.Dumper::export($this->foreignKey());
+            $foreignKey = $this->parent->usesPropertyConstants()
+                ? $this->reference->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
+                : $this->foreignKey();
+            $body .= ', ' . Dumper::export($foreignKey);
         }
 
         if ($this->needsOtherKey()) {
-            $body .= ', '.Dumper::export($this->otherKey());
+            $otherKey = $this->reference->usesPropertyConstants()
+                ? $this->reference->getQualifiedUserClassName() . '::' . strtoupper($this->otherKey())
+                : $this->otherKey();
+            $body .= ', ' . Dumper::export($otherKey);
         }
 
         $body .= ')';
 
         $fields = $this->getPivotFields();
 
-        if (! empty($fields)) {
-            $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
+        if (!empty($fields)) {
+            $body .= "\n\t\t\t\t\t->withPivot(" . $this->parametrize($fields) . ')';
         }
 
         if ($this->pivot->usesTimestamps()) {
@@ -146,7 +157,7 @@ class BelongsToMany implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->parentRecordName().'_id';
+        $defaultForeignKey = $this->parentRecordName() . '_id';
 
         return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
     }
@@ -164,7 +175,7 @@ class BelongsToMany implements Relation
      */
     protected function needsOtherKey()
     {
-        $defaultOtherKey = $this->referenceRecordName().'_id';
+        $defaultOtherKey = $this->referenceRecordName() . '_id';
 
         return $this->otherKey() != $defaultOtherKey;
     }
@@ -212,7 +223,11 @@ class BelongsToMany implements Relation
      */
     private function parametrize($fields = [])
     {
-        return (string) implode(', ', array_map(function ($field) {
+        return (string)implode(', ', array_map(function ($field) {
+            $field = $this->reference->usesPropertyConstants()
+                ? $this->pivot->getQualifiedUserClassName() . '::' . strtoupper($field)
+                : $field;
+
             return Dumper::export($field);
         }, $fields));
     }
