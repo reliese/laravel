@@ -115,7 +115,7 @@ class BelongsToMany implements Relation
 
         $fields = $this->getPivotFields();
 
-        if (!empty($fields)) {
+        if (! empty($fields)) {
             $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
         }
 
@@ -223,7 +223,7 @@ class BelongsToMany implements Relation
      */
     private function parametrize($fields = [])
     {
-        return (string)implode(', ', array_map(function ($field) {
+        return (string) implode(', ', array_map(function ($field) {
             $field = $this->reference->usesPropertyConstants()
                 ? $this->pivot->getQualifiedUserClassName().'::'.strtoupper($field)
                 : $field;
