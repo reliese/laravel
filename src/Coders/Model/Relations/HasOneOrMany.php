@@ -64,14 +64,14 @@ abstract class HasOneOrMany implements Relation
 
         if ($this->needsForeignKey()) {
             $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
+                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
                 : $this->foreignKey();
             $body .= ', '.Dumper::export($foreignKey);
         }
 
         if ($this->needsLocalKey()) {
             $localKey = $this->related->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->localKey())
+                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->localKey())
                 : $this->localKey();
             $body .= ', '.Dumper::export($localKey);
         }

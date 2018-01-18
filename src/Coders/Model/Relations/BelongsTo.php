@@ -7,11 +7,11 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
+use Reliese\Support\Dumper;
+use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
 
 class BelongsTo implements Relation
 {
@@ -77,14 +77,14 @@ class BelongsTo implements Relation
 
         if ($this->needsForeignKey()) {
             $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->parent->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
+                ? $this->parent->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
                 : $this->foreignKey();
             $body .= ', '.Dumper::export($foreignKey);
         }
 
         if ($this->needsOtherKey()) {
             $otherKey = $this->related->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->otherKey())
+                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
                 : $this->otherKey();
             $body .= ', '.Dumper::export($otherKey);
         }
