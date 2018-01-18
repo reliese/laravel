@@ -302,17 +302,33 @@ class Factory
             $body .= $this->class->mixin($trait);
         }
 
+        $excludedConstants = [];
+
         if ($model->hasCustomCreatedAtField()) {
             $body .= $this->class->constant('CREATED_AT', $model->getCreatedAtField());
+            $excludedConstants[] = $model->getCreatedAtField();
         }
 
         if ($model->hasCustomUpdatedAtField()) {
             $body .= $this->class->constant('UPDATED_AT', $model->getUpdatedAtField());
+            $excludedConstants[] = $model->getUpdatedAtField();
         }
 
         if ($model->hasCustomDeletedAtField()) {
             $body .= $this->class->constant('DELETED_AT', $model->getDeletedAtField());
+            $excludedConstants[] = $model->getDeletedAtField();
         }
+
+        if ($this->config($model->getBlueprint(), 'with_property_constants', false)) {
+            // Take all properties and exclude already added constants with timestamps.
+            $properties = array_keys($model->getProperties());
+            $properties = array_diff($properties, $excludedConstants);
+
+            foreach ($properties as $property) {
+                $body .= $this->class->constant(strtoupper($property), $property);
+            }
+        }
+
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.

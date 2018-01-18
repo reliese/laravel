@@ -336,6 +336,26 @@ return [
     ],
 
     /*
+     |--------------------------------------------------------------------------
+     | Determines need or not to generate constants with properties names like
+     |
+     | ...
+     | const AGE = 'age';
+     | const USER_NAME = 'user_name';
+     | ...
+     |
+     | that later can be used in QueryBuilder like
+     |
+     | ...
+     | $builder->select([User::USER_NAME])->where(User::AGE, '<=', 18);
+     | ...
+     |
+     | that helps to avoid typos in strings when typing field names and allows to use
+     | code competition with available model's field names.
+     */
+    'with_property_constants' => false,
+
+    /*
     |--------------------------------------------------------------------------
     | Database Specifics
     |--------------------------------------------------------------------------
