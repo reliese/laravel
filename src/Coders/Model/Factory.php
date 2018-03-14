@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Reliese\Support\Classify;
 
 class Factory
 {
@@ -220,8 +220,8 @@ class Factory
         foreach ($references as &$related) {
             $blueprint = $related['blueprint'];
             $related['model'] = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table())
-                                ? $model
-                                : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
+                ? $model
+                : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
         }
 
         return $references;
@@ -251,12 +251,78 @@ class Factory
     protected function fillTemplate($template, Model $model)
     {
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
-        $template = str_replace('{{parent}}', $model->getParentClass(), $template);
-        $template = str_replace('{{properties}}', $this->properties($model), $template);
         $template = str_replace('{{class}}', $model->getClassName(), $template);
-        $template = str_replace('{{body}}', $this->body($model), $template);
+
+
+        $properties = $this->properties($model);
+        $usedClasses = $this->extractUsedClasses($properties);
+        $template = str_replace('{{properties}}', $properties, $template);
+
+        $parentClass = $model->getParentClass();
+        $usedClasses = array_merge($usedClasses, $this->extractUsedClasses($parentClass));
+        $template = str_replace('{{parent}}', $parentClass, $template);
+
+        $body = $this->body($model);
+        $usedClasses = array_merge($usedClasses, $this->extractUsedClasses($body));
+        $template = str_replace('{{body}}', $body, $template);
+
+        $usedClasses = array_unique($usedClasses);
+        $usedClassesSection = $this->formatUsedClasses(
+            $model->getBaseNamespace(),
+            $usedClasses
+        );
+        $template = str_replace('{{imports}}', $usedClassesSection, $template);
 
         return $template;
+    }
+
+    /**
+     * Returns imports section for model.
+     *
+     * @param string $baseNamespace base namespace to avoid importing classes from same namespace
+     * @param array $usedClasses Array of used in model classes
+     *
+     * @return string
+     */
+    private function formatUsedClasses($baseNamespace, $usedClasses)
+    {
+        $result = [];
+        foreach ($usedClasses as $usedClass) {
+            // Do not import classes from same namespace
+            $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
+            if (!preg_match($namespacePattern, $usedClass)) {
+                $result[] = "use {$usedClass};";
+            }
+        }
+
+        sort($result);
+
+        return implode("\n", $result);
+    }
+
+    /**
+     * Extract and replace fully-qualified class names from placeholder.
+     *
+     * @param string $placeholder Placeholder to extract class names from. Rewrites value to content without FQN
+     *
+     * @return array Extracted FQN
+     */
+    private function extractUsedClasses(&$placeholder)
+    {
+        $classNamespaceRegExp = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
+        $matches = [];
+        $usedInModelClasses = [];
+        if (preg_match_all($classNamespaceRegExp, $placeholder, $matches)) {
+            foreach ($matches[1] as $match) {
+                $usedClassName = $match;
+                $usedInModelClasses[] = trim($usedClassName, '\\');
+                $namespaceParts = explode('\\', $usedClassName);
+                $resultClassName = array_pop($namespaceParts);
+                $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
+            }
+        }
+
+        return array_unique($usedInModelClasses);
     }
 
     /**

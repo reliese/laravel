@@ -2,6 +2,8 @@
 
 namespace {{namespace}};
 
+{{imports}}
+
 class {{class}} extends {{parent}}
 {
 {{body}}
