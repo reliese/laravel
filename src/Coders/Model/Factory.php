@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
-use Illuminate\Database\DatabaseManager;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Meta\SchemaManager;
 use Reliese\Support\Classify;
+use Reliese\Meta\SchemaManager;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\DatabaseManager;
 
 class Factory
 {
@@ -253,7 +253,6 @@ class Factory
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
         $template = str_replace('{{class}}', $model->getClassName(), $template);
 
-
         $properties = $this->properties($model);
         $usedClasses = $this->extractUsedClasses($properties);
         $template = str_replace('{{properties}}', $properties, $template);
@@ -290,7 +289,7 @@ class Factory
         foreach ($usedClasses as $usedClass) {
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
-            if (!preg_match($namespacePattern, $usedClass)) {
+            if (! preg_match($namespacePattern, $usedClass)) {
                 $result[] = "use {$usedClass};";
             }
         }
