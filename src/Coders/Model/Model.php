@@ -482,6 +482,9 @@ class Model
      */
     public function getClassName()
     {
+        if($this->config('lower_table_name_first', false)) {
+            return Str::studly(Str::lower($this->getRecordName()));
+        }
         return Str::studly($this->getRecordName());
     }
 

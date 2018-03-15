@@ -311,6 +311,18 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Lower table name before doing studly
+        |--------------------------------------------------------------------------
+        |
+        | If tables names are capitalised using studly produces incorrect name
+        | this can help fix it ie TABLE_NAME now becomes TableName
+        |
+        */
+
+        'lower_table_name_first' => false,
+
+        /*
+        |--------------------------------------------------------------------------
         | Relation Name Strategy
         |--------------------------------------------------------------------------
         |
