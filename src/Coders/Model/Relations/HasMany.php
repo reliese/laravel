@@ -25,7 +25,11 @@ class HasMany extends HasOneOrMany
      */
     public function name()
     {
-        $relationBaseName = Str::plural(Str::singular($this->related->getTable(true)));
+        if($this->parent->shouldPluralizationTableName()){
+            $relationBaseName = Str::plural(Str::singular($this->related->getTable(true)));
+        }else{
+            $relationBaseName = $this->related->getTable(true);
+        }
 
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':
