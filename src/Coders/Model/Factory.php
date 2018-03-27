@@ -506,7 +506,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Myusuf5400\Coders\Model\Model $model
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -517,10 +517,29 @@ class Factory
         $template = $this->prepareTemplate($model, 'user_model');
         $template = str_replace('{{namespace}}', $model->getNamespace(), $template);
         $template = str_replace('{{class}}', $model->getClassName(), $template);
-        $template = str_replace('{{parent}}', '\\'.$model->getBaseNamespace().'\\'.$model->getClassName(), $template);
+        $template = str_replace('{{imports}}', $this->formatBaseClasses($model), $template);
+        $template = str_replace('{{parent}}', $this->getBaseClassName($model), $template);
         $template = str_replace('{{body}}', $this->userFileBody($model), $template);
 
         $this->files->put($file, $template);
+    }
+
+    /**
+     * @param Model $model
+     * @return string
+     */
+    private function formatBaseClasses(Model $model)
+    {
+        return "use {$model->getBaseNamespace()}\\{$model->getClassName()} as {$this->getBaseClassName($model)};";
+    }
+
+    /**
+     * @param Model $model
+     * @return string
+     */
+    private function getBaseClassName(Model $model)
+    {
+        return 'Base' . $model->getClassName();
     }
 
     /**
