@@ -406,20 +406,20 @@ class Model
     /**
      * @return bool
      */
-    public function shouldPluralizationTableName()
+    public function shouldPluralizeTableName()
     {
-        $disablePluralization = (bool)$this->config('disable_pluralization', false);
+        $pluralize = (bool)$this->config('pluralize', true);
 
-        if ($disablePluralization) {
-            $disablePluralizationExcept = $this->config('disable_pluralization_except', []);
-            foreach ($disablePluralizationExcept as $except) {
+        $overridePluralizeFor = $this->config('override_pluralize_for', []);
+        if (count($overridePluralizeFor) > 0) {
+            foreach ($overridePluralizeFor as $except) {
                 if ($except == $this->getTable()) {
-                    return true;
+                    return !$pluralize;
                 }
             }
         }
 
-        return !$disablePluralization;
+        return $pluralize;
     }
 
     /**
@@ -513,11 +513,10 @@ class Model
      */
     public function getRecordName()
     {
-        if ($this->shouldPluralizationTableName()) {
+        if ($this->shouldPluralizeTableName()) {
             return Str::singular($this->removeTablePrefix($this->blueprint->table()));
-        } else {
-            return $this->removeTablePrefix($this->blueprint->table());
         }
+        return $this->removeTablePrefix($this->blueprint->table());
     }
 
     /**
@@ -698,9 +697,9 @@ class Model
     public function needsTableName()
     {
         return false === $this->shouldQualifyTableName() ||
-                $this->shouldRemoveTablePrefix() ||
-                $this->blueprint->table() != Str::plural($this->getRecordName()) ||
-                $this->shouldPluralizationTableName();
+            $this->shouldRemoveTablePrefix() ||
+            $this->blueprint->table() != Str::plural($this->getRecordName()) ||
+            !$this->shouldPluralizeTableName();
     }
 
     /**

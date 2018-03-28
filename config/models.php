@@ -374,7 +374,7 @@ return [
         | You can disable pluralization tables and relations
         |
         */
-        'disable_pluralization' => false,
+        'pluralize' => true,
 
         /*
         |--------------------------------------------------------------------------
@@ -384,8 +384,8 @@ return [
         | You can enable pluralization for certain tables
         |
         */
-        'disable_pluralization_except' => [
-            'users', 'password_resets'
+        'override_pluralize_for' => [
+
         ]
     ],
 
