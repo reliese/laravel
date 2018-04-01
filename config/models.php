@@ -365,6 +365,28 @@ return [
          | code competition with available model's field names.
          */
         'with_property_constants' => false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Disable Pluralization Name
+        |--------------------------------------------------------------------------
+        |
+        | You can disable pluralization tables and relations
+        |
+        */
+        'pluralize' => true,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Disable Pluralization Except For Certain Tables
+        |--------------------------------------------------------------------------
+        |
+        | You can enable pluralization for certain tables
+        |
+        */
+        'override_pluralize_for' => [
+
+        ]
     ],
 
     /*
