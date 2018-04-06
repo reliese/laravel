@@ -386,7 +386,7 @@ return [
         */
         'override_pluralize_for' => [
 
-        ]
+        ],
     ],
 
     /*
