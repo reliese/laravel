@@ -539,7 +539,7 @@ class Factory
      */
     private function getBaseClassName(Model $model)
     {
-        return 'Base' . $model->getClassName();
+        return 'Base'.$model->getClassName();
     }
 
     /**
