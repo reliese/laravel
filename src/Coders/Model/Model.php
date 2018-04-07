@@ -493,6 +493,10 @@ class Model
      */
     public function getQualifiedUserClassName()
     {
+        if($this->usesBaseFiles()){
+            return '\\'.$this->getBaseNamespace().'\\'.$this->getClassName();
+        }
+
         return '\\'.$this->getNamespace().'\\'.$this->getClassName();
     }
 
