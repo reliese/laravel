@@ -69,7 +69,7 @@ class BelongsToMany implements Relation
      */
     public function hint()
     {
-        return '\\'.Collection::class.'|'.$this->reference->getQualifiedUserClassName().'[]';
+        return '\\' . Collection::class . '|' . $this->reference->getQualifiedUserClassName() . '[]';
     }
 
     /**
@@ -77,18 +77,19 @@ class BelongsToMany implements Relation
      */
     public function name()
     {
-        if ($this->parent->shouldPluralizeTableName()) {
-            if ($this->parent->usesSnakeAttributes()) {
-                return Str::snake(Str::plural(Str::singular($this->reference->getTable(true))));
-            }
+        $tableName = $this->reference->getTable(true);
 
-            return Str::camel(Str::plural(Str::singular($this->reference->getTable(true))));
+        if ($this->parent->shouldLowerCaseTableName()) {
+            $tableName = strtolower($tableName);
+        }
+        if ($this->parent->shouldPluralizeTableName()) {
+            $tableName = Str::plural(Str::singular($tableName));
         }
         if ($this->parent->usesSnakeAttributes()) {
-            return Str::snake($this->reference->getTable(true));
+            return Str::snake($tableName);
         }
 
-        return Str::camel($this->reference->getTable(true));
+        return Str::camel($tableName);
     }
 
     /**
@@ -98,32 +99,32 @@ class BelongsToMany implements Relation
     {
         $body = 'return $this->belongsToMany(';
 
-        $body .= $this->reference->getQualifiedUserClassName().'::class';
+        $body .= $this->reference->getQualifiedUserClassName() . '::class';
 
         if ($this->needsPivotTable()) {
-            $body .= ', '.Dumper::export($this->pivotTable());
+            $body .= ', ' . Dumper::export($this->pivotTable());
         }
 
         if ($this->needsForeignKey()) {
             $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->reference->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
+                ? $this->reference->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
                 : $this->foreignKey();
-            $body .= ', '.Dumper::export($foreignKey);
+            $body .= ', ' . Dumper::export($foreignKey);
         }
 
         if ($this->needsOtherKey()) {
             $otherKey = $this->reference->usesPropertyConstants()
-                ? $this->reference->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
+                ? $this->reference->getQualifiedUserClassName() . '::' . strtoupper($this->otherKey())
                 : $this->otherKey();
-            $body .= ', '.Dumper::export($otherKey);
+            $body .= ', ' . Dumper::export($otherKey);
         }
 
         $body .= ')';
 
         $fields = $this->getPivotFields();
 
-        if (! empty($fields)) {
-            $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
+        if (!empty($fields)) {
+            $body .= "\n\t\t\t\t\t->withPivot(" . $this->parametrize($fields) . ')';
         }
 
         if ($this->pivot->usesTimestamps()) {
@@ -164,7 +165,7 @@ class BelongsToMany implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->parentRecordName().'_id';
+        $defaultForeignKey = $this->parentRecordName() . '_id';
 
         return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
     }
@@ -182,7 +183,7 @@ class BelongsToMany implements Relation
      */
     protected function needsOtherKey()
     {
-        $defaultOtherKey = $this->referenceRecordName().'_id';
+        $defaultOtherKey = $this->referenceRecordName() . '_id';
 
         return $this->otherKey() != $defaultOtherKey;
     }
@@ -230,9 +231,9 @@ class BelongsToMany implements Relation
      */
     private function parametrize($fields = [])
     {
-        return (string) implode(', ', array_map(function ($field) {
+        return (string)implode(', ', array_map(function ($field) {
             $field = $this->reference->usesPropertyConstants()
-                ? $this->pivot->getQualifiedUserClassName().'::'.strtoupper($field)
+                ? $this->pivot->getQualifiedUserClassName() . '::' . strtoupper($field)
                 : $field;
 
             return Dumper::export($field);
