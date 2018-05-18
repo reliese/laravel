@@ -208,7 +208,7 @@ class Blueprint
             return current($this->unique);
         }
 
-        $nullPrimaryKey = new Fluent();
+        $nullPrimaryKey = new Fluent(['columns' => []]);
 
         return $nullPrimaryKey;
     }

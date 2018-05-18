@@ -24,7 +24,7 @@ class Factory
     /**
      * @var \Reliese\Meta\SchemaManager
      */
-    protected $schemas;
+    protected $schemas = [];
 
     /**
      * @var \Illuminate\Filesystem\Filesystem
