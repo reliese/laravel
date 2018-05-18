@@ -17,7 +17,7 @@ class HasMany extends HasOneOrMany
      */
     public function hint()
     {
-        return '\\'.Collection::class.'|'.$this->related->getQualifiedUserClassName().'[]';
+        return '\\' . Collection::class . '|' . $this->related->getQualifiedUserClassName() . '[]';
     }
 
     /**
@@ -27,8 +27,13 @@ class HasMany extends HasOneOrMany
     {
         if ($this->parent->shouldPluralizeTableName()) {
             $relationBaseName = Str::plural(Str::singular($this->related->getTable(true)));
+        } else {
+            $relationBaseName = $this->related->getTable(true);
         }
-        $relationBaseName = $this->related->getTable(true);
+
+        if ($this->parent->shouldLowerCaseTableName()) {
+            $relationBaseName = strtolower($relationBaseName);
+        }
 
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':
