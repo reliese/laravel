@@ -7,8 +7,8 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Collection;
 
 class HasMany extends HasOneOrMany
 {
@@ -17,7 +17,7 @@ class HasMany extends HasOneOrMany
      */
     public function hint()
     {
-        return '\\' . Collection::class . '|' . $this->related->getQualifiedUserClassName() . '[]';
+        return '\\'.Collection::class.'|'.$this->related->getQualifiedUserClassName().'[]';
     }
 
     /**
