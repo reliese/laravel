@@ -7,8 +7,8 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Collection;
 
 class HasMany extends HasOneOrMany
 {
@@ -27,8 +27,13 @@ class HasMany extends HasOneOrMany
     {
         if ($this->parent->shouldPluralizeTableName()) {
             $relationBaseName = Str::plural(Str::singular($this->related->getTable(true)));
+        } else {
+            $relationBaseName = $this->related->getTable(true);
         }
-        $relationBaseName = $this->related->getTable(true);
+
+        if ($this->parent->shouldLowerCaseTableName()) {
+            $relationBaseName = strtolower($relationBaseName);
+        }
 
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':

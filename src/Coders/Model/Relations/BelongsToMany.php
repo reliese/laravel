@@ -77,18 +77,19 @@ class BelongsToMany implements Relation
      */
     public function name()
     {
-        if ($this->parent->shouldPluralizeTableName()) {
-            if ($this->parent->usesSnakeAttributes()) {
-                return Str::snake(Str::plural(Str::singular($this->reference->getTable(true))));
-            }
+        $tableName = $this->reference->getTable(true);
 
-            return Str::camel(Str::plural(Str::singular($this->reference->getTable(true))));
+        if ($this->parent->shouldLowerCaseTableName()) {
+            $tableName = strtolower($tableName);
+        }
+        if ($this->parent->shouldPluralizeTableName()) {
+            $tableName = Str::plural(Str::singular($tableName));
         }
         if ($this->parent->usesSnakeAttributes()) {
-            return Str::snake($this->reference->getTable(true));
+            return Str::snake($tableName);
         }
 
-        return Str::camel($this->reference->getTable(true));
+        return Str::camel($tableName);
     }
 
     /**

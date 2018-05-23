@@ -408,18 +408,26 @@ class Model
      */
     public function shouldPluralizeTableName()
     {
-        $pluralize = (bool)$this->config('pluralize', true);
+        $pluralize = (bool) $this->config('pluralize', true);
 
         $overridePluralizeFor = $this->config('override_pluralize_for', []);
         if (count($overridePluralizeFor) > 0) {
             foreach ($overridePluralizeFor as $except) {
                 if ($except == $this->getTable()) {
-                    return !$pluralize;
+                    return ! $pluralize;
                 }
             }
         }
 
         return $pluralize;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldLowerCaseTableName()
+    {
+        return (bool) $this->config('lower_table_name_first', false);
     }
 
     /**
@@ -501,7 +509,7 @@ class Model
      */
     public function getClassName()
     {
-        if ($this->config('lower_table_name_first', false)) {
+        if ($this->shouldLowerCaseTableName()) {
             return Str::studly(Str::lower($this->getRecordName()));
         }
 
@@ -516,6 +524,7 @@ class Model
         if ($this->shouldPluralizeTableName()) {
             return Str::singular($this->removeTablePrefix($this->blueprint->table()));
         }
+
         return $this->removeTablePrefix($this->blueprint->table());
     }
 
@@ -699,7 +708,7 @@ class Model
         return false === $this->shouldQualifyTableName() ||
             $this->shouldRemoveTablePrefix() ||
             $this->blueprint->table() != Str::plural($this->getRecordName()) ||
-            !$this->shouldPluralizeTableName();
+            ! $this->shouldPluralizeTableName();
     }
 
     /**
