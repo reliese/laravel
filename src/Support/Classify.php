@@ -73,7 +73,7 @@ class Classify
 
     public function mixin($class)
     {
-        if (Str::startsWith('\\', $class)) {
+        if (Str::startsWith($class, '\\')) {
             $class = Str::replaceFirst('\\', '', $class);
         }
 
