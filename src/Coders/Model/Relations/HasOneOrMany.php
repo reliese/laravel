@@ -7,10 +7,10 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
+use Reliese\Support\Dumper;
 
 abstract class HasOneOrMany implements Relation
 {
@@ -32,7 +32,7 @@ abstract class HasOneOrMany implements Relation
     /**
      * HasManyWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent $command
+     * @param \Illuminate\Support\Fluent  $command
      * @param \Reliese\Coders\Model\Model $parent
      * @param \Reliese\Coders\Model\Model $related
      */

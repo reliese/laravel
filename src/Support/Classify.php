@@ -27,7 +27,7 @@ class Classify
      * Constant template.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return string
      */
@@ -42,8 +42,8 @@ class Classify
      * Field template.
      *
      * @param string $name
-     * @param mixed $value
-     * @param array $options
+     * @param mixed  $value
+     * @param array  $options
      *
      * @return string
      */
@@ -60,7 +60,7 @@ class Classify
     /**
      * @param string $name
      * @param string $body
-     * @param array $options
+     * @param array  $options
      *
      * @return string
      */

@@ -7,11 +7,11 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
+use Reliese\Support\Dumper;
 
 class BelongsTo implements Relation
 {
@@ -33,7 +33,7 @@ class BelongsTo implements Relation
     /**
      * BelongsToWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent $command
+     * @param \Illuminate\Support\Fluent  $command
      * @param \Reliese\Coders\Model\Model $parent
      * @param \Reliese\Coders\Model\Model $related
      */
