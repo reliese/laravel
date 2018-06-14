@@ -105,7 +105,7 @@ WHERE
   AND   table_name   = :table
 ';
 
-        list( $schema, $table ) = explode( '.', $blueprint->qualifiedTable() );
+        list($schema, $table) = explode('.', $blueprint->qualifiedTable());
 
         $params = [
             'schema'    => $schema,
@@ -136,7 +136,7 @@ WHERE
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-        $this->fillPrimaryKey( '', $blueprint);
+        $this->fillPrimaryKey('', $blueprint);
         $this->fillIndexes('', $blueprint);
         $this->fillRelations('', $blueprint);
     }
@@ -223,7 +223,7 @@ ORDER BY
 
         foreach ($row as $setup) {
             $index = [
-                'name' => ($setup["is_unique"] == true ? 'unique' : 'index'),
+                'name' => ($setup['is_unique'] == true ? 'unique' : 'index'),
                 'columns' => $this->columnize($setup['column_name']),
                 'index' => $setup['index_name'],
             ];
@@ -239,7 +239,6 @@ ORDER BY
      */
     protected function fillRelations($sql, Blueprint $blueprint)
     {
-
         $fullTable = $blueprint->qualifiedTable();
 
         $sql = "
