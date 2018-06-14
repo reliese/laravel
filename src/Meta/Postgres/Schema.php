@@ -41,12 +41,10 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function __construct($schema, $connection)
     {
-
         $this->schema = $schema;
         $this->connection = $connection;
 
         $this->load();
-
     }
 
     /**
@@ -64,14 +62,12 @@ class Schema implements \Reliese\Meta\Schema
     protected function load()
     {
         $tables = $this->fetchTables($this->schema);
-
         foreach ($tables as $table) {
             $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
             $this->fillColumns($blueprint);
             $this->fillConstraints($blueprint);
             $this->tables[$table] = $blueprint;
         }
-
     }
 
     /**
@@ -81,19 +77,17 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-
-        $sql = "SELECT * FROM information_schema.tables WHERE table_schema = :schema";
+        $sql = 'SELECT * FROM information_schema.tables WHERE table_schema = :schema';
 
         $params = [
             'schema'  => $schema,
         ];
 
-        $rows = $this->arraify($this->connection->select($sql, $params ));
+        $rows = $this->arraify($this->connection->select($sql, $params));
 
         $names = array_column($rows, 'table_name');
 
         return Arr::flatten($names);
-
     }
 
     /**
@@ -101,8 +95,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fillColumns(Blueprint $blueprint)
     {
-
-        $sql = "
+        $sql = '
 SELECT
     *
 FROM
@@ -110,7 +103,7 @@ FROM
 WHERE
         table_schema = :schema
   AND   table_name   = :table
-";
+';
 
         list( $schema, $table ) = explode( '.', $blueprint->qualifiedTable() );
 
@@ -119,7 +112,7 @@ WHERE
             'table'     => $table,
         ];
 
-        $rows = $this->arraify($this->connection->select($sql, $params ));
+        $rows = $this->arraify($this->connection->select($sql, $params));
 
         foreach ($rows as $column) {
             $blueprint->withColumn(
@@ -143,11 +136,9 @@ WHERE
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-
-        $this->fillPrimaryKey( "", $blueprint);
-        $this->fillIndexes("", $blueprint);
-        $this->fillRelations("", $blueprint);
-
+        $this->fillPrimaryKey( '', $blueprint);
+        $this->fillIndexes('', $blueprint);
+        $this->fillRelations('', $blueprint);
     }
 
     /**
@@ -181,14 +172,14 @@ WHERE  i.indrelid = '$fullTable'::regclass
 AND    i.indisprimary;
 ";
 
-        $res = $this->arraify( $this->connection->select( $sql ) );
+        $res = $this->arraify($this->connection->select($sql));
 
-        foreach( $res as $row ) {
+        foreach ($res as $row) {
 
             $blueprint->withPrimaryKey(new Fluent([
                 'name'    => 'primary',
                 'index'   => '',
-                'columns' => [ $row['attname'] ],
+                'columns' => [$row['attname']],
             ]));
 
         }
@@ -228,11 +219,11 @@ ORDER BY
     i.relname;
 ";
 
-        $row = $this->arraify( $this->connection->select( $sql ) );
+        $row = $this->arraify($this->connection->select($sql));
 
         foreach ($row as $setup) {
             $index = [
-                'name' => ( $setup["is_unique"] == true ? 'unique' : 'index' ),
+                'name' => ($setup["is_unique"] == true ? 'unique' : 'index'),
                 'columns' => $this->columnize($setup['column_name']),
                 'index' => $setup['index_name'],
             ];
@@ -269,7 +260,7 @@ WHERE
     AND tc.table_name = '$fullTable';
 ";
 
-        $relations = $this->arraify( $this->connection->select( $sql ) );
+        $relations = $this->arraify($this->connection->select($sql));
 
         foreach ($relations as $setup) {
             $table = $setup['table_name'];
