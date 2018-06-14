@@ -7,8 +7,8 @@
 
 namespace Reliese\Database\Eloquent;
 
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Http\Request;
 
 class WhoDidIt
 {
@@ -28,7 +28,7 @@ class WhoDidIt
     }
 
     /**
-     * @param string $event
+     * @param string                              $event
      * @param \Illuminate\Database\Eloquent\Model $model
      */
     public function creating($event, Eloquent $model)
@@ -37,7 +37,7 @@ class WhoDidIt
     }
 
     /**
-     * @param string $event
+     * @param string                              $event
      * @param \Illuminate\Database\Eloquent\Model $model
      */
     public function updating($event, Eloquent $model)

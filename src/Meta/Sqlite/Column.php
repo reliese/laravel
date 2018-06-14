@@ -27,10 +27,10 @@ class Column implements \Reliese\Meta\Column
      * @var array
      */
     public static $mappings = [
-        'string' => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
-        'date' => ['datetime', 'year', 'date', 'time', 'timestamp'],
-        'int' => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
-        'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
+        'string'  => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
+        'date'    => ['datetime', 'year', 'date', 'time', 'timestamp'],
+        'int'     => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
+        'float'   => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
         'boolean' => ['longblob', 'blob', 'bit'],
     ];
 

@@ -39,7 +39,7 @@ class Mutator
     }
 
     /**
-     * @param string $column
+     * @param string                  $column
      * @param \Reliese\Meta\Blueprint $blueprint
      *
      * @return mixed
@@ -62,7 +62,7 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
+     * @param string                      $attribute
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string
@@ -85,7 +85,7 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
+     * @param string                      $attribute
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string

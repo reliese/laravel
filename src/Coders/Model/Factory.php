@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Reliese\Support\Classify;
 
 class Factory
 {
@@ -55,9 +55,9 @@ class Factory
      * ModelsFactory constructor.
      *
      * @param \Illuminate\Database\DatabaseManager $db
-     * @param \Illuminate\Filesystem\Filesystem $files
-     * @param \Reliese\Support\Classify $writer
-     * @param \Reliese\Coders\Model\Config $config
+     * @param \Illuminate\Filesystem\Filesystem    $files
+     * @param \Reliese\Support\Classify            $writer
+     * @param \Reliese\Coders\Model\Config         $config
      */
     public function __construct(DatabaseManager $db, Filesystem $files, Classify $writer, Config $config)
     {
@@ -80,7 +80,7 @@ class Factory
      */
     protected function models()
     {
-        if (! isset($this->models)) {
+        if (!isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -106,7 +106,7 @@ class Factory
      */
     public function map($schema)
     {
-        if (! isset($this->schemas)) {
+        if (!isset($this->schemas)) {
             $this->on();
         }
 
@@ -180,8 +180,7 @@ class Factory
     /**
      * @param string $schema
      * @param string $table
-     *
-     * @param bool $withRelations
+     * @param bool   $withRelations
      *
      * @return \Reliese\Coders\Model\Model
      */
@@ -229,10 +228,11 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
-     * @param string $name
+     * @param string                      $name
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      *
      * @return string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function prepareTemplate(Model $model, $name)
     {
@@ -243,7 +243,7 @@ class Factory
     }
 
     /**
-     * @param string $template
+     * @param string                      $template
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return mixed
@@ -279,7 +279,7 @@ class Factory
      * Returns imports section for model.
      *
      * @param string $baseNamespace base namespace to avoid importing classes from same namespace
-     * @param array $usedClasses Array of used in model classes
+     * @param array  $usedClasses   Array of used in model classes
      *
      * @return string
      */
@@ -289,7 +289,7 @@ class Factory
         foreach ($usedClasses as $usedClass) {
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
-            if (! preg_match($namespacePattern, $usedClass)) {
+            if (!preg_match($namespacePattern, $usedClass)) {
                 $result[] = "use {$usedClass};";
             }
         }
@@ -396,7 +396,7 @@ class Factory
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
-        if (! empty($body)) {
+        if (!empty($body)) {
             $body .= "\n";
         }
 
@@ -422,7 +422,7 @@ class Factory
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
 
-        if (! $model->usesTimestamps()) {
+        if (!$model->usesTimestamps()) {
             $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
         }
 
@@ -470,7 +470,7 @@ class Factory
 
     /**
      * @param \Reliese\Coders\Model\Model $model
-     * @param array $custom
+     * @param array                       $custom
      *
      * @return string
      */
@@ -478,7 +478,7 @@ class Factory
     {
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
 
-        if (! $this->files->isDirectory($modelsDirectory)) {
+        if (!$this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
@@ -502,7 +502,7 @@ class Factory
      */
     public function needsUserFile(Model $model)
     {
-        return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
+        return !$this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**
@@ -526,6 +526,7 @@ class Factory
 
     /**
      * @param Model $model
+     *
      * @return string
      */
     private function formatBaseClasses(Model $model)
@@ -535,6 +536,7 @@ class Factory
 
     /**
      * @param Model $model
+     *
      * @return string
      */
     private function getBaseClassName(Model $model)
@@ -567,8 +569,8 @@ class Factory
 
     /**
      * @param \Reliese\Meta\Blueprint|null $blueprint
-     * @param string $key
-     * @param mixed $default
+     * @param string                       $key
+     * @param mixed                        $default
      *
      * @return mixed|\Reliese\Coders\Model\Config
      */

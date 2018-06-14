@@ -23,7 +23,7 @@ class Dumper
 
     /**
      * @param mixed $value
-     * @param int $tabs
+     * @param int   $tabs
      *
      * @return string
      */

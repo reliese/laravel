@@ -2,10 +2,10 @@
 
 namespace Reliese\Meta\MySql;
 
-use Illuminate\Support\Arr;
-use Reliese\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Fluent;
+use Reliese\Meta\Blueprint;
 
 /**
  * Created by Cristian.
@@ -36,7 +36,7 @@ class Schema implements \Reliese\Meta\Schema
     /**
      * Mapper constructor.
      *
-     * @param string $schema
+     * @param string                               $schema
      * @param \Illuminate\Database\MySqlConnection $connection
      */
     public function __construct($schema, $connection)
@@ -140,6 +140,7 @@ class Schema implements \Reliese\Meta\Schema
      * to PDO::FETCH_ASSOC.
      *
      * @param $data
+     *
      * @return mixed
      */
     protected function arraify($data)
@@ -148,7 +149,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param string $sql
+     * @param string                  $sql
      * @param \Reliese\Meta\Blueprint $blueprint
      * @todo: Support named primary keys
      */
@@ -160,8 +161,8 @@ class Schema implements \Reliese\Meta\Schema
         }
 
         $key = [
-            'name' => 'primary',
-            'index' => '',
+            'name'    => 'primary',
+            'index'   => '',
             'columns' => $this->columnize($indexes[0][2]),
         ];
 
@@ -169,7 +170,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param string $sql
+     * @param string                  $sql
      * @param \Reliese\Meta\Blueprint $blueprint
      */
     protected function fillIndexes($sql, Blueprint $blueprint)
@@ -181,16 +182,16 @@ class Schema implements \Reliese\Meta\Schema
 
         foreach ($indexes as $setup) {
             $index = [
-                'name' => strcasecmp($setup[1], 'unique') === 0 ? 'unique' : 'index',
+                'name'    => strcasecmp($setup[1], 'unique') === 0 ? 'unique' : 'index',
                 'columns' => $this->columnize($setup[4]),
-                'index' => $setup[3],
+                'index'   => $setup[3],
             ];
             $blueprint->withIndex(new Fluent($index));
         }
     }
 
     /**
-     * @param string $sql
+     * @param string                  $sql
      * @param \Reliese\Meta\Blueprint $blueprint
      * @todo: Support named foreign keys
      */
@@ -203,11 +204,11 @@ class Schema implements \Reliese\Meta\Schema
             $table = $this->resolveForeignTable($setup[2], $blueprint);
 
             $relation = [
-                'name' => 'foreign',
-                'index' => '',
-                'columns' => $this->columnize($setup[1]),
+                'name'       => 'foreign',
+                'index'      => '',
+                'columns'    => $this->columnize($setup[1]),
                 'references' => $this->columnize($setup[3]),
-                'on' => $table,
+                'on'         => $table,
             ];
 
             $blueprint->withRelation(new Fluent($relation));
@@ -241,7 +242,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param string $table
+     * @param string                  $table
      * @param \Reliese\Meta\Blueprint $blueprint
      *
      * @return array
@@ -253,13 +254,13 @@ class Schema implements \Reliese\Meta\Schema
         if (count($referenced) == 2) {
             return [
                 'database' => current($referenced),
-                'table' => next($referenced),
+                'table'    => next($referenced),
             ];
         }
 
         return [
             'database' => $blueprint->schema(),
-            'table' => current($referenced),
+            'table'    => current($referenced),
         ];
     }
 
@@ -313,7 +314,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 
@@ -351,7 +352,7 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @param string $table
-     * @param bool $isView
+     * @param bool   $isView
      */
     protected function loadTable($table, $isView = false)
     {

@@ -2,9 +2,9 @@
 
 namespace Reliese\Meta\Sqlite;
 
-use Reliese\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Fluent;
+use Reliese\Meta\Blueprint;
 
 /**
  * Created by Cristian.
@@ -35,7 +35,7 @@ class Schema implements \Reliese\Meta\Schema
     /**
      * Mapper constructor.
      *
-     * @param string $schema
+     * @param string                               $schema
      * @param \Illuminate\Database\MySqlConnection $connection
      */
     public function __construct($schema, $connection)
@@ -73,6 +73,7 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @return array
+     *
      * @internal param string $schema
      */
     protected function fetchTables()
@@ -126,6 +127,7 @@ class Schema implements \Reliese\Meta\Schema
      * to PDO::FETCH_ASSOC.
      *
      * @param $data
+     *
      * @return mixed
      */
     protected function arraify($data)
@@ -142,8 +144,8 @@ class Schema implements \Reliese\Meta\Schema
         $indexes = $this->manager()->listTableIndexes($blueprint->table());
 
         $key = [
-            'name' => 'primary',
-            'index' => '',
+            'name'    => 'primary',
+            'index'   => '',
             'columns' => $indexes['primary']->getColumns(),
         ];
 
@@ -152,6 +154,7 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @param \Reliese\Meta\Blueprint $blueprint
+     *
      * @internal param string $sql
      */
     protected function fillIndexes(Blueprint $blueprint)
@@ -161,9 +164,9 @@ class Schema implements \Reliese\Meta\Schema
 
         foreach ($indexes as $setup) {
             $index = [
-                'name' => $setup->isUnique() ? 'unique' : 'index',
+                'name'    => $setup->isUnique() ? 'unique' : 'index',
                 'columns' => $setup->getColumns(),
-                'index' => $setup->getName(),
+                'index'   => $setup->getName(),
             ];
             $blueprint->withIndex(new Fluent($index));
         }
@@ -181,11 +184,11 @@ class Schema implements \Reliese\Meta\Schema
             $table = ['database' => '', 'table'=>$setup->getForeignTableName()];
 
             $relation = [
-                'name' => 'foreign',
-                'index' => '',
-                'columns' => $setup->getColumns(),
+                'name'       => 'foreign',
+                'index'      => '',
+                'columns'    => $setup->getColumns(),
                 'references' => $setup->getForeignColumns(),
-                'on' => $table,
+                'on'         => $table,
             ];
 
             $blueprint->withRelation(new Fluent($relation));
@@ -235,7 +238,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

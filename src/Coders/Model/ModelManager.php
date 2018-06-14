@@ -8,8 +8,8 @@
 namespace Reliese\Coders\Model;
 
 use ArrayIterator;
-use IteratorAggregate;
 use Illuminate\Support\Arr;
+use IteratorAggregate;
 
 class ModelManager implements IteratorAggregate
 {
@@ -34,10 +34,10 @@ class ModelManager implements IteratorAggregate
     }
 
     /**
-     * @param string $schema
-     * @param string $table
+     * @param string                          $schema
+     * @param string                          $table
      * @param \Reliese\Coders\Model\Mutator[] $mutators
-     * @param bool $withRelations
+     * @param bool                            $withRelations
      *
      * @return \Reliese\Coders\Model\Model
      */
