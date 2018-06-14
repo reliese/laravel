@@ -160,7 +160,6 @@ WHERE
      */
     protected function fillPrimaryKey($sql, Blueprint $blueprint)
     {
-
         $fullTable = $blueprint->qualifiedTable();
 
         $sql = "
@@ -175,15 +174,12 @@ AND    i.indisprimary;
         $res = $this->arraify($this->connection->select($sql));
 
         foreach ($res as $row) {
-
             $blueprint->withPrimaryKey(new Fluent([
                 'name'    => 'primary',
                 'index'   => '',
                 'columns' => [$row['attname']],
             ]));
-
         }
-
     }
 
     /**
@@ -192,7 +188,6 @@ AND    i.indisprimary;
      */
     protected function fillIndexes($sql, Blueprint $blueprint)
     {
-
         $fullTable = $blueprint->qualifiedTable();
 
         $sql = "
@@ -229,7 +224,6 @@ ORDER BY
             ];
             $blueprint->withIndex(new Fluent($index));
         }
-
     }
 
     /**
