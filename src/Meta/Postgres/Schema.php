@@ -42,7 +42,6 @@ class Schema implements \Reliese\Meta\Schema
     public function __construct($schema, $connection)
     {
 
-// print_r( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 2 ) );
         $this->schema = $schema;
         $this->connection = $connection;
 
@@ -65,8 +64,7 @@ class Schema implements \Reliese\Meta\Schema
     protected function load()
     {
         $tables = $this->fetchTables($this->schema);
-// print_r( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 4 ) );
-echo __CLASS__.':'.__FUNCTION__.' : '.$this->schema." : ".count( $tables ) . " : ". count( $this->tables ) ."\n";
+
         foreach ($tables as $table) {
             $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
             $this->fillColumns($blueprint);

@@ -2,6 +2,7 @@
 
 /**
  * Created by Reliese Model.
+ * Date: {{date}}.
  */
 
 namespace {{namespace}};
