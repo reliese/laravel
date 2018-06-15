@@ -61,40 +61,6 @@ class Classify
      * @param string $name
      * @param string $body
      * @param array  $options
-     * @param mixed  $value
-     *
-     * @return string
-     */
-    public function constant($name, $value)
-    {
-        $value = Dumper::export($value);
-
-        return "\tconst $name = $value;\n";
-    }
-
-    /**
-     * Field template.
-     *
-     * @param string $name
-     * @param mixed  $value
-     * @param array  $options
-     *
-     * @return string
-     */
-    public function field($name, $value, $options = [])
-    {
-        $value = Dumper::export($value);
-        $before = Arr::get($options, 'before', '');
-        $visibility = Arr::get($options, 'visibility', 'protected');
-        $after = Arr::get($options, 'after', "\n");
-
-        return "$before\t$visibility \$$name = $value;$after";
-    }
-
-    /**
-     * @param string $name
-     * @param string $body
-     * @param array  $options
      *
      * @return string
      */
