@@ -39,7 +39,7 @@ class Mutator
     }
 
     /**
-     * @param string                  $column
+     * @param string $column
      * @param \Reliese\Meta\Blueprint $blueprint
      *
      * @return mixed
@@ -62,7 +62,7 @@ class Mutator
     }
 
     /**
-     * @param string                      $attribute
+     * @param string $attribute
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string
@@ -85,54 +85,7 @@ class Mutator
     }
 
     /**
-     * @param string                  $attribute
-     * @param string                  $column
-     * @param \Reliese\Meta\Blueprint $blueprint
-     *
-     * @return mixed
-     */
-    public function applies($column, Blueprint $blueprint)
-    {
-        return call_user_func($this->condition, $column, $blueprint);
-    }
-
-    /**
-     * @param \Closure $name
-     *
-     * @return $this
-     */
-    public function name(\Closure $name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @param string                      $attribute
-     * @param \Reliese\Coders\Model\Model $model
-     *
-     * @return string
-     */
-    public function getName($attribute, Model $model)
-    {
-        return call_user_func($this->name, $attribute, $model);
-    }
-
-    /**
-     * @param \Closure $body
-     *
-     * @return $this
-     */
-    public function body(\Closure $body)
-    {
-        $this->body = $body;
-
-        return $this;
-    }
-
-    /**
-     * @param string                      $attribute
+     * @param string $attribute
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string
