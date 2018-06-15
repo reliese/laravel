@@ -133,8 +133,6 @@ class Mutator
 
     /**
      * @param string                      $attribute
-     *                                               >>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
-     *                                               >>>>>>> a13c5a57e0e2b2d0efd686d7348bede024b0f779
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string
