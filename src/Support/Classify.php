@@ -95,8 +95,6 @@ class Classify
      * @param string $name
      * @param string $body
      * @param array  $options
-     *                        >>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
-     *                        >>>>>>> a13c5a57e0e2b2d0efd686d7348bede024b0f779
      *
      * @return string
      */
