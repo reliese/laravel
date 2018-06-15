@@ -68,7 +68,7 @@ class ReferenceFactory
         // See whether this potencial pivot table has the parent record name in it.
         // Not sure whether we should only take into account composite primary keys.
         if (
-            !Str::contains($pivot, $firstRecord)
+            ! Str::contains($pivot, $firstRecord)
         ) {
             return false;
         }

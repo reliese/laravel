@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
+use Reliese\Support\Dumper;
+use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
+use Illuminate\Database\Eloquent\Collection;
 
 class BelongsToMany implements Relation
 {
@@ -123,7 +123,7 @@ class BelongsToMany implements Relation
 
         $fields = $this->getPivotFields();
 
-        if (!empty($fields)) {
+        if (! empty($fields)) {
             $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
         }
 

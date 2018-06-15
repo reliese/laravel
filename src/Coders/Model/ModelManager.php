@@ -8,8 +8,8 @@
 namespace Reliese\Coders\Model;
 
 use ArrayIterator;
-use Illuminate\Support\Arr;
 use IteratorAggregate;
+use Illuminate\Support\Arr;
 
 class ModelManager implements IteratorAggregate
 {

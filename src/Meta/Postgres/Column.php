@@ -8,8 +8,8 @@
 namespace Reliese\Meta\Postgres;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Str;
+use Illuminate\Support\Fluent;
 
 class Column implements \Reliese\Meta\Column
 {
@@ -77,10 +77,10 @@ class Column implements \Reliese\Meta\Column
     ];
 
     /*/
-    
+
     note for working on dynamics or better list later.
     Also need support for array of a field type
-    
+
     SELECT n.nspname as "Schema",
       pg_catalog.format_type(t.oid, NULL) AS "Name",
       pg_catalog.obj_description(t.oid, 'pg_type') as "Description"
@@ -90,7 +90,7 @@ class Column implements \Reliese\Meta\Column
       AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
       AND pg_catalog.pg_type_is_visible(t.oid)
     ORDER BY 1, 2;
-    
+
     /**/
     public static $ungroupedFieldTypes = [
         'bit',
