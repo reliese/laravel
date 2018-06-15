@@ -29,11 +29,92 @@ class Column implements \Reliese\Meta\Column
      * @var array
      */
     public static $mappings = [
-        'string'  => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
-        'date'    => ['datetime', 'year', 'date', 'time', 'timestamp'],
-        'int'     => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
-        'float'   => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
-        'boolean' => ['longblob', 'blob', 'bit'],
+        'string' => [
+            'char',
+            'character',
+            'character varying',
+            'json',
+            'jsonb',
+            'varchar',
+            'text'
+        ],
+        'date' => [
+            'date',
+            'time',
+            'time',
+            'timestamp',
+            'timestamp',
+            'timestamptz',
+            'timetz'
+        ],
+        'int' => [
+            'real',
+            'bigint',
+            'bigserial',
+            'int',
+            'int4',
+            'int2',
+            'int8',
+            'integer',
+            'serial',
+            'serial2',
+            'serial4',
+            'serial8',
+            'smallint',
+            'smallserial'
+        ],
+        'float' => [
+            'numeric',
+            'decimal',
+            'double precision',
+            'float4',
+            'float8'
+        ],
+        'boolean' => [
+            'bool',
+            'boolean'
+        ]
+    ];
+
+/*/
+
+note for working on dynamics or better list later.
+Also need support for array of a field type
+
+SELECT n.nspname as "Schema",
+  pg_catalog.format_type(t.oid, NULL) AS "Name",
+  pg_catalog.obj_description(t.oid, 'pg_type') as "Description"
+FROM pg_catalog.pg_type t
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
+  AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
+  AND pg_catalog.pg_type_is_visible(t.oid)
+ORDER BY 1, 2;
+
+/**/
+    public static $ungroupedFieldTypes= [
+        'bit',
+        'bit varying',
+        'box',
+        'bytea',
+        'cidr',
+        'circle',
+        'inet',
+        'interval',
+        'line',
+        'lseg',
+        'macaddr',
+        'money',
+        'path',
+        'pg_lsn',
+        'point',
+        'polygon',
+        'tsquery',
+        'tsvector',
+        'txid_snapshot',
+        'uuid',
+        'varbit',
+        'xml'
     ];
 
     /**
