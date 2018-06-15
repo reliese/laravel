@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * Created by Reliese Model.
+ * Date: {{date}}.
+ */
+
+namespace {{namespace}};
+
+{{imports}}
+
+/**
+ * Class {{class}}
+ * {{properties}}
+ *
+ * @package {{namespace}}
+ */
+class {{class}} extends {{parent}}
+{
+{{body}}
+}
