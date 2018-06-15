@@ -60,18 +60,21 @@ class CodeModelsCommand extends Command
 
         // Check whether we just need to generate one table
         if ($table) {
+            $this->info("Making models for table : $table");
             $this->models->on($connection)->create($schema, $table);
             $this->info("Check out your models for $table");
         }
 
         // Otherwise map the schema
         elseif (!empty($schema)) {
+            $this->info("Making models for schema : $schema");
             $this->models->on($connection)->map($schema);
             $this->info("Check out your models for $schema");
         }
 
         // Otherwise map the whole database
         else {
+            $this->info('Making models for all schemas');
             $this->models->on($connection)->mapAll();
             $this->info('Check out your models for all schemas');
         }
@@ -92,7 +95,7 @@ class CodeModelsCommand extends Command
      */
     protected function getSchema($connection)
     {
-        return $this->option('schema') ?: $this->config->get("database.connections.$connection.database");
+        return $this->option('schema');
     }
 
     /**

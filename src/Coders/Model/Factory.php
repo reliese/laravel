@@ -115,21 +115,21 @@ class Factory
             $this->on();
         }
 
-        foreach ($this->schemas as $schema) {
-            $this->map($schema);
+        foreach( $this->schemas as $schema ) {
+            $this->map($schema->schema());
         }
     }
 
     /**
-     * @param string $schema
+     * @param string $schemaName
      */
-    public function map($schema)
+    public function map($schemaName)
     {
         if (!isset($this->schemas)) {
             $this->on();
         }
 
-        $mapper = $this->makeSchema($schema);
+        $mapper = $this->makeSchema($schemaName);
 
         foreach ($mapper->tables() as $blueprint) {
             if ($this->shouldTakeOnly($blueprint) && $this->shouldNotExclude($blueprint)) {
