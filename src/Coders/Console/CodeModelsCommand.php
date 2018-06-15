@@ -3,8 +3,8 @@
 namespace Reliese\Coders\Console;
 
 use Illuminate\Console\Command;
-use Reliese\Coders\Model\Factory;
 use Illuminate\Contracts\Config\Repository;
+use Reliese\Coders\Model\Factory;
 
 class CodeModelsCommand extends Command
 {
@@ -38,7 +38,7 @@ class CodeModelsCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param \Reliese\Coders\Model\Factory $models
+     * @param \Reliese\Coders\Model\Factory           $models
      * @param \Illuminate\Contracts\Config\Repository $config
      */
     public function __construct(Factory $models, Repository $config)
@@ -65,7 +65,7 @@ class CodeModelsCommand extends Command
         }
 
         // Otherwise map the schema
-        else if( !empty( $schema ) ) {
+        elseif (!empty($schema)) {
             $this->models->on($connection)->map($schema);
             $this->info("Check out your models for $schema");
         }
@@ -73,7 +73,7 @@ class CodeModelsCommand extends Command
         // Otherwise map the whole database
         else {
             $this->models->on($connection)->mapAll();
-            $this->info("Check out your models for all schemas");
+            $this->info('Check out your models for all schemas');
         }
     }
 

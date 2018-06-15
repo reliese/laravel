@@ -8,8 +8,8 @@
 namespace Reliese\Meta\Postgres;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 
 class Column implements \Reliese\Meta\Column
 {
@@ -29,10 +29,10 @@ class Column implements \Reliese\Meta\Column
      * @var array
      */
     public static $mappings = [
-        'string' => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
-        'date' => ['datetime', 'year', 'date', 'time', 'timestamp'],
-        'int' => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
-        'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
+        'string'  => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
+        'date'    => ['datetime', 'year', 'date', 'time', 'timestamp'],
+        'int'     => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
+        'float'   => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
         'boolean' => ['longblob', 'blob', 'bit'],
     ];
 
@@ -88,8 +88,8 @@ class Column implements \Reliese\Meta\Column
     }
 
     /**
-     * @param string $databaseType
-     * @param string $precision
+     * @param string                     $databaseType
+     * @param string                     $precision
      * @param \Illuminate\Support\Fluent $attributes
      */
     protected function parsePrecision($databaseType, $precision, Fluent $attributes)
@@ -168,7 +168,7 @@ class Column implements \Reliese\Meta\Column
 
     /**
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */

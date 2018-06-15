@@ -2,10 +2,10 @@
 
 namespace Reliese\Meta\Postgres;
 
-use Illuminate\Support\Arr;
-use Reliese\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Fluent;
+use Reliese\Meta\Blueprint;
 
 /**
  * Created by Cristian.
@@ -36,7 +36,7 @@ class Schema implements \Reliese\Meta\Schema
     /**
      * Mapper constructor.
      *
-     * @param string $schema
+     * @param string                                  $schema
      * @param \Illuminate\Database\PostgresConnection $connection
      */
     public function __construct($schema, $connection)
@@ -146,6 +146,7 @@ WHERE
      * to PDO::FETCH_ASSOC.
      *
      * @param $data
+     *
      * @return mixed
      */
     protected function arraify($data)
@@ -154,7 +155,7 @@ WHERE
     }
 
     /**
-     * @param string $sql
+     * @param string                  $sql
      * @param \Reliese\Meta\Blueprint $blueprint
      * @todo: Support named primary keys
      */
@@ -183,7 +184,7 @@ AND    i.indisprimary;
     }
 
     /**
-     * @param string $sql
+     * @param string                  $sql
      * @param \Reliese\Meta\Blueprint $blueprint
      */
     protected function fillIndexes($sql, Blueprint $blueprint)
@@ -218,16 +219,16 @@ ORDER BY
 
         foreach ($row as $setup) {
             $index = [
-                'name' => ($setup['is_unique'] == true ? 'unique' : 'index'),
+                'name'    => ($setup['is_unique'] == true ? 'unique' : 'index'),
                 'columns' => $this->columnize($setup['column_name']),
-                'index' => $setup['index_name'],
+                'index'   => $setup['index_name'],
             ];
             $blueprint->withIndex(new Fluent($index));
         }
     }
 
     /**
-     * @param string $sql
+     * @param string                  $sql
      * @param \Reliese\Meta\Blueprint $blueprint
      * @todo: Support named foreign keys
      */
@@ -259,11 +260,11 @@ WHERE
             $table = $setup['table_name'];
 
             $relation = [
-                'name' => 'foreign',
-                'index' => '',
-                'columns' => $this->columnize($setup['column_name']),
+                'name'       => 'foreign',
+                'index'      => '',
+                'columns'    => $this->columnize($setup['column_name']),
                 'references' => $this->columnize($setup['foreign_column_name']),
-                'on' => $table,
+                'on'         => $table,
             ];
 
             $blueprint->withRelation(new Fluent($relation));
@@ -297,7 +298,7 @@ WHERE
     }
 
     /**
-     * @param string $table
+     * @param string                  $table
      * @param \Reliese\Meta\Blueprint $blueprint
      *
      * @return array
@@ -309,13 +310,13 @@ WHERE
         if (count($referenced) == 2) {
             return [
                 'database' => current($referenced),
-                'table' => next($referenced),
+                'table'    => next($referenced),
             ];
         }
 
         return [
             'database' => $blueprint->schema(),
-            'table' => current($referenced),
+            'table'    => current($referenced),
         ];
     }
 
@@ -370,7 +371,7 @@ WHERE
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 
