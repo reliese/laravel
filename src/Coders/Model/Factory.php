@@ -115,7 +115,7 @@ class Factory
             $this->on();
         }
 
-        foreach( $this->schemas as $schema ) {
+        foreach ($this->schemas as $schema) {
             $this->map($schema->schema());
         }
     }
