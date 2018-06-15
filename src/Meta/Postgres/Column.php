@@ -36,7 +36,7 @@ class Column implements \Reliese\Meta\Column
             'json',
             'jsonb',
             'varchar',
-            'text'
+            'text',
         ],
         'date' => [
             'date',
@@ -45,7 +45,7 @@ class Column implements \Reliese\Meta\Column
             'timestamp',
             'timestamp',
             'timestamptz',
-            'timetz'
+            'timetz',
         ],
         'int' => [
             'real',
@@ -61,38 +61,38 @@ class Column implements \Reliese\Meta\Column
             'serial4',
             'serial8',
             'smallint',
-            'smallserial'
+            'smallserial',
         ],
         'float' => [
             'numeric',
             'decimal',
             'double precision',
             'float4',
-            'float8'
+            'float8',
         ],
         'boolean' => [
             'bool',
-            'boolean'
-        ]
+            'boolean',
+        ],
     ];
 
-/*/
-
-note for working on dynamics or better list later.
-Also need support for array of a field type
-
-SELECT n.nspname as "Schema",
-  pg_catalog.format_type(t.oid, NULL) AS "Name",
-  pg_catalog.obj_description(t.oid, 'pg_type') as "Description"
-FROM pg_catalog.pg_type t
-     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
-  AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
-  AND pg_catalog.pg_type_is_visible(t.oid)
-ORDER BY 1, 2;
-
-/**/
-    public static $ungroupedFieldTypes= [
+    /*/
+    
+    note for working on dynamics or better list later.
+    Also need support for array of a field type
+    
+    SELECT n.nspname as "Schema",
+      pg_catalog.format_type(t.oid, NULL) AS "Name",
+      pg_catalog.obj_description(t.oid, 'pg_type') as "Description"
+    FROM pg_catalog.pg_type t
+         LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+    WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
+      AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
+      AND pg_catalog.pg_type_is_visible(t.oid)
+    ORDER BY 1, 2;
+    
+    /**/
+    public static $ungroupedFieldTypes = [
         'bit',
         'bit varying',
         'box',
@@ -114,7 +114,7 @@ ORDER BY 1, 2;
         'txid_snapshot',
         'uuid',
         'varbit',
-        'xml'
+        'xml',
     ];
 
     /**
