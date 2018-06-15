@@ -8,7 +8,6 @@
 namespace Reliese\Meta;
 
 use ArrayIterator;
-<<<<<<< HEAD
 use RuntimeException;
 use IteratorAggregate;
 use Illuminate\Database\MySqlConnection;
@@ -57,56 +56,6 @@ class SchemaManager implements IteratorAggregate
     public function boot()
     {
         if (! $this->hasMapping()) {
-=======
-use Illuminate\Database\ConnectionInterface;
-use Illuminate\Database\MySqlConnection;
-use Illuminate\Database\PostgresConnection;
-use Illuminate\Database\SQLiteConnection;
-use IteratorAggregate;
-use Reliese\Meta\MySql\Schema as MySqlSchema;
-use Reliese\Meta\Postgres\Schema as PostgresSchema;
-use Reliese\Meta\Sqlite\Schema as SqliteSchema;
-use RuntimeException;
-
-class SchemaManager implements IteratorAggregate
-{
-    /**
-     * @var array
-     */
-    protected static $lookup = [
-        MySqlConnection::class    => MySqlSchema::class,
-        SQLiteConnection::class   => SqliteSchema::class,
-        PostgresConnection::class => PostgresSchema::class,
-    ];
-
-    /**
-     * @var \Illuminate\Database\ConnectionInterface
-     */
-    private $connection;
-
-    /**
-     * @var \Reliese\Meta\Schema[]
-     */
-    protected $schemas = [];
-
-    /**
-     * SchemaManager constructor.
-     *
-     * @param \Illuminate\Database\ConnectionInterface $connection
-     */
-    public function __construct(ConnectionInterface $connection)
-    {
-        $this->connection = $connection;
-        $this->boot();
-    }
-
-    /**
-     * Load all schemas from this connection.
-     */
-    public function boot()
-    {
-        if (!$this->hasMapping()) {
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
             throw new RuntimeException("There is no Schema Mapper registered for [{$this->type()}] connection.");
         }
 

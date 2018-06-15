@@ -2,21 +2,12 @@
 
 namespace Reliese\Coders;
 
-<<<<<<< HEAD
 use Reliese\Support\Classify;
 use Reliese\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use Reliese\Coders\Console\CodeModelsCommand;
 use Reliese\Coders\Model\Factory as ModelFactory;
-=======
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\ServiceProvider;
-use Reliese\Coders\Console\CodeModelsCommand;
-use Reliese\Coders\Model\Config;
-use Reliese\Coders\Model\Factory as ModelFactory;
-use Reliese\Support\Classify;
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
 
 class CodersServiceProvider extends ServiceProvider
 {

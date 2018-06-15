@@ -7,7 +7,6 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-<<<<<<< HEAD
 use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
@@ -34,34 +33,6 @@ abstract class HasOneOrMany implements Relation
      * HasManyWriter constructor.
      *
      * @param \Illuminate\Support\Fluent $command
-=======
-use Illuminate\Support\Fluent;
-use Reliese\Coders\Model\Model;
-use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
-
-abstract class HasOneOrMany implements Relation
-{
-    /**
-     * @var \Illuminate\Support\Fluent
-     */
-    protected $command;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $parent;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $related;
-
-    /**
-     * HasManyWriter constructor.
-     *
-     * @param \Illuminate\Support\Fluent  $command
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      * @param \Reliese\Coders\Model\Model $parent
      * @param \Reliese\Coders\Model\Model $related
      */

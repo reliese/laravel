@@ -7,7 +7,6 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-<<<<<<< HEAD
 use Illuminate\Support\Str;
 use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
@@ -125,125 +124,6 @@ class BelongsToMany implements Relation
         $fields = $this->getPivotFields();
 
         if (! empty($fields)) {
-=======
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Fluent;
-use Illuminate\Support\Str;
-use Reliese\Coders\Model\Model;
-use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
-
-class BelongsToMany implements Relation
-{
-    /**
-     * @var \Illuminate\Support\Fluent
-     */
-    protected $parentCommand;
-
-    /**
-     * @var \Illuminate\Support\Fluent
-     */
-    protected $referenceCommand;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $parent;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $pivot;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $reference;
-
-    /**
-     * BelongsToMany constructor.
-     *
-     * @param \Illuminate\Support\Fluent  $parentCommand
-     * @param \Illuminate\Support\Fluent  $referenceCommand
-     * @param \Reliese\Coders\Model\Model $parent
-     * @param \Reliese\Coders\Model\Model $pivot
-     * @param \Reliese\Coders\Model\Model $reference
-     */
-    public function __construct(
-        Fluent $parentCommand,
-        Fluent $referenceCommand,
-        Model $parent,
-        Model $pivot,
-        Model $reference
-    ) {
-        $this->parentCommand = $parentCommand;
-        $this->referenceCommand = $referenceCommand;
-        $this->parent = $parent;
-        $this->pivot = $pivot;
-        $this->reference = $reference;
-    }
-
-    /**
-     * @return string
-     */
-    public function hint()
-    {
-        return '\\'.Collection::class.'|'.$this->reference->getQualifiedUserClassName().'[]';
-    }
-
-    /**
-     * @return string
-     */
-    public function name()
-    {
-        $tableName = $this->reference->getTable(true);
-
-        if ($this->parent->shouldLowerCaseTableName()) {
-            $tableName = strtolower($tableName);
-        }
-        if ($this->parent->shouldPluralizeTableName()) {
-            $tableName = Str::plural(Str::singular($tableName));
-        }
-        if ($this->parent->usesSnakeAttributes()) {
-            return Str::snake($tableName);
-        }
-
-        return Str::camel($tableName);
-    }
-
-    /**
-     * @return string
-     */
-    public function body()
-    {
-        $body = 'return $this->belongsToMany(';
-
-        $body .= $this->reference->getQualifiedUserClassName().'::class';
-
-        if ($this->needsPivotTable()) {
-            $body .= ', '.Dumper::export($this->pivotTable());
-        }
-
-        if ($this->needsForeignKey()) {
-            $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->reference->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
-                : $this->foreignKey();
-            $body .= ', '.Dumper::export($foreignKey);
-        }
-
-        if ($this->needsOtherKey()) {
-            $otherKey = $this->reference->usesPropertyConstants()
-                ? $this->reference->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
-                : $this->otherKey();
-            $body .= ', '.Dumper::export($otherKey);
-        }
-
-        $body .= ')';
-
-        $fields = $this->getPivotFields();
-
-        if (!empty($fields)) {
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
             $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
         }
 

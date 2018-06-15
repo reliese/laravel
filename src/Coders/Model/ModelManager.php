@@ -8,7 +8,6 @@
 namespace Reliese\Coders\Model;
 
 use ArrayIterator;
-<<<<<<< HEAD
 use IteratorAggregate;
 use Illuminate\Support\Arr;
 
@@ -39,38 +38,6 @@ class ModelManager implements IteratorAggregate
      * @param string $table
      * @param \Reliese\Coders\Model\Mutator[] $mutators
      * @param bool $withRelations
-=======
-use Illuminate\Support\Arr;
-use IteratorAggregate;
-
-class ModelManager implements IteratorAggregate
-{
-    /**
-     * @var \Reliese\Coders\Model\Factory
-     */
-    protected $factory;
-
-    /**
-     * @var \Reliese\Coders\Model\Model[]
-     */
-    protected $models = [];
-
-    /**
-     * ModelManager constructor.
-     *
-     * @param \Reliese\Coders\Model\Factory $factory
-     */
-    public function __construct(Factory $factory)
-    {
-        $this->factory = $factory;
-    }
-
-    /**
-     * @param string                          $schema
-     * @param string                          $table
-     * @param \Reliese\Coders\Model\Mutator[] $mutators
-     * @param bool                            $withRelations
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      *
      * @return \Reliese\Coders\Model\Model
      */

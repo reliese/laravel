@@ -21,11 +21,7 @@ class HasOneOrManyStrategy implements Relation
     /**
      * HasManyWriter constructor.
      *
-<<<<<<< HEAD
      * @param \Illuminate\Support\Fluent $command
-=======
-     * @param \Illuminate\Support\Fluent  $command
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      * @param \Reliese\Coders\Model\Model $parent
      * @param \Reliese\Coders\Model\Model $related
      */

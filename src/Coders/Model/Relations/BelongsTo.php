@@ -7,7 +7,6 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-<<<<<<< HEAD
 use Illuminate\Support\Str;
 use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
@@ -35,35 +34,6 @@ class BelongsTo implements Relation
      * BelongsToWriter constructor.
      *
      * @param \Illuminate\Support\Fluent $command
-=======
-use Illuminate\Support\Fluent;
-use Illuminate\Support\Str;
-use Reliese\Coders\Model\Model;
-use Reliese\Coders\Model\Relation;
-use Reliese\Support\Dumper;
-
-class BelongsTo implements Relation
-{
-    /**
-     * @var \Illuminate\Support\Fluent
-     */
-    protected $command;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $parent;
-
-    /**
-     * @var \Reliese\Coders\Model\Model
-     */
-    protected $related;
-
-    /**
-     * BelongsToWriter constructor.
-     *
-     * @param \Illuminate\Support\Fluent  $command
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      * @param \Reliese\Coders\Model\Model $parent
      * @param \Reliese\Coders\Model\Model $related
      */

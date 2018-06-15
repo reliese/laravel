@@ -7,13 +7,8 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-<<<<<<< HEAD
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Collection;
-=======
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Str;
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
 
 class HasMany extends HasOneOrMany
 {
