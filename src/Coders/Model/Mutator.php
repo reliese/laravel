@@ -39,8 +39,9 @@ class Mutator
     }
 
     /**
-<<<<<<< HEAD
-     * @param string $column
+     * <<<<<<< HEAD.
+     *
+     * @param string                  $column
      * @param \Reliese\Meta\Blueprint $blueprint
      *
      * @return mixed
@@ -63,7 +64,7 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
+     * @param string                      $attribute
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string
@@ -86,8 +87,8 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
-=======
+     * @param string                  $attribute
+     *                                           =======
      * @param string                  $column
      * @param \Reliese\Meta\Blueprint $blueprint
      *
@@ -135,7 +136,7 @@ class Mutator
 
     /**
      * @param string                      $attribute
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
+     *                                               >>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      * @param \Reliese\Coders\Model\Model $model
      *
      * @return string

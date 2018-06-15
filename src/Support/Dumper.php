@@ -23,11 +23,11 @@ class Dumper
 
     /**
      * @param mixed $value
-<<<<<<< HEAD
-     * @param int $tabs
-=======
+     *                     <<<<<<< HEAD
      * @param int   $tabs
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
+     *                     =======
+     * @param int   $tabs
+     *                     >>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      *
      * @return string
      */

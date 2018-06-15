@@ -29,13 +29,13 @@ class Config
 
     /**
      * @param \Reliese\Meta\Blueprint $blueprint
-<<<<<<< HEAD
-     * @param string $key
-     * @param mixed $default
-=======
+     *                                           <<<<<<< HEAD
      * @param string                  $key
      * @param mixed                   $default
->>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
+     *                                           =======
+     * @param string                  $key
+     * @param mixed                   $default
+     *                                           >>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
      *
      * @return mixed
      */
