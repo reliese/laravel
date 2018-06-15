@@ -63,10 +63,7 @@ class Schema implements \Reliese\Meta\Schema
     {
         $tables = $this->fetchTables($this->schema);
         foreach ($tables as $table) {
-            $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
-            $this->fillColumns($blueprint);
-            $this->fillConstraints($blueprint);
-            $this->tables[$table] = $blueprint;
+            $this->loadTable($table);
         }
     }
 
@@ -96,13 +93,23 @@ class Schema implements \Reliese\Meta\Schema
     protected function fillColumns(Blueprint $blueprint)
     {
         $sql = '
+
 SELECT
-    *
+    c.*,
+    pgd.*
 FROM
-    information_schema.columns
+                    pg_catalog.pg_statio_all_tables st
+    INNER JOIN      information_schema.columns       c   ON (
+            c.table_schema  = st.schemaname
+        AND c.table_name    = st.relname
+    )
+    LEFT OUTER JOIN pg_catalog.pg_description       pgd ON (
+            pgd.objsubid    = c.ordinal_position
+        AND pgd.objoid = st.relid
+    )
 WHERE
-        table_schema = :schema
-  AND   table_name   = :table
+        st.schemaname   = :schema
+    AND st.relname      = :table
 ';
 
         list($schema, $table) = explode('.', $blueprint->qualifiedTable());
@@ -111,6 +118,55 @@ WHERE
             'schema'    => $schema,
             'table'     => $table,
         ];
+
+/*/
+
+"table_catalog" => "my_database_name"
+"table_schema" => "my_schema_name"
+"table_name" => "my_table_name"
+"column_name" => "my_field_name"
+"ordinal_position" => 1
+"column_default" => "nextval('my_field_name_id_seq'::regclass)"
+"is_nullable" => "NO"
+"data_type" => "integer"
+"character_maximum_length" => null
+"character_octet_length" => null
+"numeric_precision" => 32
+"numeric_precision_radix" => 2
+"numeric_scale" => 0
+"datetime_precision" => null
+"interval_type" => null
+"interval_precision" => null
+"character_set_catalog" => null
+"character_set_schema" => null
+"character_set_name" => null
+"collation_catalog" => null
+"collation_schema" => null
+"collation_name" => null
+"domain_catalog" => null
+"domain_schema" => null
+"domain_name" => null
+"udt_catalog" => "my_database_name"
+"udt_schema" => "pg_catalog"
+"udt_name" => "int4"
+"scope_catalog" => null
+"scope_schema" => null
+"scope_name" => null
+"maximum_cardinality" => null
+"dtd_identifier" => "1"
+"is_self_referencing" => "NO"
+"is_identity" => "NO"
+"identity_generation" => null
+"identity_start" => null
+"identity_increment" => null
+"identity_maximum" => null
+"identity_minimum" => null
+"identity_cycle" => "NO"
+"is_generated" => "NEVER"
+"generation_expression" => null
+"is_updatable" => "YES"
+
+/**/
 
         $rows = $this->arraify($this->connection->select($sql, $params));
 
@@ -405,5 +461,17 @@ WHERE
         }
 
         return $references;
+    }
+
+    /**
+     * @param string $table
+     * @param bool   $isView
+     */
+    protected function loadTable($table, $isView = false)
+    {
+        $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table, $isView);
+        $this->fillColumns($blueprint);
+        $this->fillConstraints($blueprint);
+        $this->tables[$table] = $blueprint;
     }
 }

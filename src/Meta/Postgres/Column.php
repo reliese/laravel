@@ -65,7 +65,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseType(Fluent $attributes)
     {
-        $type = $this->get('Type', 'string');
+        $type = $this->get('data_type', 'string');
 
         preg_match('/^(\w+)(?:\(([^\)]+)\))?/', $type, $matches);
 
@@ -129,7 +129,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseName(Fluent $attributes)
     {
-        $attributes['name'] = $this->get('Field');
+        $attributes['name'] = $this->get('column_name');
     }
 
     /**
@@ -137,7 +137,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseAutoincrement(Fluent $attributes)
     {
-        if ($this->same('Extra', 'auto_increment')) {
+        if ($this->same('column_default', 'auto_increment')) {
             $attributes['autoincrement'] = true;
         }
     }
@@ -147,7 +147,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseNullable(Fluent $attributes)
     {
-        $attributes['nullable'] = $this->same('Null', 'YES');
+        $attributes['nullable'] = $this->same('is_nullable', 'YES');
     }
 
     /**
@@ -155,7 +155,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseDefault(Fluent $attributes)
     {
-        $attributes['default'] = $this->get('Default');
+        $attributes['default'] = $this->get('column_default');
     }
 
     /**
@@ -163,7 +163,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseComment(Fluent $attributes)
     {
-        $attributes['comment'] = $this->get('Comment');
+        $attributes['comment'] = $this->get('description');
     }
 
     /**
