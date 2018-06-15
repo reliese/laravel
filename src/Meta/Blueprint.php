@@ -132,7 +132,7 @@ class Blueprint
      */
     public function column($name)
     {
-        if (!$this->hasColumn($name)) {
+        if (! $this->hasColumn($name)) {
             throw new \InvalidArgumentException("Column [$name] does not belong to table [{$this->qualifiedTable()}]");
         }
 
@@ -204,7 +204,7 @@ class Blueprint
             return $this->primaryKey;
         }
 
-        if (!empty($this->unique)) {
+        if (! empty($this->unique)) {
             return current($this->unique);
         }
 

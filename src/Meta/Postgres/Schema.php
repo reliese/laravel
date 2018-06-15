@@ -2,10 +2,10 @@
 
 namespace Reliese\Meta\Postgres;
 
-use Illuminate\Database\Connection;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
 use Reliese\Meta\Blueprint;
+use Illuminate\Support\Fluent;
+use Illuminate\Database\Connection;
 
 /**
  * Created by Cristian.
@@ -120,7 +120,7 @@ WHERE
         ];
 
         /*/
-        
+
         "table_catalog" => "my_database_name"
         "table_schema" => "my_schema_name"
         "table_name" => "my_table_name"
@@ -165,7 +165,7 @@ WHERE
         "is_generated" => "NEVER"
         "generation_expression" => null
         "is_updatable" => "YES"
-        
+
         /**/
 
         $rows = $this->arraify($this->connection->select($sql, $params));
@@ -427,7 +427,7 @@ WHERE
      */
     public function table($table)
     {
-        if (!$this->has($table)) {
+        if (! $this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

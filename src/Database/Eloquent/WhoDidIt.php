@@ -7,8 +7,8 @@
 
 namespace Reliese\Database\Eloquent;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 class WhoDidIt
 {

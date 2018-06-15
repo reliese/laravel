@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
-use Illuminate\Database\DatabaseManager;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Meta\SchemaManager;
 use Reliese\Support\Classify;
+use Reliese\Meta\SchemaManager;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Database\DatabaseManager;
 
 class Factory
 {
@@ -85,7 +85,7 @@ class Factory
      */
     protected function models()
     {
-        if (!isset($this->models)) {
+        if (! isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -111,7 +111,7 @@ class Factory
      */
     public function mapAll()
     {
-        if (!isset($this->schemas)) {
+        if (! isset($this->schemas)) {
             $this->on();
         }
 
@@ -125,7 +125,7 @@ class Factory
      */
     public function map($schemaName)
     {
-        if (!isset($this->schemas)) {
+        if (! isset($this->schemas)) {
             $this->on();
         }
 
@@ -308,7 +308,7 @@ class Factory
         foreach ($usedClasses as $usedClass) {
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
-            if (!preg_match($namespacePattern, $usedClass)) {
+            if (! preg_match($namespacePattern, $usedClass)) {
                 $result[] = "use {$usedClass};";
             }
         }
@@ -415,7 +415,7 @@ class Factory
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
-        if (!empty($body)) {
+        if (! empty($body)) {
             $body .= "\n";
         }
 
@@ -441,7 +441,7 @@ class Factory
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
 
-        if (!$model->usesTimestamps()) {
+        if (! $model->usesTimestamps()) {
             $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
         }
 
@@ -511,7 +511,7 @@ class Factory
 
         $modelsDirectory = $this->path($pathParts);
 
-        if (!$this->files->isDirectory($modelsDirectory)) {
+        if (! $this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
@@ -545,7 +545,7 @@ class Factory
      */
     public function needsUserFile(Model $model)
     {
-        return !$this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
+        return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**

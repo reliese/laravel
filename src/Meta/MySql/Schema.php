@@ -2,10 +2,10 @@
 
 namespace Reliese\Meta\MySql;
 
-use Illuminate\Database\Connection;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
 use Reliese\Meta\Blueprint;
+use Illuminate\Support\Fluent;
+use Illuminate\Database\Connection;
 
 /**
  * Created by Cristian.
@@ -314,7 +314,7 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function table($table)
     {
-        if (!$this->has($table)) {
+        if (! $this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

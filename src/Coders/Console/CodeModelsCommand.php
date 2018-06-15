@@ -3,8 +3,8 @@
 namespace Reliese\Coders\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Config\Repository;
 use Reliese\Coders\Model\Factory;
+use Illuminate\Contracts\Config\Repository;
 
 class CodeModelsCommand extends Command
 {
@@ -66,7 +66,7 @@ class CodeModelsCommand extends Command
         }
 
         // Otherwise map the schema
-        elseif (!empty($schema)) {
+        elseif (! empty($schema)) {
             $this->info("Making models for schema : $schema");
             $this->models->on($connection)->map($schema);
             $this->info("Check out your models for $schema");
