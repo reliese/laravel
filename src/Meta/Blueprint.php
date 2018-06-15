@@ -132,6 +132,7 @@ class Blueprint
      */
     public function column($name)
     {
+<<<<<<< HEAD
         if (! $this->hasColumn($name)) {
             throw new \InvalidArgumentException("Column [$name] does not belong to table [{$this->qualifiedTable()}]");
         }
@@ -205,6 +206,81 @@ class Blueprint
         }
 
         if (! empty($this->unique)) {
+=======
+        if (!$this->hasColumn($name)) {
+            throw new \InvalidArgumentException("Column [$name] does not belong to table [{$this->qualifiedTable()}]");
+        }
+
+        return $this->columns[$name];
+    }
+
+    /**
+     * @param \Illuminate\Support\Fluent $index
+     *
+     * @return $this
+     */
+    public function withIndex(Fluent $index)
+    {
+        $this->indexes[] = $index;
+
+        if ($index->name == 'unique') {
+            $this->unique[] = $index;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Support\Fluent[]
+     */
+    public function indexes()
+    {
+        return $this->indexes;
+    }
+
+    /**
+     * @param \Illuminate\Support\Fluent $index
+     *
+     * @return $this
+     */
+    public function withRelation(Fluent $index)
+    {
+        $this->relations[] = $index;
+
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Support\Fluent[]
+     */
+    public function relations()
+    {
+        return $this->relations;
+    }
+
+    /**
+     * @param \Illuminate\Support\Fluent $primaryKey
+     *
+     * @return $this
+     */
+    public function withPrimaryKey(Fluent $primaryKey)
+    {
+        $this->primaryKey = $primaryKey;
+
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Support\Fluent
+     */
+    public function primaryKey()
+    {
+        if ($this->primaryKey) {
+            return $this->primaryKey;
+        }
+
+        if (!empty($this->unique)) {
+>>>>>>> branch 'master' of git@github.com:gareth-ib/reliese-laravel.git
             return current($this->unique);
         }
 
