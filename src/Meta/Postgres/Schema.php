@@ -316,12 +316,11 @@ WHERE
             'table'  => $blueprint->table(),
         ];
 
-        $res = $this->connection->select( $sql, $data );
+        $res = $this->connection->select($sql, $data);
 
-        $relations = $this->arraify( $res );
+        $relations = $this->arraify($res);
 
         foreach ($relations as $setup) {
-
             $table = [
                 'database' => $setup['table_schema'],
                 'table'    => $setup['table_name'],
