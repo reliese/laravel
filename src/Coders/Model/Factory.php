@@ -521,11 +521,21 @@ class Factory
     /**
      * @param string $schema
      *
+     * @return string
+     */
+    public function transformSchemaToNamespace($schema)
+    {
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $schema)));
+    }
+
+    /**
+     * @param string $schema
+     *
      * @return void
      */
     protected function setSchemaNamespace($schema)
     {
-        $this->schema_namespace = str_replace(' ', '', ucwords(str_replace('_', ' ', $schema)));
+        $this->schema_namespace = $this->transformSchemaToNamespace($schema);
     }
 
     /**

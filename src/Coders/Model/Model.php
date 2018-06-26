@@ -445,6 +445,11 @@ class Model
      */
     public function withNamespace($namespace)
     {
+        $namespaceSchema = $this->config( 'namespace_schema', false );
+
+        if( $namespaceSchema )
+            $namespace .= "\\".$this->factory->transformSchemaToNamespace( $this->getSchema() );
+
         $this->namespace = $namespace;
 
         return $this;
