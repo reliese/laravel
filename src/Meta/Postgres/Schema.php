@@ -307,13 +307,25 @@ FROM
     JOIN    information_schema.constraint_column_usage  AS ccu  ON ccu.constraint_name = tc.constraint_name
 WHERE
         constraint_type = 'FOREIGN KEY'
-    AND tc.table_name = '$fullTable';
+    AND tc.table_schema = :schema
+    AND tc.table_name   = :table
 ";
 
-        $relations = $this->arraify($this->connection->select($sql));
+        $data = [
+            'schema' => $blueprint->schema(),
+            'table'  => $blueprint->table(),
+        ];
+
+        $res = $this->connection->select( $sql, $data );
+
+        $relations = $this->arraify( $res );
 
         foreach ($relations as $setup) {
-            $table = $setup['table_name'];
+
+            $table = [
+                'database' => $setup['table_schema'],
+                'table'    => $setup['table_name'],
+            ];
 
             $relation = [
                 'name'       => 'foreign',
