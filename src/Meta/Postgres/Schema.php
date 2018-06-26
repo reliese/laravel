@@ -294,9 +294,6 @@ ORDER BY
 
         $sql = "
 SELECT
-    tc.table_schema,
-    tc.constraint_name,
-    tc.table_name,
     kcu.column_name,
     ccu.table_schema AS foreign_table_schema,
     ccu.table_name   AS foreign_table_name,
@@ -322,8 +319,8 @@ WHERE
 
         foreach ($relations as $setup) {
             $table = [
-                'database' => $setup['table_schema'],
-                'table'    => $setup['table_name'],
+                'database' => $setup['foreign_table_schema'],
+                'table'    => $setup['foreign_table_name'],
             ];
 
             $relation = [
