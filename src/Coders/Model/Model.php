@@ -153,16 +153,6 @@ class Model
     protected $hasCrossDatabaseRelationships = false;
 
     /**
-     * @var string
-     */
-    protected $tablePrefix = '';
-
-    /**
-     * @var string
-     */
-    protected $relationNameStrategy = '';
-
-    /**
      * ModelClass constructor.
      *
      * @param \Reliese\Meta\Blueprint $blueprint
@@ -203,12 +193,6 @@ class Model
 
         // Dates settings
         $this->withDateFormat($this->config('date_format', $this->getDefaultDateFormat()));
-
-        // Table Prefix settings
-        $this->withTablePrefix($this->config('table_prefix', $this->getDefaultTablePrefix()));
-
-        // Relation name settings
-        $this->withRelationNameStrategy($this->config('relation_name_strategy', $this->getDefaultRelationNameStrategy()));
 
         return $this;
     }
@@ -252,8 +236,6 @@ class Model
         // TODO: Check type cast is OK
         $cast = $column->type;
 
-        $propertyName = $this->usesPropertyConstants() ? 'self::'.strtoupper($column->name) : $column->name;
-
         // Due to some casting problems when converting null to a Carbon instance,
         // we are going to treat Soft Deletes field as string.
         if ($column->name == $this->getDeletedAtField()) {
@@ -262,26 +244,26 @@ class Model
 
         // Track dates
         if ($cast == 'date') {
-            $this->dates[] = $propertyName;
+            $this->dates[] = $column->name;
         }
         // Track attribute casts
         elseif ($cast != 'string') {
-            $this->casts[$propertyName] = $cast;
+            $this->casts[$column->name] = $cast;
         }
 
         foreach ($this->config('casts', []) as $pattern => $casting) {
             if (Str::is($pattern, $column->name)) {
-                $this->casts[$propertyName] = $cast = $casting;
+                $this->casts[$column->name] = $cast = $casting;
                 break;
             }
         }
 
         if ($this->isHidden($column->name)) {
-            $this->hidden[] = $propertyName;
+            $this->hidden[] = $column->name;
         }
 
         if ($this->isFillable($column->name)) {
-            $this->fillable[] = $propertyName;
+            $this->fillable[] = $column->name;
         }
 
         $this->mutate($column->name);
@@ -368,12 +350,8 @@ class Model
     /**
      * @return string
      */
-    public function getTable($andRemovePrefix = false)
+    public function getTable()
     {
-        if ($andRemovePrefix) {
-            return $this->removeTablePrefix($this->blueprint->table());
-        }
-
         return $this->blueprint->table();
     }
 
@@ -404,33 +382,6 @@ class Model
     }
 
     /**
-     * @return bool
-     */
-    public function shouldPluralizeTableName()
-    {
-        $pluralize = (bool) $this->config('pluralize', true);
-
-        $overridePluralizeFor = $this->config('override_pluralize_for', []);
-        if (count($overridePluralizeFor) > 0) {
-            foreach ($overridePluralizeFor as $except) {
-                if ($except == $this->getTable()) {
-                    return ! $pluralize;
-                }
-            }
-        }
-
-        return $pluralize;
-    }
-
-    /**
-     * @return bool
-     */
-    public function shouldLowerCaseTableName()
-    {
-        return (bool) $this->config('lower_table_name_first', false);
-    }
-
-    /**
      * @param \Reliese\Meta\Blueprint[] $references
      */
     public function withReferences($references)
@@ -456,14 +407,6 @@ class Model
     public function getNamespace()
     {
         return $this->namespace;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRelationNameStrategy()
-    {
-        return $this->relationNameStrategy;
     }
 
     /**
@@ -509,10 +452,6 @@ class Model
      */
     public function getClassName()
     {
-        if ($this->shouldLowerCaseTableName()) {
-            return Str::studly(Str::lower($this->getRecordName()));
-        }
-
         return Str::studly($this->getRecordName());
     }
 
@@ -521,11 +460,7 @@ class Model
      */
     public function getRecordName()
     {
-        if ($this->shouldPluralizeTableName()) {
-            return Str::singular($this->removeTablePrefix($this->blueprint->table()));
-        }
-
-        return $this->removeTablePrefix($this->blueprint->table());
+        return Str::singular($this->blueprint->table());
     }
 
     /**
@@ -705,46 +640,8 @@ class Model
      */
     public function needsTableName()
     {
-        return false === $this->shouldQualifyTableName() ||
-            $this->shouldRemoveTablePrefix() ||
-            $this->blueprint->table() != Str::plural($this->getRecordName()) ||
-            ! $this->shouldPluralizeTableName();
-    }
-
-    /**
-     * @return string
-     */
-    public function shouldRemoveTablePrefix()
-    {
-        return ! empty($this->tablePrefix);
-    }
-
-    /**
-     * @param string $tablePrefix
-     */
-    public function withTablePrefix($tablePrefix)
-    {
-        $this->tablePrefix = $tablePrefix;
-    }
-
-    /**
-     * @param string $relationNameStrategy
-     */
-    public function withRelationNameStrategy($relationNameStrategy)
-    {
-        $this->relationNameStrategy = $relationNameStrategy;
-    }
-
-    /**
-     * @param string $table
-     */
-    public function removeTablePrefix($table)
-    {
-        if (($this->shouldRemoveTablePrefix()) && (substr($table, 0, strlen($this->tablePrefix)) == $this->tablePrefix)) {
-            $table = substr($table, strlen($this->tablePrefix));
-        }
-
-        return $table;
+        return $this->blueprint->table() != Str::plural($this->getRecordName()) ||
+               $this->shouldQualifyTableName();
     }
 
     /**
@@ -784,8 +681,11 @@ class Model
      */
     public function hasCustomPrimaryKey()
     {
-        return count($this->primaryKeys->columns) == 1 &&
-               $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
+	if (isset($this->primaryKeys->columns)) {
+	        return count($this->primaryKeys->columns) == 1 &&
+        	       $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
+	}
+	return false;
     }
 
     /**
@@ -921,22 +821,6 @@ class Model
     public function getDefaultDateFormat()
     {
         return 'Y-m-d H:i:s';
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultTablePrefix()
-    {
-        return '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getDefaultRelationNameStrategy()
-    {
-        return 'related';
     }
 
     /**
@@ -1178,22 +1062,6 @@ class Model
     public function usesBaseFiles()
     {
         return $this->config('base_files', false);
-    }
-
-    /**
-     * @return bool
-     */
-    public function usesPropertyConstants()
-    {
-        return $this->config('with_property_constants', false);
-    }
-
-    /**
-     * @return int
-     */
-    public function indentWithSpace()
-    {
-        return (int) $this->config('indent_with_space', 0);
     }
 
     /**
