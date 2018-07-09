@@ -685,6 +685,7 @@ class Model
             return count($this->primaryKeys->columns) == 1 &&
                 $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
         }
+        
         return false;
     }
 
