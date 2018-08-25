@@ -60,7 +60,6 @@ class Column implements \Reliese\Meta\Column
         return $attributes;
     }
 
-
     /**
      * @param \Illuminate\Support\Fluent $attributes
      */
@@ -198,5 +197,4 @@ class Column implements \Reliese\Meta\Column
 
         return preg_match('/nextval\(/i', $value);
     }
-
 }

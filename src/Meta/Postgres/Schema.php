@@ -218,14 +218,13 @@ class Schema implements \Reliese\Meta\Schema
                 if (! array_key_exists($relName, $fk)) {
                     $fk[$relName] = [
                         'columns' =>  [],
-                        'ref' => []
+                        'ref' => [],
                     ];
                 }
                 $fk[$relName]['columns'][] = $row['attname'];
                 $fk[$relName]['ref'][] = $row['parent_attname'];
                 $fk[$relName]['table'] = $row['parent_table'];
             }
-
         }
 
         foreach ($fk as $row) {
@@ -236,7 +235,6 @@ class Schema implements \Reliese\Meta\Schema
                 'references' => $row['ref'],
                 'on' => [$this->schema, $row['table']],
             ];
-
 
             $blueprint->withRelation(new Fluent($relation));
         }
