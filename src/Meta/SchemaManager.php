@@ -15,9 +15,8 @@ use Illuminate\Database\SQLiteConnection;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\ConnectionInterface;
 use Reliese\Meta\MySql\Schema as MySqlSchema;
-use Reliese\Meta\Postgres\Schema as PostgresSchema;
 use Reliese\Meta\Sqlite\Schema as SqliteSchema;
-
+use Reliese\Meta\Postgres\Schema as PostgresSchema;
 
 class SchemaManager implements IteratorAggregate
 {
@@ -26,7 +25,7 @@ class SchemaManager implements IteratorAggregate
      */
     protected static $lookup = [
         MySqlConnection::class => MySqlSchema::class,
-	SQLiteConnection::class => SqliteSchema::class,
+        SQLiteConnection::class => SqliteSchema::class,
         PostgresConnection::class => PostgresSchema::class,
     ];
 

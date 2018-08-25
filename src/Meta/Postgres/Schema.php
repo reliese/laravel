@@ -66,10 +66,10 @@ class Schema implements \Reliese\Meta\Schema
         $this->connection->raw('\c '.$this->wrap($this->schema));
         $tables = $this->fetchTables($this->schema);
         foreach ($tables as $table) {
-          $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
-          $this->fillColumns($blueprint);
-          $this->fillConstraints($blueprint);
-          $this->tables[$table] = $blueprint;
+            $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
+            $this->fillColumns($blueprint);
+            $this->fillConstraints($blueprint);
+            $this->tables[$table] = $blueprint;
         }
         $this->loaded = true;
     }
@@ -193,7 +193,7 @@ class Schema implements \Reliese\Meta\Schema
             $pattern = '/\s*(UNIQUE)?\s*(KEY|INDEX)\s+(\w+)\s+\(([^\)]+)\)/mi';
             if (preg_match($pattern, $row['indexdef'], $setup) == false) {
                 continue;
-             }
+            }
 
             $index = [
                 'name' => strcasecmp($setup[1], 'unique') === 0 ? 'unique' : 'index',
@@ -215,7 +215,7 @@ class Schema implements \Reliese\Meta\Schema
         foreach ($relations as $row) {
             $relName = $row['conname'];
             if ($row['contype'] === 'f') {
-                if (!array_key_exists($relName, $fk)) {
+                if (! array_key_exists($relName, $fk)) {
                     $fk[$relName] = [
                         'columns' =>  [],
                         'ref' => []
@@ -234,7 +234,7 @@ class Schema implements \Reliese\Meta\Schema
                 'index' => '',
                 'columns' => $row['columns'],
                 'references' => $row['ref'],
-                'on' => array($this->schema, $row['table'])
+                'on' => [$this->schema, $row['table']],
             ];
 
 

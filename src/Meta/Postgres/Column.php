@@ -3,9 +3,7 @@
 namespace Reliese\Meta\Postgres;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Fluent;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 /**
  * Created by rwdim from cristians MySql original.
@@ -56,7 +54,7 @@ class Column implements \Reliese\Meta\Column
         $attributes = new Fluent();
 
         foreach ($this->metas as $meta) {
-          $this->{'parse'.ucfirst($meta)}($attributes);
+            $this->{'parse'.ucfirst($meta)}($attributes);
         }
 
         return $attributes;
@@ -97,10 +95,10 @@ class Column implements \Reliese\Meta\Column
             return;
         }
 
-        $size = (int)  $precision;
+        $size = (int) $precision;
 
         // Check whether it's a boolean
-	if ($size == 1 && in_array($databaseType, self::$mappings['boolean'])) {
+        if ($size == 1 && in_array($databaseType, self::$mappings['boolean'])) {
             // Make sure this column type is a boolean
             $attributes['type'] = 'bool';
 
@@ -132,8 +130,8 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseAutoincrement(Fluent $attributes)
     {
-      $attributes['autoincrement'] = preg_match('/serial/i',
-        $this->get('data_type', '')) || $this->defaultIsNextVal($attributes);
+        $attributes['autoincrement'] = preg_match('/serial/i',
+            $this->get('data_type', '')) || $this->defaultIsNextVal($attributes);
     }
 
     /**
@@ -151,9 +149,9 @@ class Column implements \Reliese\Meta\Column
     {
         $value = null;
         if ($this->defaultIsNextVal($attributes)) {
-          $attributes['autoincrement'] = true;
+            $attributes['autoincrement'] = true;
         } else {
-          $value = $this->get('column_default', $this->get('generation_expression', null));
+            $value = $this->get('column_default', $this->get('generation_expression', null));
         }
         $attributes['default'] = $value;
     }
@@ -194,9 +192,11 @@ class Column implements \Reliese\Meta\Column
      *
      * @return bool
      */
-    private function defaultIsNextVal(Fluent $attributes) {
-      $value = $this->get('column_default', $this->get('generation_expression', null));
-      return preg_match('/nextval\(/i', $value);
+    private function defaultIsNextVal(Fluent $attributes)
+    {
+        $value = $this->get('column_default', $this->get('generation_expression', null));
+
+        return preg_match('/nextval\(/i', $value);
     }
 
 }
