@@ -96,7 +96,7 @@ class Column implements \Reliese\Meta\Column
         $size = (int)  $precision;
 
         // Check whether it's a boolean
-        if ($size == 1 && in_array($databaseType, $this->mappings['boolean'])) {
+	if ($size == 1 && in_array($databaseType, self::$mappings['boolean'])) {
             // Make sure this column type is a boolean
             $attributes['type'] = 'bool';
 
