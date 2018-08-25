@@ -7,6 +7,10 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Fluent;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 
+/**
+ * Created by rwdim from cristians MySql original.
+ * Date: 25/08/18 04:20 PM.
+ */
 class Column implements \Reliese\Meta\Column
 {
     /**

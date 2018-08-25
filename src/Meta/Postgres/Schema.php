@@ -8,8 +8,8 @@ use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
 
 /**
- * Created by Cristian.
- * Date: 18/09/16 06:50 PM.
+ * Created by rwdim from cristians MySql original.
+ * Date: 25/08/18 04:13 PM.
  */
 class Schema implements \Reliese\Meta\Schema
 {
