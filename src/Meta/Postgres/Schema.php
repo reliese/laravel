@@ -276,10 +276,9 @@ class Schema implements \Reliese\Meta\Schema
         $schemas = $connection->getDoctrineSchemaManager()->listDatabases();
 
         return array_diff($schemas, [
-            'information_schema',
-            'sys',
-            'mysql',
-            'performance_schema',
+            'postgres',
+            'template0',
+            'template1',
         ]);
     }
 
