@@ -275,13 +275,12 @@ ORDER BY
 
         $res = $this->arraify($this->connection->select($sql));
 
-        foreach( $res as $row ) {
-
-            $columnNames = explode( ',', trim( $row['column_names'], '}{' ) );
+        foreach ($res as $row) {
+            $columnNames = explode(',', trim($row['column_names'], '}{'));
 
             $columns = [];
-            foreach( $columnNames as $v ) {
-                $columns[] = $this->columnize( $v );
+            foreach ($columnNames as $v) {
+                $columns[] = $this->columnize($v);
             }
 
             $index = [
@@ -291,7 +290,6 @@ ORDER BY
             ];
 
             $blueprint->withIndex(new Fluent($index));
-
         }
     }
 
