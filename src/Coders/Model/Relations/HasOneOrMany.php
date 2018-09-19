@@ -93,8 +93,7 @@ abstract class HasOneOrMany implements Relation
     {
         $defaultForeignKey = $this->parent->getRecordName().'_id';
 
-        if ($this->parent->shouldQualifyTableName())
-        {
+        if ($this->parent->shouldQualifyTableName()) {
             $defaultForeignKey = $this->parent->getTable().'_'.$defaultForeignKey;
         }
 
