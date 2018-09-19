@@ -46,18 +46,16 @@ class ReferenceFactory
         $relations = [];
 
         if ($this->hasPivot()) {
-
             foreach ($this->references as $reference) {
                 $relation = new BelongsToMany($this->getRelatedReference(), $reference['command'], $this->parent, $this->getRelatedModel(), $reference['model']);
                 $relations[$relation->name()] = $relation;
             }
-
         }
 
         $relation = new HasOneOrManyStrategy($this->getRelatedReference(), $this->parent, $this->getRelatedModel());
 
         $relations[$relation->name()] = $relation;
-        
+
         return $relations;
     }
 
