@@ -249,11 +249,11 @@ AND    i.indisprimary;
 
         $sql = "
 SELECT
-    ix.indisunique  AS is_unique,
-    ix.indisprimary AS is_primary,
-    t.relname       AS table_name,
-    i.relname       AS index_name,
-    a.attname       AS column_name
+    ix.indisunique          AS is_unique,
+    ix.indisprimary         AS is_primary,
+    t.relname               AS table_name,
+    i.relname               AS index_name,
+    ARRAY_AGG( a.attname )  AS column_names
 FROM
     pg_class     t,
     pg_class     i,
@@ -266,20 +266,32 @@ WHERE
     AND a.attnum    = ANY(ix.indkey)
     AND t.relkind   = 'r'
     AND ix.indrelid = '$fullTable'::regclass
+GROUP BY
+    1,2,3,4
 ORDER BY
     t.relname,
     i.relname;
 ";
 
-        $row = $this->arraify($this->connection->select($sql));
+        $res = $this->arraify($this->connection->select($sql));
 
-        foreach ($row as $setup) {
+        foreach( $res as $row ) {
+
+            $columnNames = explode( ',', trim( $row['column_names'], '}{' ) );
+
+            $columns = [];
+            foreach( $columnNames as $v ) {
+                $columns[] = $this->columnize( $v );
+            }
+
             $index = [
-                'name'    => ($setup['is_unique'] == true ? 'unique' : 'index'),
-                'columns' => $this->columnize($setup['column_name']),
-                'index'   => $setup['index_name'],
+                'name'    => ($row['is_unique'] == true ? 'unique' : 'index'),
+                'columns' => $columns,
+                'index'   => $row['index_name'],
             ];
+
             $blueprint->withIndex(new Fluent($index));
+
         }
     }
 
