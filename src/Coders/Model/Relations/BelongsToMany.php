@@ -153,7 +153,8 @@ class BelongsToMany implements Relation
      */
     protected function pivotTable()
     {
-        if ($this->parent->getSchema() != $this->pivot->getSchema()) {
+
+        if ($this->parent->shouldQualifyTableName()) {
             return $this->pivot->getQualifiedTable();
         }
 
