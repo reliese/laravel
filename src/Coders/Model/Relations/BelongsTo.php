@@ -124,6 +124,10 @@ class BelongsTo implements Relation
     {
         $defaultForeignKey = $this->related->getRecordName().'_id';
 
+        if ($this->parent->shouldQualifyTableName()) {
+            $defaultForeignKey = $this->parent->getTable().'_'.$defaultForeignKey;
+        }
+
         return $defaultForeignKey != $this->foreignKey() || $this->needsOtherKey();
     }
 

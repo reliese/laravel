@@ -168,6 +168,10 @@ class BelongsToMany implements Relation
     {
         $defaultForeignKey = $this->parentRecordName().'_id';
 
+        if ($this->parent->shouldQualifyTableName()) {
+            $defaultForeignKey = $this->parent->getTable().'_'.$defaultForeignKey;
+        }
+
         return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
     }
 
