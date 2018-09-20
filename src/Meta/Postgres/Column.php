@@ -218,6 +218,7 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseAutoincrement(Fluent $attributes)
     {
+        $attributes['autoincrement'] = $this->defaultIsNextVal($attributes);
         if ($this->same('column_default', 'auto_increment')) {
             $attributes['autoincrement'] = true;
         }
@@ -236,7 +237,13 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parseDefault(Fluent $attributes)
     {
-        $attributes['default'] = $this->get('column_default');
+        $value = null;
+        if ($this->defaultIsNextVal($attributes)) {
+            $attributes['autoincrement'] = true;
+        } else {
+            $value = $this->get('column_default', $this->get('generation_expression', null));
+        }
+        $attributes['default'] = $value;
     }
 
     /**
@@ -268,4 +275,23 @@ class Column implements \Reliese\Meta\Column
     {
         return strcasecmp($this->get($key, ''), $value) === 0;
     }
+
+    /**
+     * @param \Illuminate\Support\Fluent $attributes
+     *
+     * @return bool
+     */
+    private function defaultIsNextVal(Fluent $attributes)
+    {
+
+        return
+            preg_match( '/serial/i', $this->get('data_type', '') )
+            ||
+            preg_match(
+                '/nextval\(/i',
+                $this->get( 'column_default', $this->get('generation_expression', null ) )
+            );
+
+    }
+
 }
