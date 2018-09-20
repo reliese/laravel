@@ -283,15 +283,12 @@ class Column implements \Reliese\Meta\Column
      */
     private function defaultIsNextVal(Fluent $attributes)
     {
-
         return
-            preg_match( '/serial/i', $this->get('data_type', '') )
+            preg_match('/serial/i', $this->get('data_type', ''))
             ||
             preg_match(
                 '/nextval\(/i',
-                $this->get( 'column_default', $this->get('generation_expression', null ) )
+                $this->get('column_default', $this->get('generation_expression', null))
             );
-
     }
-
 }
