@@ -128,6 +128,7 @@ return [
         // 'soft_deletes' => [
         //     'enabled' => true,
         //     'field' => 'deleted_at',
+        //     'field_as_string' => true,
         // ],
 
         /*

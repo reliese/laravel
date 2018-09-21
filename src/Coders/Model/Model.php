@@ -115,6 +115,11 @@ class Model
     /**
      * @var bool
      */
+    protected $softDeletesFieldAsString = true;
+
+    /**
+     * @var bool
+     */
     protected $showConnection = false;
 
     /**
@@ -193,6 +198,7 @@ class Model
         // Soft deletes settings
         $this->withSoftDeletes($this->config('soft_deletes.enabled', $this->config('soft_deletes', false)));
         $this->withDeletedAtField($this->config('soft_deletes.field', $this->getDefaultDeletedAtField()));
+        $this->withSoftDeletesFieldAsString($this->config('soft_deletes.field_as_string', true));
 
         // Connection settings
         $this->withConnection($this->config('connection', false));
@@ -255,8 +261,8 @@ class Model
         $propertyName = $this->usesPropertyConstants() ? 'self::'.strtoupper($column->name) : $column->name;
 
         // Due to some casting problems when converting null to a Carbon instance,
-        // we are going to treat Soft Deletes field as string.
-        if ($column->name == $this->getDeletedAtField()) {
+        // by default, we are going to treat Soft Deletes field as string.
+        if ($column->name == $this->getDeletedAtField() && $this->softDeletesFieldAsString) {
             $cast = 'string';
         }
 
@@ -653,6 +659,18 @@ class Model
     public function withDeletedAtField($field)
     {
         $this->DELETED_AT = $field;
+
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return $this
+     */
+    public function withSoftDeletesFieldAsString($softDeletesFieldAsString)
+    {
+        $this->softDeletesFieldAsString = $softDeletesFieldAsString;
 
         return $this;
     }
