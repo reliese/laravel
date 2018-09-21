@@ -158,6 +158,7 @@ class Factory
     /**
      * @param string $schema
      * @param string $table
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function create($schema, $table)
     {
@@ -236,7 +237,8 @@ class Factory
      */
     protected function prepareTemplate(Model $model, $name)
     {
-        $defaultFile = $this->path([__DIR__, 'Templates', $name]);
+        $defaultFile = $this->path([resource_path('generators/model') ?: __DIR__, 'Templates', $name]);
+
         $file = $this->config($model->getBlueprint(), "*.template.$name", $defaultFile);
 
         return $this->files->get($file);

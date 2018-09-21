@@ -26,6 +26,8 @@ class CodersServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../../config/models.php' => config_path('models.php'),
+                __DIR__.'/../../src/Coders/Model/Templates/model' => resource_path('generators/model'),
+                __DIR__.'/../../src/Coders/Model/Templates/user_model' => resource_path('generators/model'),
             ], 'reliese-models');
 
             $this->commands([
