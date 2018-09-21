@@ -284,7 +284,7 @@ return [
         */
 
         'except' => [
-            'migrations',
+            'migrations', 'action_events', 'password_resets'
         ],
 
         /*
