@@ -237,7 +237,9 @@ class Factory
      */
     protected function prepareTemplate(Model $model, $name)
     {
-        $defaultFile = $this->path([resource_path('generators/model') ?: __DIR__, 'Templates', $name]);
+        $customTemplatePath = resource_path('generators');
+        $templatePath = file_exists($customTemplatePath) ? $customTemplatePath : __DIR__;
+        $defaultFile = $this->path([$templatePath, 'templates', $name]);
 
         $file = $this->config($model->getBlueprint(), "*.template.$name", $defaultFile);
 
