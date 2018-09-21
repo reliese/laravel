@@ -113,6 +113,10 @@ will lose all changes when they are generated again.
 to have two classes for the same thing. However, it is up to you
 to decide whether this approach gives value to your project :-)
 
+### Customizing Models Template
+
+And you can even change generation pattern by edit template files in `resources/generators/templates/`!
+
 #### Support
 
 For the time being, this package only supports MySQL databases. Support for other databases will be added soon.
