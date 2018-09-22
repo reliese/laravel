@@ -2,7 +2,7 @@
 
 /**
  * Created by Mike Artemiev
- * Date: 9/22/18 5:40 PM
+ * Date: 9/22/18 5:40 PM.
  */
 
 namespace Reliese\Coders\Model\Relations;
