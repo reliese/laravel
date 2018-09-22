@@ -33,7 +33,7 @@ class Column implements \Reliese\Meta\Column
         'date' => ['datetime', 'year', 'date', 'time', 'timestamp'],
         'int' => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
         'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
-        'boolean' => ['longblob', 'blob', 'bit'],
+        'mixed' => ['longblob', 'mediumblob','tinyblob', 'blob'], // bit converts to bool only if presision=1
     ];
 
     /**
