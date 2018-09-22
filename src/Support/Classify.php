@@ -15,12 +15,13 @@ class Classify
     /**
      * @param string $name
      * @param string $value
+     * @param string $desc
      *
      * @return string
      */
-    public function annotation($name, $value)
+    public function annotation($name, $value, $desc = '')
     {
-        return "\n * @$name $value";
+        return "\n * @$name $value".($desc ? ' '.$desc : '');
     }
 
     /**

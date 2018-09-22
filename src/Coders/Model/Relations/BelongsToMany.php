@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BelongsToMany implements Relation
 {
+    use RelationComment;
+
     /**
      * @var \Illuminate\Support\Fluent
      */
@@ -39,7 +41,7 @@ class BelongsToMany implements Relation
     /**
      * @var \Reliese\Coders\Model\Model
      */
-    protected $reference;
+    protected $related;
 
     /**
      * BelongsToMany constructor.
@@ -48,20 +50,20 @@ class BelongsToMany implements Relation
      * @param \Illuminate\Support\Fluent $referenceCommand
      * @param \Reliese\Coders\Model\Model $parent
      * @param \Reliese\Coders\Model\Model $pivot
-     * @param \Reliese\Coders\Model\Model $reference
+     * @param \Reliese\Coders\Model\Model $related
      */
     public function __construct(
         Fluent $parentCommand,
         Fluent $referenceCommand,
         Model $parent,
         Model $pivot,
-        Model $reference
+        Model $related
     ) {
         $this->parentCommand = $parentCommand;
         $this->referenceCommand = $referenceCommand;
         $this->parent = $parent;
         $this->pivot = $pivot;
-        $this->reference = $reference;
+        $this->related = $related;
     }
 
     /**
@@ -69,7 +71,7 @@ class BelongsToMany implements Relation
      */
     public function hint()
     {
-        return '\\'.Collection::class.'|'.$this->reference->getQualifiedUserClassName().'[]';
+        return '\\'.Collection::class.'|'.$this->related->getQualifiedUserClassName().'[]';
     }
 
     /**
@@ -77,7 +79,7 @@ class BelongsToMany implements Relation
      */
     public function name()
     {
-        $tableName = $this->reference->getTable(true);
+        $tableName = $this->related->getTable(true);
 
         if ($this->parent->shouldLowerCaseTableName()) {
             $tableName = strtolower($tableName);
@@ -99,7 +101,7 @@ class BelongsToMany implements Relation
     {
         $body = 'return $this->belongsToMany(';
 
-        $body .= $this->reference->getQualifiedUserClassName().'::class';
+        $body .= $this->related->getQualifiedUserClassName().'::class';
 
         if ($this->needsPivotTable()) {
             $body .= ', '.Dumper::export($this->pivotTable());
@@ -107,14 +109,14 @@ class BelongsToMany implements Relation
 
         if ($this->needsForeignKey()) {
             $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->reference->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
+                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
                 : $this->foreignKey();
             $body .= ', '.Dumper::export($foreignKey);
         }
 
         if ($this->needsOtherKey()) {
-            $otherKey = $this->reference->usesPropertyConstants()
-                ? $this->reference->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
+            $otherKey = $this->related->usesPropertyConstants()
+                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
                 : $this->otherKey();
             $body .= ', '.Dumper::export($otherKey);
         }
@@ -221,7 +223,7 @@ class BelongsToMany implements Relation
     protected function referenceRecordName()
     {
         // We make sure it is snake case because Eloquent assumes it is.
-        return Str::snake($this->reference->getRecordName());
+        return Str::snake($this->related->getRecordName());
     }
 
     /**
@@ -232,7 +234,7 @@ class BelongsToMany implements Relation
     private function parametrize($fields = [])
     {
         return (string) implode(', ', array_map(function ($field) {
-            $field = $this->reference->usesPropertyConstants()
+            $field = $this->related->usesPropertyConstants()
                 ? $this->pivot->getQualifiedUserClassName().'::'.strtoupper($field)
                 : $field;
 

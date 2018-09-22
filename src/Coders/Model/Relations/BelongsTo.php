@@ -15,6 +15,8 @@ use Reliese\Coders\Model\Relation;
 
 class BelongsTo implements Relation
 {
+    use RelationComment;
+
     /**
      * @var \Illuminate\Support\Fluent
      */

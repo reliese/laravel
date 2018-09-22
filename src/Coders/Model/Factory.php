@@ -256,6 +256,7 @@ class Factory
     {
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
         $template = str_replace('{{class}}', $model->getClassName(), $template);
+        $template = str_replace('{{comment}}', $model->getBlueprint()->tableComment(), $template);
 
         $properties = $this->properties($model);
         $usedClasses = $this->extractUsedClasses($properties);
@@ -339,7 +340,7 @@ class Factory
         $annotations = '';
 
         foreach ($model->getProperties() as $name => $hint) {
-            $annotations .= $this->class->annotation('property', "$hint \$$name");
+            $annotations .= $this->class->annotation('property', "$hint \$$name", @$model->getHints()[$name]);
         }
 
         if ($model->hasRelations()) {
@@ -352,7 +353,7 @@ class Factory
             if ($model->hasProperty($name)) {
                 continue;
             }
-            $annotations .= $this->class->annotation('property', $relation->hint()." \$$name");
+            $annotations .= $this->class->annotation('property', $relation->hint()." \$$name".$relation->comment());
         }
 
         return $annotations;

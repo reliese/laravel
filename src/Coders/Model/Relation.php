@@ -22,5 +22,9 @@ interface Relation
     /**
      * @return string
      */
+    public function comment();
+    /**
+     * @return string
+     */
     public function body();
 }
