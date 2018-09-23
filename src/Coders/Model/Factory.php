@@ -345,7 +345,7 @@ class Factory
 
         if ($model->hasRelations()) {
             // Add separation between model properties and model relations
-            $annotations .= "\n * ";
+            $annotations .= "\n *";
         }
 
         foreach ($model->getRelations() as $name => $relation) {
