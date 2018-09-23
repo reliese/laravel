@@ -14,6 +14,8 @@ use Reliese\Coders\Model\Relation;
 
 abstract class HasOneOrMany implements Relation
 {
+    use RelationComment;
+
     /**
      * @var \Illuminate\Support\Fluent
      */

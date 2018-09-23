@@ -9,7 +9,7 @@ namespace {{namespace}};
 {{imports}}
 
 /**
- * Class {{class}}
+ * Class {{class}}{{comment}}
  * {{properties}}
  *
  * @package {{namespace}}

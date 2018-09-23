@@ -133,6 +133,7 @@ class Schema implements \Reliese\Meta\Schema
         $this->fillPrimaryKey($sql, $blueprint);
         $this->fillIndexes($sql, $blueprint);
         $this->fillRelations($sql, $blueprint);
+        $this->fillTableComent($sql, $blueprint);
     }
 
     /**
@@ -212,6 +213,22 @@ class Schema implements \Reliese\Meta\Schema
 
             $blueprint->withRelation(new Fluent($relation));
         }
+    }
+
+    /**
+     * @param string $sql
+     * @param \Reliese\Meta\Blueprint $blueprint
+     */
+    protected function fillTableComent($sql, Blueprint $blueprint)
+    {
+        $pattern = '/\s*(COMMENT)\s?=\s?\'([\W\d]+)\'/mi';
+        if (preg_match_all($pattern, $sql, $indexes, PREG_SET_ORDER) == false) {
+            return;
+        }
+
+        $comment = $indexes[0][2];
+
+        $blueprint->withTableComment($comment);
     }
 
     /**

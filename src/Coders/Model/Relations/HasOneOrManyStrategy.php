@@ -56,6 +56,14 @@ class HasOneOrManyStrategy implements Relation
     /**
      * @return string
      */
+    public function comment()
+    {
+        return $this->relation->comment();
+    }
+
+    /**
+     * @return string
+     */
     public function body()
     {
         return $this->relation->body();

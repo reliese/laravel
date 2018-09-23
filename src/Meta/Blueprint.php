@@ -27,6 +27,11 @@ class Blueprint
     protected $table;
 
     /**
+     * @var string
+     */
+    protected $tableComent;
+
+    /**
      * @var \Illuminate\Support\Fluent[]
      */
     protected $columns = [];
@@ -181,6 +186,26 @@ class Blueprint
     public function relations()
     {
         return $this->relations;
+    }
+
+    /**
+     * @param string $tableComment
+     *
+     * @return $this
+     */
+    public function withTableComment(string $tableComment)
+    {
+        $this->tableComent = ' '.$tableComment;
+
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Support\Fluent[]
+     */
+    public function tableComment()
+    {
+        return $this->tableComent;
     }
 
     /**
