@@ -238,7 +238,6 @@ class Factory
     protected function prepareTemplate(Model $model, $name)
     {
         $defaultFile = $this->path([__DIR__, 'templates', $name]);
-
         $file = $this->config($model->getBlueprint(), "*.template.$name", $defaultFile);
 
         return $this->files->get($file);
