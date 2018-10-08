@@ -2,7 +2,8 @@
 
 /**
  * Created by Cristian.
- * Date: 12/10/16 12:09 AM.
+ * Updated by Mike Artemiev.
+ * Date: 08/10/18 12:03 AM.
  */
 
 namespace Reliese\Database\Eloquent;
@@ -28,21 +29,19 @@ class WhoDidIt
     }
 
     /**
-     * @param string $event
      * @param \Illuminate\Database\Eloquent\Model $model
      */
-    public function creating($event, Eloquent $model)
+    public function creating(Eloquent $model)
     {
         $model->created_by = $this->doer();
     }
 
     /**
-     * @param string $event
      * @param \Illuminate\Database\Eloquent\Model $model
      */
-    public function updating($event, Eloquent $model)
+    public function updating(Eloquent $model)
     {
-        $model->udpated_by = $this->doer();
+        $model->updated_by = $this->doer();
     }
 
     /**
