@@ -74,7 +74,13 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $sql = 'SELECT * FROM information_schema.tables WHERE table_schema = :schema';
+        $sql = '
+SELECT table_name                FROM information_schema.tables WHERE table_schema = :schema
+UNION
+SELECT table_name                FROM information_schema.views  WHERE table_schema = :schema
+UNION
+SELECT matviewname AS table_name FROM pg_matviews WHERE schemaname = :schema
+';
 
         $params = [
             'schema'  => $schema,
