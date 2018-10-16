@@ -446,6 +446,11 @@ class Model
     public function withNamespace($namespace)
     {
         $namespaceSchema = $this->config('namespace_schema', false);
+        $namespaceConnection = $this->config('namespace_connection', false);
+
+        if ($namespaceConnection) {
+            $namespace .= '\\'.$this->factory->transformSchemaToNamespace($this->blueprint->connection());
+        }
 
         if ($namespaceSchema) {
             $namespace .= '\\'.$this->factory->transformSchemaToNamespace($this->getSchema());
