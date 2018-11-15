@@ -406,34 +406,29 @@ class Factory
         if ($model->shouldShowConnection()) {
             $body .= $this->class->field('connection', $model->getConnectionName());
         }
-
         // When table is not plural, append the table name
         if ($model->needsTableName()) {
             $body .= $this->class->field('table', $model->getTableForQuery());
         }
-
         if ($model->hasCustomPrimaryKey()) {
             $body .= $this->class->field('primaryKey', $model->getPrimaryKey());
         }
-
-        if ($model->doesNotAutoincrement()) {
-            $body .= $this->class->field('incrementing', false, ['visibility' => 'public']);
-        }
-
         if ($model->hasCustomPerPage()) {
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
-
-        if (! $model->usesTimestamps()) {
-            $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
-        }
-
         if ($model->hasCustomDateFormat()) {
             $body .= $this->class->field('dateFormat', $model->getDateFormat());
         }
 
+        if ($model->doesNotAutoincrement()) {
+            $body .= $this->class->field('incrementing', false, ['visibility' => 'public', 'before' => "\n"]);
+        }
+        if (! $model->usesTimestamps()) {
+            $body .= $this->class->field('timestamps', false, ['visibility' => 'public', 'before' => "\n"]);
+        }
+
         if ($model->doesNotUseSnakeAttributes()) {
-            $body .= $this->class->field('snakeAttributes', false, ['visibility' => 'public static']);
+            $body .= $this->class->field('snakeAttributes', false, ['visibility' => 'public static', 'before' => "\n"]);
         }
 
         if ($model->hasCasts()) {
