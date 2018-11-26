@@ -509,11 +509,11 @@ class Factory
             $this->config($model->getBlueprint(), 'path'),
         ];
 
-        $doConnectionPath  = $this->config($model->getBlueprint(), 'path_connection');
+        $doConnectionPath = $this->config($model->getBlueprint(), 'path_connection');
         $doSchemaNamespace = $this->config($model->getBlueprint(), 'namespace_schema');
 
         if ($doConnectionPath) {
-            $pathParts[] = $this->transformSchemaToNamespace( $model->getConnectionName() );
+            $pathParts[] = $this->transformSchemaToNamespace($model->getConnectionName());
         }
 
         if ($doSchemaNamespace) {
