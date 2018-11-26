@@ -298,7 +298,6 @@ class Model
         // Track PHP type hints
         $hint = $this->phpTypeHint($cast);
         $this->properties[$column->name] = $hint;
-
     }
 
     /**
@@ -1123,7 +1122,7 @@ class Model
             $this->getDeletedAtField(),
         ];
 
-        if( $this->autoincrement() ) {
+        if ($this->autoincrement()) {
             if ($this->primaryKeys->columns) {
                 $protected = array_merge($protected, $this->primaryKeys->columns);
             }

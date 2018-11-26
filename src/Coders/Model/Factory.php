@@ -303,7 +303,7 @@ class Factory
      *
      * @return string
      */
-    private function formatUsedClasses( $nameSpace, $baseNamespace, $usedClasses)
+    private function formatUsedClasses($nameSpace, $baseNamespace, $usedClasses)
     {
         $result = [];
         foreach ($usedClasses as $usedClass) {
@@ -312,15 +312,12 @@ class Factory
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
 
             if (! preg_match($namespacePattern, $usedClass)) {
-
                 $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
 
                 if (! preg_match($namespacePattern, $usedClass)) {
                     $result[] = "use {$usedClass};";
                 }
-
             }
-
         }
 
         sort($result);
