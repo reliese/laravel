@@ -280,6 +280,10 @@ class Model
             $this->hidden[] = $propertyName;
         }
 
+        if ($column->name == $this->getPrimaryKey()) {
+            $this->primaryKeyColumn = $column;
+        }
+
         if ($this->isFillable($column->name)) {
             $this->fillable[] = $propertyName;
         }
@@ -295,9 +299,6 @@ class Model
         $hint = $this->phpTypeHint($cast);
         $this->properties[$column->name] = $hint;
 
-        if ($column->name == $this->getPrimaryKey()) {
-            $this->primaryKeyColumn = $column;
-        }
     }
 
     /**
@@ -1122,8 +1123,10 @@ class Model
             $this->getDeletedAtField(),
         ];
 
-        if ($this->primaryKeys->columns) {
-            $protected = array_merge($protected, $this->primaryKeys->columns);
+        if( $this->autoincrement() ) {
+            if ($this->primaryKeys->columns) {
+                $protected = array_merge($protected, $this->primaryKeys->columns);
+            }
         }
 
         foreach (array_merge($guarded, $protected) as $pattern) {

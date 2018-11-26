@@ -286,6 +286,7 @@ class Factory
 
         $usedClasses = array_unique($usedClasses);
         $usedClassesSection = $this->formatUsedClasses(
+            $model->getClassName(),
             $model->getBaseNamespace(),
             $usedClasses
         );
@@ -302,15 +303,24 @@ class Factory
      *
      * @return string
      */
-    private function formatUsedClasses($baseNamespace, $usedClasses)
+    private function formatUsedClasses( $nameSpace, $baseNamespace, $usedClasses)
     {
         $result = [];
         foreach ($usedClasses as $usedClass) {
+
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
+
             if (! preg_match($namespacePattern, $usedClass)) {
-                $result[] = "use {$usedClass};";
+
+                $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
+
+                if (! preg_match($namespacePattern, $usedClass)) {
+                    $result[] = "use {$usedClass};";
+                }
+
             }
+
         }
 
         sort($result);
