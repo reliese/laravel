@@ -390,7 +390,8 @@ class Factory
             $properties = array_diff($properties, $excludedConstants);
 
             foreach ($properties as $property) {
-                $body .= $this->class->constant(strtoupper($property), $property);
+                $constantName = Str::upper(Str::snake($property));
+                $body .= $this->class->constant($constantName, $property);
             }
         }
 
