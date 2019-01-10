@@ -126,6 +126,12 @@ class SchemaManager implements IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->schemas);
+        $schemas = forward_static_call([$this->getMapper(), 'schemas'], $this->connection);
+
+        foreach ($schemas as $schema) {
+            $this->make($schema);
+        }
+
+        return new ArrayIterator($this->schemas = $schemas);
     }
 }
