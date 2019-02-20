@@ -48,7 +48,7 @@ class SchemaManager implements IteratorAggregate
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
-        $this->boot();
+        //$this->boot();
     }
 
     /**
