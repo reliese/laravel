@@ -1,14 +1,18 @@
 {
-    "name": "reliese/laravel",
-    "description": "Reliese Components for Laravel Framework code generation.",
-    "keywords": ["reliese", "laravel"],
-    "homepage": "http://cristianllanos.com",
+    "name": "kksoftwareag/laravel-model-generator",
+    "description": "Fork of Reliese Components for Laravel Framework code generation.",
+    "keywords": ["reliese", "laravel", "model"],
+    "homepage": "https://kk-software.de",
     "support": {
-        "issues": "https://github.com/reliese/laravel/issues",
-        "source": "https://github.com/reliese/laravel"
+        "issues": "https://github.com/kksoftwareag/laravel-model-generator/issues",
+        "source": "https://github.com/kksoftwareag/laravel-model-generator"
     },
     "license": "MIT",
     "authors": [
+        {
+            "name": "Bernhard Sirlinger",
+            "email": "sirlinger@kk-software.de"
+        },
         {
             "name": "Cristian Llanos",
             "email": "cristianllanos@outlook.com"
