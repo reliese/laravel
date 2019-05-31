@@ -290,6 +290,7 @@ class Factory
             $model->getBaseNamespace(),
             $usedClasses
         );
+        $usedClassesSection = '';
         $template = str_replace('{{imports}}', $usedClassesSection, $template);
 
         return $template;
