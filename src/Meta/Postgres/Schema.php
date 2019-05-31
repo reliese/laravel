@@ -118,7 +118,7 @@ WHERE
     AND st.relname      = :table
 ';
 
-        list($schema, $table) = explode('.', $blueprint->qualifiedTable());
+        [$schema, $table] = explode('.', $blueprint->qualifiedTable());
 
         $params = [
             'schema'    => $schema,

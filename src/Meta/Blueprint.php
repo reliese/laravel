@@ -250,7 +250,7 @@ class Blueprint
         $references = [];
 
         foreach ($this->relations() as $relation) {
-            list($foreignDatabase, $foreignTable) = array_values($relation->on);
+            [$foreignDatabase, $foreignTable] = array_values($relation->on);
             if ($table->is($foreignDatabase, $foreignTable)) {
                 $references[] = $relation;
             }
