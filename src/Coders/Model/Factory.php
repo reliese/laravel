@@ -316,6 +316,8 @@ class Factory
 
                 if (! preg_match($namespacePattern, $usedClass)) {
                     $result[] = "use {$usedClass};";
+//                     $alias = $this->getUseClassAliasFromString( $usedClass );
+//                     $result[] = "use {$usedClass} as {$alias};";
                 }
             }
         }
@@ -323,6 +325,22 @@ class Factory
         sort($result);
 
         return implode("\n", $result);
+    }
+
+    private function getUseClassAliasFromString( $usedClass )
+    {
+        // need enhancements to this for handling if Databse or Schema aren't in the class namespace
+        $expl = explode( "\\", $usedClass );
+        $tableName      = array_pop( $expl );
+        $schemaName     = array_pop( $expl );
+        $databaseName   = array_pop( $expl );
+
+        return $this->formatUseClassAlias( $tableName, $schemaName, $databaseName );
+    }
+
+    private function formatUseClassAlias( $tableName, $schemaName, $databaseName )
+    {
+        return $databaseName."_".$schemaName."_".$tableName;
     }
 
     /**
@@ -343,7 +361,7 @@ class Factory
                 $usedInModelClasses[] = trim($usedClassName, '\\');
                 $namespaceParts = explode('\\', $usedClassName);
                 $resultClassName = array_pop($namespaceParts);
-                $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
+//                 $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
             }
         }
 
