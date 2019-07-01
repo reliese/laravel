@@ -784,7 +784,7 @@ class Model
      */
     public function hasCustomPrimaryKey()
     {
-        return count($this->primaryKeys->columns) == 1 &&
+        return count(empty($this->primaryKeys->columns)?[]:$this->primaryKeys->columns) == 1 &&
                $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
     }
 
