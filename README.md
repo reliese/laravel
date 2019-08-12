@@ -19,7 +19,7 @@ You will need to import the `pursehouse/modeler-laravel-eloquent` package via co
 ```shell
 composer config repositories.pursehouse/modeler-laravel-eloquent vcs https://github.com/pursehouse/modeler-laravel-eloquent
 
-composer require pursehouse/modeler-laravel-eloquent/repo:dev-master
+composer require pursehouse/modeler-laravel-eloquent:dev-master
 ```
 
 ### Configuration
@@ -44,7 +44,7 @@ If you wish to enable generators only for your local environment, you should ins
 ```shell
 composer config repositories.pursehouse/modeler-laravel-eloquent vcs https://github.com/pursehouse/modeler-laravel-eloquent
 
-composer require pursehouse/modeler-laravel-eloquent/repo:dev-master --dev
+composer require pursehouse/modeler-laravel-eloquent:dev-master --dev
 ```
 
 Then you'll need to register the provider in `app/Providers/AppServiceProvider.php` file.
