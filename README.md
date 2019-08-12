@@ -65,7 +65,7 @@ public function register()
 Add the `models.php` configuration file to your `config` directory and clear the config cache:
 
 ```shell
-php artisan vendor:publish --tag=reliese-models
+php artisan vendor:publish --tag=pursehouse-modeler
 php artisan config:clear
 ```
 

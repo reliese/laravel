@@ -25,8 +25,8 @@ class CodersServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../../config/models.php' => config_path('models.php'),
-            ], 'reliese-models');
+                __DIR__.'/../../config/modeler.php' => config_path('modeler.php'),
+            ], 'pursehouse-modeler');
 
             $this->commands([
                 CodeModelsCommand::class,
@@ -56,7 +56,7 @@ class CodersServiceProvider extends ServiceProvider
                 $app->make('db'),
                 $app->make(Filesystem::class),
                 new Classify(),
-                new Config($app->make('config')->get('models'))
+                new Config($app->make('config')->get('modeler'))
             );
         });
     }
