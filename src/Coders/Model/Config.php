@@ -5,10 +5,10 @@
  * Date: 11/09/16 09:00 PM.
  */
 
-namespace Reliese\Coders\Model;
+namespace Pursehouse\Modeler\Coders\Model;
 
 use Illuminate\Support\Arr;
-use Reliese\Meta\Blueprint;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Config
 {
@@ -28,7 +28,7 @@ class Config
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @param string                  $key
      * @param mixed                   $default
      *

@@ -1,13 +1,13 @@
 <?php
 
-namespace Reliese\Coders;
+namespace Pursehouse\Modeler\Coders;
 
-use Reliese\Support\Classify;
-use Reliese\Coders\Model\Config;
+use Pursehouse\Modeler\Support\Classify;
+use Pursehouse\Modeler\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
-use Reliese\Coders\Console\CodeModelsCommand;
-use Reliese\Coders\Model\Factory as ModelFactory;
+use Pursehouse\Modeler\Coders\Console\CodeModelsCommand;
+use Pursehouse\Modeler\Coders\Model\Factory as ModelFactory;
 
 class CodersServiceProvider extends ServiceProvider
 {

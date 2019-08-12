@@ -5,7 +5,7 @@
  * Date: 04/10/16 11:32 PM.
  */
 
-namespace Reliese\Coders\Model\Relations;
+namespace Pursehouse\Modeler\Coders\Model\Relations;
 
 use Illuminate\Support\Str;
 
@@ -17,12 +17,12 @@ class ReferenceFactory
     protected $related;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $parent;
 
     /**
-     * @var \Reliese\Coders\Model\Model[]
+     * @var \Pursehouse\Modeler\Coders\Model\Model[]
      */
     protected $references = [];
 
@@ -30,7 +30,7 @@ class ReferenceFactory
      * ReferenceFactory constructor.
      *
      * @param array                       $related
-     * @param \Reliese\Coders\Model\Model $parent
+     * @param \Pursehouse\Modeler\Coders\Model\Model $parent
      */
     public function __construct($related, $parent)
     {
@@ -39,7 +39,7 @@ class ReferenceFactory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Relation[]
+     * @return \Pursehouse\Modeler\Coders\Model\Relation[]
      */
     public function make()
     {
@@ -105,7 +105,7 @@ class ReferenceFactory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Model
+     * @return \Pursehouse\Modeler\Coders\Model\Model
      */
     protected function getRelatedModel()
     {
@@ -113,7 +113,7 @@ class ReferenceFactory
     }
 
     /**
-     * @return \Reliese\Meta\Blueprint
+     * @return \Pursehouse\Modeler\Meta\Blueprint
      */
     protected function getRelatedBlueprint()
     {

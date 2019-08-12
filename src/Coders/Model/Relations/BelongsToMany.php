@@ -5,13 +5,13 @@
  * Date: 05/10/16 11:47 PM.
  */
 
-namespace Reliese\Coders\Model\Relations;
+namespace Pursehouse\Modeler\Coders\Model\Relations;
 
 use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
+use Pursehouse\Modeler\Support\Dumper;
 use Illuminate\Support\Fluent;
-use Reliese\Coders\Model\Model;
-use Reliese\Coders\Model\Relation;
+use Pursehouse\Modeler\Coders\Model\Model;
+use Pursehouse\Modeler\Coders\Model\Relation;
 use Illuminate\Database\Eloquent\Collection;
 
 class BelongsToMany implements Relation
@@ -27,17 +27,17 @@ class BelongsToMany implements Relation
     protected $referenceCommand;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $parent;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $pivot;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $reference;
 
@@ -46,9 +46,9 @@ class BelongsToMany implements Relation
      *
      * @param \Illuminate\Support\Fluent  $parentCommand
      * @param \Illuminate\Support\Fluent  $referenceCommand
-     * @param \Reliese\Coders\Model\Model $parent
-     * @param \Reliese\Coders\Model\Model $pivot
-     * @param \Reliese\Coders\Model\Model $reference
+     * @param \Pursehouse\Modeler\Coders\Model\Model $parent
+     * @param \Pursehouse\Modeler\Coders\Model\Model $pivot
+     * @param \Pursehouse\Modeler\Coders\Model\Model $reference
      */
     public function __construct(
         Fluent $parentCommand,

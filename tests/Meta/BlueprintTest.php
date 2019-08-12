@@ -1,6 +1,6 @@
 <?php
 
-use Reliese\Meta\Blueprint;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 /**
  * Created by Cristian.

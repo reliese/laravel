@@ -5,13 +5,13 @@
  * Date: 18/09/16 08:36 PM.
  */
 
-namespace Reliese\Meta\Postgres;
+namespace Pursehouse\Modeler\Meta\Postgres;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Fluent;
 
-class Column implements \Reliese\Meta\Column
+class Column implements \Pursehouse\Modeler\Meta\Column
 {
     /**
      * @var array

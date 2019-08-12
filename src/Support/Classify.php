@@ -5,7 +5,7 @@
  * Date: 05/09/16 11:27 PM.
  */
 
-namespace Reliese\Support;
+namespace Pursehouse\Modeler\Support;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;

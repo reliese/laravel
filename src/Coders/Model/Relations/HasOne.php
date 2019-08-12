@@ -5,7 +5,7 @@
  * Date: 11/09/16 09:26 PM.
  */
 
-namespace Reliese\Coders\Model\Relations;
+namespace Pursehouse\Modeler\Coders\Model\Relations;
 
 use Illuminate\Support\Str;
 

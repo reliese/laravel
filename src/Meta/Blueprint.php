@@ -5,7 +5,7 @@
  * Date: 18/09/16 08:19 PM.
  */
 
-namespace Reliese\Meta;
+namespace Pursehouse\Modeler\Meta;
 
 use Illuminate\Support\Fluent;
 
@@ -241,7 +241,7 @@ class Blueprint
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $table
+     * @param \Pursehouse\Modeler\Meta\Blueprint $table
      *
      * @return array
      */

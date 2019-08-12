@@ -5,7 +5,7 @@
  * Date: 02/10/16 07:37 PM.
  */
 
-namespace Reliese\Meta;
+namespace Pursehouse\Modeler\Meta;
 
 use ArrayIterator;
 use RuntimeException;
@@ -14,9 +14,9 @@ use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\ConnectionInterface;
-use Reliese\Meta\MySql\Schema as MySqlSchema;
-use Reliese\Meta\Sqlite\Schema as SqliteSchema;
-use Reliese\Meta\Postgres\Schema as PostgresSchema;
+use Pursehouse\Modeler\Meta\MySql\Schema as MySqlSchema;
+use Pursehouse\Modeler\Meta\Sqlite\Schema as SqliteSchema;
+use Pursehouse\Modeler\Meta\Postgres\Schema as PostgresSchema;
 
 class SchemaManager implements IteratorAggregate
 {
@@ -36,7 +36,7 @@ class SchemaManager implements IteratorAggregate
     private $connection;
 
     /**
-     * @var \Reliese\Meta\Schema[]
+     * @var \Pursehouse\Modeler\Meta\Schema[]
      */
     protected $schemas = [];
 
@@ -64,7 +64,7 @@ class SchemaManager implements IteratorAggregate
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return \Pursehouse\Modeler\Meta\Schema
      */
     public function make($schema)
     {
@@ -78,7 +78,7 @@ class SchemaManager implements IteratorAggregate
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return \Pursehouse\Modeler\Meta\Schema
      */
     protected function makeMapper($schema)
     {

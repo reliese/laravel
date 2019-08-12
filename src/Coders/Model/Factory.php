@@ -5,12 +5,12 @@
  * Date: 19/09/16 11:58 PM.
  */
 
-namespace Reliese\Coders\Model;
+namespace Pursehouse\Modeler\Coders\Model;
 
 use Illuminate\Support\Str;
-use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
-use Reliese\Meta\SchemaManager;
+use Pursehouse\Modeler\Meta\Blueprint;
+use Pursehouse\Modeler\Support\Classify;
+use Pursehouse\Modeler\Meta\SchemaManager;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\DatabaseManager;
 
@@ -22,7 +22,7 @@ class Factory
     private $db;
 
     /**
-     * @var \Reliese\Meta\SchemaManager
+     * @var \Pursehouse\Modeler\Meta\SchemaManager
      */
     protected $schemas = [];
 
@@ -32,22 +32,22 @@ class Factory
     protected $files;
 
     /**
-     * @var \Reliese\Support\Classify
+     * @var \Pursehouse\Modeler\Support\Classify
      */
     protected $class;
 
     /**
-     * @var \Reliese\Coders\Model\Config
+     * @var \Pursehouse\Modeler\Coders\Model\Config
      */
     protected $config;
 
     /**
-     * @var \Reliese\Coders\Model\ModelManager
+     * @var \Pursehouse\Modeler\Coders\Model\ModelManager
      */
     protected $models;
 
     /**
-     * @var \Reliese\Coders\Model\Mutator[]
+     * @var \Pursehouse\Modeler\Coders\Model\Mutator[]
      */
     protected $mutators = [];
 
@@ -62,7 +62,7 @@ class Factory
      * @param \Illuminate\Database\DatabaseManager $db
      * @param \Illuminate\Filesystem\Filesystem    $files
      * @param \Reliese\Support\Classify            $writer
-     * @param \Reliese\Coders\Model\Config         $config
+     * @param \Pursehouse\Modeler\Coders\Model\Config         $config
      */
     public function __construct(DatabaseManager $db, Filesystem $files, Classify $writer, Config $config)
     {
@@ -73,7 +73,7 @@ class Factory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Mutator
+     * @return \Pursehouse\Modeler\Coders\Model\Mutator
      */
     public function mutate()
     {
@@ -81,7 +81,7 @@ class Factory
     }
 
     /**
-     * @return \Reliese\Coders\Model\ModelManager
+     * @return \Pursehouse\Modeler\Coders\Model\ModelManager
      */
     protected function models()
     {
@@ -139,7 +139,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return bool
      */
@@ -155,7 +155,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return bool
      */
@@ -201,7 +201,7 @@ class Factory
      * @param string $table
      * @param bool   $withRelations
      *
-     * @return \Reliese\Coders\Model\Model
+     * @return \Pursehouse\Modeler\Coders\Model\Model
      */
     public function makeModel($schema, $table, $withRelations = true)
     {
@@ -211,7 +211,7 @@ class Factory
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return \Pursehouse\Modeler\Meta\Schema
      */
     public function makeSchema($schema)
     {
@@ -219,7 +219,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @todo: Delegate workload to SchemaManager and ModelManager
      *
@@ -246,7 +246,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      * @param string                      $name
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
@@ -263,7 +263,7 @@ class Factory
 
     /**
      * @param string                      $template
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return mixed
      */
@@ -370,7 +370,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -400,7 +400,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -514,7 +514,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      * @param array                       $custom
      *
      * @return string
@@ -580,7 +580,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return bool
      */
@@ -590,7 +590,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -629,7 +629,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -652,11 +652,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint|null $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint|null $blueprint
      * @param string                       $key
      * @param mixed                        $default
      *
-     * @return mixed|\Reliese\Coders\Model\Config
+     * @return mixed|\Pursehouse\Modeler\Coders\Model\Config
      */
     public function config(Blueprint $blueprint = null, $key = null, $default = null)
     {
