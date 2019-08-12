@@ -76,25 +76,25 @@ Assuming you have already configured your database, you are now all set to go.
 - Let's scaffold some of your models from your default connection.
 
 ```shell
-php artisan code:models
+php artisan pursehouse:modeler
 ```
 
 - You can scaffold a specific table like this:
 
 ```shell
-php artisan code:models --table=users
+php artisan pursehouse:modeler --table=users
 ```
 
 - You can also specify the connection:
 
 ```shell
-php artisan code:models --connection=mysql
+php artisan pursehouse:modeler --connection=mysql
 ```
 
 - If you are using a MySQL database, you can specify which schema you want to scaffold:
 
 ```shell
-php artisan code:models --schema=shop
+php artisan pursehouse:modeler --schema=shop
 ```
 
 ### Customizing Model Scaffolding

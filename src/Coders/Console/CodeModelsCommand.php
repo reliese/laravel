@@ -13,8 +13,8 @@ class CodeModelsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'code:models
-                            {--s|schema= : The name of the MySQL database}
+    protected $signature = 'pursehouse:modeler
+                            {--s|schema= : The name of the schema ( database in MySQL terms )}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
 
