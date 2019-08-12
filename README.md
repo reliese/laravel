@@ -1,4 +1,4 @@
-# Reliese Laravel
+# Pursehouse Modeler for Eloquent/Laravel
 
 [![StyleCI](https://styleci.io/repos/71080508/shield?style=flat)](https://styleci.io/repos/71080508)
 [![Build Status](https://travis-ci.org/reliese/laravel.svg?branch=master)](https://travis-ci.org/reliese/laravel)
@@ -7,9 +7,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/reliese/laravel/v/unstable)](https://packagist.org/packages/reliese/laravel)
 [![License](https://poser.pugx.org/reliese/laravel/license)](https://packagist.org/packages/reliese/laravel)
 
-Reliese Laravel is a collection of Laravel Components which aim is 
-to help the development process of Laravel applications by 
-providing some convenient code-generation capabilities.
+Generate model classes for Eloquent in Laravel
 
 ## How does it work?
 
@@ -33,7 +31,7 @@ Add the service provider to your `config/app.php` file within the `providers` ke
      * Package Service Providers...
      */
 
-    Reliese\Coders\CodersServiceProvider::class,
+    Pursehouse\Modeler\Coders\CodersServiceProvider::class,
 ],
 // ...
 ```

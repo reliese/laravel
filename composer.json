@@ -29,7 +29,7 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"Reliese\\" : "src/"
+			"Pursehouse\\Modeler\\" : "src/"
 		}
 	},
 	"autoload-dev" : {
@@ -43,7 +43,7 @@
 	"extra" : {
 		"laravel" : {
 			"providers" : [
-				"Reliese\\Coders\\CodersServiceProvider"
+				"Pursehouse\\Modeler\\Coders\\CodersServiceProvider"
 			]
 		}
 	}
