@@ -1,16 +1,8 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 02/10/16 07:56 PM.
- */
-
 namespace Pursehouse\Modeler\Meta;
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 06:50 PM.
- */
+
 interface Schema
 {
     /**

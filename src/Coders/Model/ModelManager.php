@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 02/10/16 08:24 PM.
- */
-
 namespace Pursehouse\Modeler\Coders\Model;
 
 use ArrayIterator;

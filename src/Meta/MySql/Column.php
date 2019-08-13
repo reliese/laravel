@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 08:36 PM.
- */
-
 namespace Pursehouse\Modeler\Meta\MySql;
 
 use Illuminate\Support\Arr;

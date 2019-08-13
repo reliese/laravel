@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/09/16 09:00 PM.
- */
-
 namespace Pursehouse\Modeler\Coders\Model;
 
 use Illuminate\Support\Arr;

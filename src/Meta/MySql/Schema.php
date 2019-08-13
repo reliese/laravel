@@ -7,10 +7,7 @@ use Pursehouse\Modeler\Meta\Blueprint;
 use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 06:50 PM.
- */
+
 class Schema implements \Pursehouse\Modeler\Meta\Schema
 {
     /**

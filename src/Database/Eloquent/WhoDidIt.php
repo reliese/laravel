@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 12/10/16 12:09 AM.
- */
-
 namespace Pursehouse\Modeler\Database\Eloquent;
 
 use Illuminate\Http\Request;

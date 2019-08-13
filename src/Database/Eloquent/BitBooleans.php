@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 09/10/16 07:34 PM.
- */
-
 namespace Pursehouse\Modeler\Database\Eloquent;
 
 trait BitBooleans

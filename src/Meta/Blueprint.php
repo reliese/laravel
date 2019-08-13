@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 08:19 PM.
- */
-
 namespace Pursehouse\Modeler\Meta;
 
 use Illuminate\Support\Fluent;

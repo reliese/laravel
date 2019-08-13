@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/09/16 05:18 PM.
- */
-
 namespace Pursehouse\Modeler\Support;
 
 class Dumper

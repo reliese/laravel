@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 10/10/16 11:46 PM.
- */
-
 namespace Pursehouse\Modeler\Coders\Model;
 
 use Pursehouse\Modeler\Meta\Blueprint;

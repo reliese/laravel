@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 05/09/16 11:41 PM.
- */
-
 namespace Pursehouse\Modeler\Coders\Model\Relations;
 
 use Illuminate\Support\Str;
