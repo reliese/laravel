@@ -322,7 +322,7 @@ class Model
      */
     public function makeRelationModel(Fluent $relation)
     {
-        list($database, $table) = array_values($relation->on);
+        [$database, $table] = array_values($relation->on);
 
         if ($this->blueprint->is($database, $table)) {
             return $this;
@@ -784,7 +784,7 @@ class Model
      */
     public function hasCustomPrimaryKey()
     {
-        if(isset($this->primaryKeys->columns)){
+        if (isset($this->primaryKeys->columns)) {
             return count($this->primaryKeys->columns) == 1 && $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
         }
     }
