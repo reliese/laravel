@@ -784,8 +784,9 @@ class Model
      */
     public function hasCustomPrimaryKey()
     {
-        return count($this->primaryKeys->columns) == 1 &&
-               $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
+        if(isset($this->primaryKeys->columns)){
+            return count($this->primaryKeys->columns) == 1 && $this->getPrimaryKey() != $this->getDefaultPrimaryKeyField();
+        }
     }
 
     /**
