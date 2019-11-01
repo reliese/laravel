@@ -284,6 +284,16 @@ return [
         ],
 
         /*
+         * typeCast
+         *
+         * set custom casts to fields based on the field type
+         *
+         */
+        'typeCast' => [
+//             'array' => \Path\To\My\CustomCast::class,
+        ],
+
+        /*
         |--------------------------------------------------------------------------
         | Excluded Tables
         |--------------------------------------------------------------------------
