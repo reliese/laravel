@@ -114,7 +114,11 @@ class Factory
 
         foreach ($mapper->tables() as $blueprint) {
             if ($this->shouldTakeOnly($blueprint) && $this->shouldNotExclude($blueprint)) {
-                $this->create($mapper->schema(), $blueprint->table());
+                try {
+                    $this->create($mapper->schema(), $blueprint->table());
+                } catch (\Throwable $e){
+                    $this->info("\n WARNING: Could not create model for ". $blueprint->table() . " because ". $e->getMessage()."\n");
+                }
             }
         }
     }
