@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Reliese\Support\Classify;
 
 class Factory
 {
@@ -116,8 +116,8 @@ class Factory
             if ($this->shouldTakeOnly($blueprint) && $this->shouldNotExclude($blueprint)) {
                 try {
                     $this->create($mapper->schema(), $blueprint->table());
-                } catch (\Throwable $e){
-                    $this->info("\n WARNING: Could not create model for ". $blueprint->table() . " because ". $e->getMessage()."\n");
+                } catch (\Throwable $e) {
+                    $this->info("\n WARNING: Could not create model for ".$blueprint->table().' because '.$e->getMessage()."\n");
                 }
             }
         }
