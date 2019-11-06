@@ -12,10 +12,15 @@
         {
             "name": "Cristian Llanos",
             "email": "cristianllanos@outlook.com"
+        },
+        {
+            "name": "Dennis Ziolkowski",
+            "email": "dezio1991@gmail.com"
         }
+
     ],
     "require": {
-        "php": ">=5.6.4",
+        "php": ">=7.3",
         "doctrine/dbal": "~2.5",
         "illuminate/support": "~6.0",
         "illuminate/database": "~6.0",
