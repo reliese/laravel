@@ -27,7 +27,7 @@ return [
 
         'path' => app_path('Models'),
 
-        'path_connection'       => true,
+        'path_connection'       => false,
 
         /*
         |--------------------------------------------------------------------------
@@ -42,8 +42,7 @@ return [
 
         'namespace' => 'App\Models',
 
-        'namespace_connection'  => true,
-        'namespace_schema'      => true,
+        'namespace_connection'  => false,
 
         /*
          |--------------------------------------------------------------------------
@@ -54,7 +53,7 @@ return [
          |
          */
 
-        'namespace_schema' => true,
+        'namespace_schema' => false,
 
         /*
         |--------------------------------------------------------------------------
