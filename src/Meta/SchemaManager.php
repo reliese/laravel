@@ -3,15 +3,15 @@
 namespace Pursehouse\Modeler\Meta;
 
 use ArrayIterator;
-use RuntimeException;
-use IteratorAggregate;
-use Illuminate\Database\MySqlConnection;
-use Illuminate\Database\SQLiteConnection;
-use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\MySqlConnection;
+use Illuminate\Database\PostgresConnection;
+use Illuminate\Database\SQLiteConnection;
+use IteratorAggregate;
 use Pursehouse\Modeler\Meta\MySql\Schema as MySqlSchema;
-use Pursehouse\Modeler\Meta\Sqlite\Schema as SqliteSchema;
 use Pursehouse\Modeler\Meta\Postgres\Schema as PostgresSchema;
+use Pursehouse\Modeler\Meta\Sqlite\Schema as SqliteSchema;
+use RuntimeException;
 
 class SchemaManager implements IteratorAggregate
 {
@@ -19,10 +19,10 @@ class SchemaManager implements IteratorAggregate
      * @var array
      */
     protected static $lookup = [
-        MySqlConnection::class    => MySqlSchema::class,
-        SQLiteConnection::class   => SqliteSchema::class,
+        MySqlConnection::class                                       => MySqlSchema::class,
+        SQLiteConnection::class                                      => SqliteSchema::class,
         \Larapack\DoctrineSupport\Connections\MySqlConnection::class => MySqlSchema::class,
-        PostgresConnection::class => PostgresSchema::class,
+        PostgresConnection::class                                    => PostgresSchema::class,
     ];
 
     /**
@@ -51,7 +51,7 @@ class SchemaManager implements IteratorAggregate
      */
     public function boot()
     {
-        if (! $this->hasMapping()) {
+        if (!$this->hasMapping()) {
             throw new RuntimeException("There is no Schema Mapper registered for [{$this->type()}] connection.");
         }
     }

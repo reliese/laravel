@@ -2,10 +2,9 @@
 
 namespace Pursehouse\Modeler\Meta\Sqlite;
 
-use Pursehouse\Modeler\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
-
+use Illuminate\Support\Fluent;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Schema implements \Pursehouse\Modeler\Meta\Schema
 {
@@ -235,7 +234,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

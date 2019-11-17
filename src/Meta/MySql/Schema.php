@@ -2,11 +2,10 @@
 
 namespace Pursehouse\Modeler\Meta\MySql;
 
-use Illuminate\Support\Arr;
-use Pursehouse\Modeler\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
-
+use Illuminate\Support\Arr;
+use Illuminate\Support\Fluent;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Schema implements \Pursehouse\Modeler\Meta\Schema
 {
@@ -146,7 +145,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     }
 
     /**
-     * @param string                  $sql
+     * @param string                             $sql
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @todo: Support named primary keys
      */
@@ -167,7 +166,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     }
 
     /**
-     * @param string                  $sql
+     * @param string                             $sql
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      */
     protected function fillIndexes($sql, Blueprint $blueprint)
@@ -188,7 +187,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     }
 
     /**
-     * @param string                  $sql
+     * @param string                             $sql
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @todo: Support named foreign keys
      */
@@ -239,7 +238,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     }
 
     /**
-     * @param string                  $table
+     * @param string                             $table
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return array
@@ -311,7 +310,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

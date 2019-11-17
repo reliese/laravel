@@ -2,7 +2,6 @@
 
 use Pursehouse\Modeler\Meta\Blueprint;
 
-
 class BlueprintTest extends TestCase
 {
     public function test_it_can_be_instantiated()

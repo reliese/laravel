@@ -2,13 +2,13 @@
 
 namespace Pursehouse\Modeler\Coders\Model;
 
-use Illuminate\Support\Str;
-use Pursehouse\Modeler\Meta\Blueprint;
-use Illuminate\Support\Fluent;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Pursehouse\Modeler\Coders\Model\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
+use Pursehouse\Modeler\Coders\Model\Relations\BelongsTo;
 use Pursehouse\Modeler\Coders\Model\Relations\ReferenceFactory;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Model
 {
@@ -163,7 +163,7 @@ class Model
      * @param \Pursehouse\Modeler\Meta\Blueprint         $blueprint
      * @param \Pursehouse\Modeler\Coders\Model\Factory   $factory
      * @param \Pursehouse\Modeler\Coders\Model\Mutator[] $mutators
-     * @param bool                            $loadRelations
+     * @param bool                                       $loadRelations
      */
     public function __construct(Blueprint $blueprint, Factory $factory, $mutators = [], $loadRelations = true)
     {
@@ -220,7 +220,7 @@ class Model
             $this->parseColumn($column);
         }
 
-        if (! $this->loadRelations) {
+        if (!$this->loadRelations) {
             return;
         }
 
@@ -266,19 +266,15 @@ class Model
 
         $typeCasts = $this->config('typeCast', []);
 
-        if( isset( $typeCasts[ $cast ] ) ) {
-
-            $this->casts[$propertyName] = $cast = $typeCasts[ $cast ];
-
+        if (isset($typeCasts[$cast])) {
+            $this->casts[$propertyName] = $cast = $typeCasts[$cast];
         } else {
-
             foreach ($this->config('casts', []) as $pattern => $casting) {
                 if (Str::is($pattern, $column->name)) {
                     $this->casts[$propertyName] = $cast = $casting;
                     break;
                 }
             }
-
         }
 
         if ($this->isHidden($column->name)) {
@@ -296,7 +292,7 @@ class Model
         $this->mutate($column->name);
 
         // Track comment hints
-        if (! empty($column->comment)) {
+        if (!empty($column->comment)) {
             $this->hints[$column->name] = $column->comment;
         }
 
@@ -419,7 +415,7 @@ class Model
         if (count($overridePluralizeFor) > 0) {
             foreach ($overridePluralizeFor as $except) {
                 if ($except == $this->getTable()) {
-                    return ! $pluralize;
+                    return !$pluralize;
                 }
             }
         }
@@ -705,7 +701,7 @@ class Model
     {
         $traits = $this->config('use', []);
 
-        if (! is_array($traits)) {
+        if (!is_array($traits)) {
             throw new \RuntimeException('Config use must be an array of valid traits to append to each model.');
         }
 
@@ -724,7 +720,7 @@ class Model
         return true === $this->shouldQualifyTableName() ||
             $this->shouldRemoveTablePrefix() ||
             $this->blueprint->table() != Str::plural($this->getRecordName()) ||
-            ! $this->shouldPluralizeTableName();
+            !$this->shouldPluralizeTableName();
     }
 
     /**
@@ -732,7 +728,7 @@ class Model
      */
     public function shouldRemoveTablePrefix()
     {
-        return ! empty($this->tablePrefix);
+        return !empty($this->tablePrefix);
     }
 
     /**
@@ -858,7 +854,7 @@ class Model
      */
     public function doesNotAutoincrement()
     {
-        return ! $this->autoincrement();
+        return !$this->autoincrement();
     }
 
     /**
@@ -962,7 +958,7 @@ class Model
      */
     public function hasCasts()
     {
-        return ! empty($this->getCasts());
+        return !empty($this->getCasts());
     }
 
     /**
@@ -985,7 +981,7 @@ class Model
      */
     public function hasDates()
     {
-        return ! empty($this->getDates());
+        return !empty($this->getDates());
     }
 
     /**
@@ -1009,7 +1005,7 @@ class Model
      */
     public function doesNotUseSnakeAttributes()
     {
-        return ! $this->usesSnakeAttributes();
+        return !$this->usesSnakeAttributes();
     }
 
     /**
@@ -1017,7 +1013,7 @@ class Model
      */
     public function hasHints()
     {
-        return ! empty($this->getHints());
+        return !empty($this->getHints());
     }
 
     /**
@@ -1059,7 +1055,7 @@ class Model
      */
     public function hasRelations()
     {
-        return ! empty($this->relations);
+        return !empty($this->relations);
     }
 
     /**
@@ -1079,7 +1075,7 @@ class Model
     {
         $attributes = $this->config('hidden', []);
 
-        if (! is_array($attributes)) {
+        if (!is_array($attributes)) {
             throw new \RuntimeException('Config field [hidden] must be an array of attributes to hide from array or json.');
         }
 
@@ -1097,7 +1093,7 @@ class Model
      */
     public function hasHidden()
     {
-        return ! empty($this->hidden);
+        return !empty($this->hidden);
     }
 
     /**
@@ -1117,7 +1113,7 @@ class Model
     {
         $guarded = $this->config('guarded', []);
 
-        if (! is_array($guarded)) {
+        if (!is_array($guarded)) {
             throw new \RuntimeException('Config field [guarded] must be an array of attributes to protect from mass assignment.');
         }
 
@@ -1147,7 +1143,7 @@ class Model
      */
     public function hasFillable()
     {
-        return ! empty($this->fillable);
+        return !empty($this->fillable);
     }
 
     /**
@@ -1174,7 +1170,7 @@ class Model
     public function isPrimaryKey(Fluent $command)
     {
         foreach ((array) $this->primaryKeys->columns as $column) {
-            if (! in_array($column, $command->columns)) {
+            if (!in_array($column, $command->columns)) {
                 return false;
             }
         }
@@ -1229,7 +1225,7 @@ class Model
      */
     public function doesNotUseBaseFiles()
     {
-        return ! $this->usesBaseFiles();
+        return !$this->usesBaseFiles();
     }
 
     /**

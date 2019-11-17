@@ -2,8 +2,8 @@
 
 namespace Pursehouse\Modeler\Database\Eloquent;
 
-use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Http\Request;
 
 class WhoDidIt
 {
