@@ -16,7 +16,7 @@ class HasOneOrManyStrategy implements Relation
     /**
      * HasManyWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent  $command
+     * @param \Illuminate\Support\Fluent             $command
      * @param \Pursehouse\Modeler\Coders\Model\Model $parent
      * @param \Pursehouse\Modeler\Coders\Model\Model $related
      */

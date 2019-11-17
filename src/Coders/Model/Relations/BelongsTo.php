@@ -2,11 +2,11 @@
 
 namespace Pursehouse\Modeler\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Pursehouse\Modeler\Support\Dumper;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Pursehouse\Modeler\Coders\Model\Model;
 use Pursehouse\Modeler\Coders\Model\Relation;
+use Pursehouse\Modeler\Support\Dumper;
 
 class BelongsTo implements Relation
 {
@@ -28,7 +28,7 @@ class BelongsTo implements Relation
     /**
      * BelongsToWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent  $command
+     * @param \Illuminate\Support\Fluent             $command
      * @param \Pursehouse\Modeler\Coders\Model\Model $parent
      * @param \Pursehouse\Modeler\Coders\Model\Model $related
      */

@@ -2,11 +2,10 @@
 
 namespace Pursehouse\Modeler\Meta\Postgres;
 
-use Illuminate\Support\Arr;
-use Pursehouse\Modeler\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
-
+use Illuminate\Support\Arr;
+use Illuminate\Support\Fluent;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Schema implements \Pursehouse\Modeler\Meta\Schema
 {
@@ -214,7 +213,7 @@ WHERE
     }
 
     /**
-     * @param string                  $sql
+     * @param string                             $sql
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @todo: Support named primary keys
      */
@@ -243,7 +242,7 @@ AND    i.indisprimary;
     }
 
     /**
-     * @param string                  $sql
+     * @param string                             $sql
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      */
     protected function fillIndexes($sql, Blueprint $blueprint)
@@ -297,7 +296,7 @@ ORDER BY
     }
 
     /**
-     * @param string                  $sql
+     * @param string                             $sql
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @todo: Support named foreign keys
      */
@@ -375,7 +374,7 @@ WHERE
     }
 
     /**
-     * @param string                  $table
+     * @param string                             $table
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return array
@@ -448,7 +447,7 @@ WHERE
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 

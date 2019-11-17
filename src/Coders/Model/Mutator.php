@@ -34,7 +34,7 @@ class Mutator
     }
 
     /**
-     * @param string $column
+     * @param string                             $column
      * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return mixed
@@ -57,7 +57,7 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
+     * @param string                                 $attribute
      * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
@@ -80,7 +80,7 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
+     * @param string                                 $attribute
      * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string

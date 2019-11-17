@@ -2,7 +2,6 @@
 
 namespace Pursehouse\Modeler\Meta;
 
-
 interface Schema
 {
     /**

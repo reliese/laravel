@@ -2,12 +2,12 @@
 
 namespace Pursehouse\Modeler\Coders\Model;
 
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Pursehouse\Modeler\Meta\Blueprint;
-use Pursehouse\Modeler\Support\Classify;
 use Pursehouse\Modeler\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Pursehouse\Modeler\Support\Classify;
 
 class Factory
 {
@@ -54,10 +54,10 @@ class Factory
     /**
      * ModelsFactory constructor.
      *
-     * @param \Illuminate\Database\DatabaseManager $db
-     * @param \Illuminate\Filesystem\Filesystem    $files
-     * @param \Reliese\Support\Classify            $writer
-     * @param \Pursehouse\Modeler\Coders\Model\Config         $config
+     * @param \Illuminate\Database\DatabaseManager    $db
+     * @param \Illuminate\Filesystem\Filesystem       $files
+     * @param \Reliese\Support\Classify               $writer
+     * @param \Pursehouse\Modeler\Coders\Model\Config $config
      */
     public function __construct(DatabaseManager $db, Filesystem $files, Classify $writer, Config $config)
     {
@@ -80,7 +80,7 @@ class Factory
      */
     protected function models()
     {
-        if (! isset($this->models)) {
+        if (!isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -106,7 +106,7 @@ class Factory
      */
     public function mapAll()
     {
-        if (! isset($this->schemas)) {
+        if (!isset($this->schemas)) {
             $this->on();
         }
 
@@ -120,7 +120,7 @@ class Factory
      */
     public function map($schemaName)
     {
-        if (! isset($this->schemas)) {
+        if (!isset($this->schemas)) {
             $this->on();
         }
 
@@ -175,7 +175,6 @@ class Factory
      */
     public function create($schema, $table)
     {
-
         $model = $this->makeModel($schema, $table);
 
         $template = $this->prepareTemplate($model, 'model');
@@ -244,7 +243,7 @@ class Factory
 
     /**
      * @param \Pursehouse\Modeler\Coders\Model\Model $model
-     * @param string                      $name
+     * @param string                                 $name
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      *
@@ -259,7 +258,7 @@ class Factory
     }
 
     /**
-     * @param string                      $template
+     * @param string                                 $template
      * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return mixed
@@ -309,10 +308,10 @@ class Factory
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
 
-            if (! preg_match($namespacePattern, $usedClass)) {
+            if (!preg_match($namespacePattern, $usedClass)) {
                 $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
 
-                if (! preg_match($namespacePattern, $usedClass)) {
+                if (!preg_match($namespacePattern, $usedClass)) {
                     $result[] = "use {$usedClass};";
 //                     $alias = $this->getUseClassAliasFromString( $usedClass );
 //                     $result[] = "use {$usedClass} as {$alias};";
@@ -438,7 +437,7 @@ class Factory
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
-        if (! empty($body)) {
+        if (!empty($body)) {
             $body .= "\n";
         }
 
@@ -464,7 +463,7 @@ class Factory
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
 
-        if (! $model->usesTimestamps()) {
+        if (!$model->usesTimestamps()) {
             $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
         }
 
@@ -512,7 +511,7 @@ class Factory
 
     /**
      * @param \Pursehouse\Modeler\Coders\Model\Model $model
-     * @param array                       $custom
+     * @param array                                  $custom
      *
      * @return string
      */
@@ -539,7 +538,7 @@ class Factory
 
         $modelsDirectory = $this->path($pathParts);
 
-        if (! $this->files->isDirectory($modelsDirectory)) {
+        if (!$this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
@@ -583,7 +582,7 @@ class Factory
      */
     public function needsUserFile(Model $model)
     {
-        return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
+        return !$this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**
@@ -650,8 +649,8 @@ class Factory
 
     /**
      * @param \Pursehouse\Modeler\Meta\Blueprint|null $blueprint
-     * @param string                       $key
-     * @param mixed                        $default
+     * @param string                                  $key
+     * @param mixed                                   $default
      *
      * @return mixed|\Pursehouse\Modeler\Coders\Model\Config
      */

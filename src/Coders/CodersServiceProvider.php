@@ -2,12 +2,12 @@
 
 namespace Pursehouse\Modeler\Coders;
 
-use Pursehouse\Modeler\Support\Classify;
-use Pursehouse\Modeler\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use Pursehouse\Modeler\Coders\Console\CodeModelsCommand;
+use Pursehouse\Modeler\Coders\Model\Config;
 use Pursehouse\Modeler\Coders\Model\Factory as ModelFactory;
+use Pursehouse\Modeler\Support\Classify;
 
 class CodersServiceProvider extends ServiceProvider
 {

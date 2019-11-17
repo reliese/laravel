@@ -3,8 +3,8 @@
 namespace Pursehouse\Modeler\Coders\Console;
 
 use Illuminate\Console\Command;
-use Pursehouse\Modeler\Coders\Model\Factory;
 use Illuminate\Contracts\Config\Repository;
+use Pursehouse\Modeler\Coders\Model\Factory;
 
 class CodeModelsCommand extends Command
 {
@@ -38,8 +38,8 @@ class CodeModelsCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param \Pursehouse\Modeler\Coders\Model\Factory           $models
-     * @param \Illuminate\Contracts\Config\Repository $config
+     * @param \Pursehouse\Modeler\Coders\Model\Factory $models
+     * @param \Illuminate\Contracts\Config\Repository  $config
      */
     public function __construct(Factory $models, Repository $config)
     {
@@ -66,7 +66,7 @@ class CodeModelsCommand extends Command
         }
 
         // Otherwise map the schema
-        elseif (! empty($schema)) {
+        elseif (!empty($schema)) {
             $this->info("Making models for schema : $schema");
             $this->models->on($connection)->map($schema);
             $this->info("Check out your models for $schema");

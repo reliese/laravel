@@ -2,12 +2,12 @@
 
 namespace Pursehouse\Modeler\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Pursehouse\Modeler\Support\Dumper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Pursehouse\Modeler\Coders\Model\Model;
 use Pursehouse\Modeler\Coders\Model\Relation;
-use Illuminate\Database\Eloquent\Collection;
+use Pursehouse\Modeler\Support\Dumper;
 
 class BelongsToMany implements Relation
 {
@@ -39,8 +39,8 @@ class BelongsToMany implements Relation
     /**
      * BelongsToMany constructor.
      *
-     * @param \Illuminate\Support\Fluent  $parentCommand
-     * @param \Illuminate\Support\Fluent  $referenceCommand
+     * @param \Illuminate\Support\Fluent             $parentCommand
+     * @param \Illuminate\Support\Fluent             $referenceCommand
      * @param \Pursehouse\Modeler\Coders\Model\Model $parent
      * @param \Pursehouse\Modeler\Coders\Model\Model $pivot
      * @param \Pursehouse\Modeler\Coders\Model\Model $reference
@@ -118,7 +118,7 @@ class BelongsToMany implements Relation
 
         $fields = $this->getPivotFields();
 
-        if (! empty($fields)) {
+        if (!empty($fields)) {
             $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
         }
 
