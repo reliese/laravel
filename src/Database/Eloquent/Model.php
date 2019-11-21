@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 01/10/16 03:02 PM.
- */
-
-namespace Reliese\Database\Eloquent;
+namespace Pursehouse\Modeler\Database\Eloquent;
 
 class Model extends \Illuminate\Database\Eloquent\Model
 {

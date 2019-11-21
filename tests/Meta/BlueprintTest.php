@@ -1,11 +1,7 @@
 <?php
 
-use Reliese\Meta\Blueprint;
+use Pursehouse\Modeler\Meta\Blueprint;
 
-/**
- * Created by Cristian.
- * Date: 16/10/16 01:32 PM.
- */
 class BlueprintTest extends TestCase
 {
     public function test_it_can_be_instantiated()

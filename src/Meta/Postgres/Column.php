@@ -1,6 +1,6 @@
 <?php
 
-namespace Pursehouse\Modeler\Meta\MySql;
+namespace Pursehouse\Modeler\Meta\Postgres;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Fluent;
@@ -24,15 +24,96 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      * @var array
      */
     public static $mappings = [
-        'string'  => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
-        'date'    => ['datetime', 'year', 'date', 'time', 'timestamp'],
-        'int'     => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
-        'float'   => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
-        'boolean' => ['longblob', 'blob', 'bit'],
+        'string' => [
+            'char',
+            'character',
+            'character varying',
+            'json',
+            'jsonb',
+            'varchar',
+            'text',
+        ],
+        'date' => [
+            'date',
+            'time',
+            'time',
+            'timestamp',
+            'timestamp',
+            'timestamptz',
+            'timetz',
+        ],
+        'int' => [
+            'real',
+            'bigint',
+            'bigserial',
+            'int',
+            'int4',
+            'int2',
+            'int8',
+            'integer',
+            'serial',
+            'serial2',
+            'serial4',
+            'serial8',
+            'smallint',
+            'smallserial',
+        ],
+        'float' => [
+            'numeric',
+            'decimal',
+            'double precision',
+            'float4',
+            'float8',
+        ],
+        'boolean' => [
+            'bool',
+            'boolean',
+        ],
+    ];
+
+    /*/
+
+    note for working on dynamics or better list later.
+    Also need support for array of a field type
+
+    SELECT n.nspname as "Schema",
+      pg_catalog.format_type(t.oid, NULL) AS "Name",
+      pg_catalog.obj_description(t.oid, 'pg_type') as "Description"
+    FROM pg_catalog.pg_type t
+         LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+    WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
+      AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
+      AND pg_catalog.pg_type_is_visible(t.oid)
+    ORDER BY 1, 2;
+
+    /**/
+    public static $ungroupedFieldTypes = [
+        'bit',
+        'bit varying',
+        'box',
+        'bytea',
+        'cidr',
+        'circle',
+        'inet',
+        'interval',
+        'line',
+        'lseg',
+        'macaddr',
+        'money',
+        'path',
+        'pg_lsn',
+        'point',
+        'polygon',
+        'tsquery',
+        'tsvector',
+        'txid_snapshot',
+        'uuid',
+        'varbit',
+        'xml',
     ];
 
     /**
-     * MysqlColumn constructor.
+     * PostgresColumn constructor.
      *
      * @param array $metadata
      */
@@ -60,7 +141,7 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      */
     protected function parseType(Fluent $attributes)
     {
-        $type = $this->get('Type', 'string');
+        $type = $this->get('data_type', 'string');
 
         preg_match('/^(\w+)(?:\(([^\)]+)\))?/', $type, $matches);
 
@@ -124,7 +205,7 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      */
     protected function parseName(Fluent $attributes)
     {
-        $attributes['name'] = $this->get('Field');
+        $attributes['name'] = $this->get('column_name');
     }
 
     /**
@@ -132,7 +213,8 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      */
     protected function parseAutoincrement(Fluent $attributes)
     {
-        if ($this->same('Extra', 'auto_increment')) {
+        $attributes['autoincrement'] = $this->defaultIsNextVal($attributes);
+        if ($this->same('column_default', 'auto_increment')) {
             $attributes['autoincrement'] = true;
         }
     }
@@ -142,7 +224,7 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      */
     protected function parseNullable(Fluent $attributes)
     {
-        $attributes['nullable'] = $this->same('Null', 'YES');
+        $attributes['nullable'] = $this->same('is_nullable', 'YES');
     }
 
     /**
@@ -150,7 +232,13 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      */
     protected function parseDefault(Fluent $attributes)
     {
-        $attributes['default'] = $this->get('Default');
+        $value = null;
+        if ($this->defaultIsNextVal($attributes)) {
+            $attributes['autoincrement'] = true;
+        } else {
+            $value = $this->get('column_default', $this->get('generation_expression', null));
+        }
+        $attributes['default'] = $value;
     }
 
     /**
@@ -158,7 +246,7 @@ class Column implements \Pursehouse\Modeler\Meta\Column
      */
     protected function parseComment(Fluent $attributes)
     {
-        $attributes['comment'] = $this->get('Comment');
+        $attributes['comment'] = $this->get('description');
     }
 
     /**
@@ -181,5 +269,21 @@ class Column implements \Pursehouse\Modeler\Meta\Column
     protected function same($key, $value)
     {
         return strcasecmp($this->get($key, ''), $value) === 0;
+    }
+
+    /**
+     * @param \Illuminate\Support\Fluent $attributes
+     *
+     * @return bool
+     */
+    private function defaultIsNextVal(Fluent $attributes)
+    {
+        return
+            preg_match('/serial/i', $this->get('data_type', ''))
+            ||
+            preg_match(
+                '/nextval\(/i',
+                $this->get('column_default', $this->get('generation_expression', null))
+            );
     }
 }

@@ -1,29 +1,24 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/09/16 12:11 PM.
- */
+namespace Pursehouse\Modeler\Coders\Model;
 
-namespace Reliese\Coders\Model;
-
-use Illuminate\Support\Str;
-use Reliese\Meta\Blueprint;
-use Illuminate\Support\Fluent;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Reliese\Coders\Model\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Reliese\Coders\Model\Relations\ReferenceFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
+use Pursehouse\Modeler\Coders\Model\Relations\BelongsTo;
+use Pursehouse\Modeler\Coders\Model\Relations\ReferenceFactory;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Model
 {
     /**
-     * @var \Reliese\Meta\Blueprint
+     * @var \Pursehouse\Modeler\Meta\Blueprint
      */
     private $blueprint;
 
     /**
-     * @var \Reliese\Coders\Model\Factory
+     * @var \Pursehouse\Modeler\Coders\Model\Factory
      */
     private $factory;
 
@@ -38,7 +33,7 @@ class Model
     protected $relations = [];
 
     /**
-     * @var \Reliese\Meta\Blueprint[]
+     * @var \Pursehouse\Modeler\Meta\Blueprint[]
      */
     protected $references = [];
 
@@ -58,12 +53,12 @@ class Model
     protected $casts = [];
 
     /**
-     * @var \Reliese\Coders\Model\Mutator[]
+     * @var \Pursehouse\Modeler\Coders\Model\Mutator[]
      */
     protected $mutators = [];
 
     /**
-     * @var \Reliese\Coders\Model\Mutation[]
+     * @var \Pursehouse\Modeler\Coders\Model\Mutation[]
      */
     protected $mutations = [];
 
@@ -165,10 +160,10 @@ class Model
     /**
      * ModelClass constructor.
      *
-     * @param \Reliese\Meta\Blueprint $blueprint
-     * @param \Reliese\Coders\Model\Factory $factory
-     * @param \Reliese\Coders\Model\Mutator[] $mutators
-     * @param bool $loadRelations
+     * @param \Pursehouse\Modeler\Meta\Blueprint         $blueprint
+     * @param \Pursehouse\Modeler\Coders\Model\Factory   $factory
+     * @param \Pursehouse\Modeler\Coders\Model\Mutator[] $mutators
+     * @param bool                                       $loadRelations
      */
     public function __construct(Blueprint $blueprint, Factory $factory, $mutators = [], $loadRelations = true)
     {
@@ -225,7 +220,7 @@ class Model
             $this->parseColumn($column);
         }
 
-        if (! $this->loadRelations) {
+        if (!$this->loadRelations) {
             return;
         }
 
@@ -269,15 +264,25 @@ class Model
             $this->casts[$propertyName] = $cast;
         }
 
-        foreach ($this->config('casts', []) as $pattern => $casting) {
-            if (Str::is($pattern, $column->name)) {
-                $this->casts[$propertyName] = $cast = $casting;
-                break;
+        $typeCasts = $this->config('typeCast', []);
+
+        if (isset($typeCasts[$cast])) {
+            $this->casts[$propertyName] = $cast = $typeCasts[$cast];
+        } else {
+            foreach ($this->config('casts', []) as $pattern => $casting) {
+                if (Str::is($pattern, $column->name)) {
+                    $this->casts[$propertyName] = $cast = $casting;
+                    break;
+                }
             }
         }
 
         if ($this->isHidden($column->name)) {
             $this->hidden[] = $propertyName;
+        }
+
+        if ($column->name == $this->getPrimaryKey()) {
+            $this->primaryKeyColumn = $column;
         }
 
         if ($this->isFillable($column->name)) {
@@ -287,17 +292,13 @@ class Model
         $this->mutate($column->name);
 
         // Track comment hints
-        if (! empty($column->comment)) {
+        if (!empty($column->comment)) {
             $this->hints[$column->name] = $column->comment;
         }
 
         // Track PHP type hints
         $hint = $this->phpTypeHint($cast);
         $this->properties[$column->name] = $hint;
-
-        if ($column->name == $this->getPrimaryKey()) {
-            $this->primaryKeyColumn = $column;
-        }
     }
 
     /**
@@ -318,11 +319,11 @@ class Model
     /**
      * @param \Illuminate\Support\Fluent $relation
      *
-     * @return $this|\Reliese\Coders\Model\Model
+     * @return $this|\Pursehouse\Modeler\Coders\Model\Model
      */
     public function makeRelationModel(Fluent $relation)
     {
-        list($database, $table) = array_values($relation->on);
+        [$database, $table] = array_values($relation->on);
 
         if ($this->blueprint->is($database, $table)) {
             return $this;
@@ -414,7 +415,7 @@ class Model
         if (count($overridePluralizeFor) > 0) {
             foreach ($overridePluralizeFor as $except) {
                 if ($except == $this->getTable()) {
-                    return ! $pluralize;
+                    return !$pluralize;
                 }
             }
         }
@@ -431,7 +432,7 @@ class Model
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint[] $references
+     * @param \Pursehouse\Modeler\Meta\Blueprint[] $references
      */
     public function withReferences($references)
     {
@@ -445,6 +446,17 @@ class Model
      */
     public function withNamespace($namespace)
     {
+        $namespaceSchema = $this->config('namespace_schema', false);
+        $namespaceConnection = $this->config('namespace_connection', false);
+
+        if ($namespaceConnection) {
+            $namespace .= '\\'.$this->factory->transformSchemaToNamespace($this->blueprint->connection());
+        }
+
+        if ($namespaceSchema) {
+            $namespace .= '\\'.$this->factory->transformSchemaToNamespace($this->getSchema());
+        }
+
         $this->namespace = $namespace;
 
         return $this;
@@ -483,7 +495,7 @@ class Model
      */
     public function withParentClass($parent)
     {
-        $this->parentClass = $parent;
+        $this->parentClass = '\\'.ltrim($parent, '\\');
 
         return $this;
     }
@@ -689,7 +701,7 @@ class Model
     {
         $traits = $this->config('use', []);
 
-        if (! is_array($traits)) {
+        if (!is_array($traits)) {
             throw new \RuntimeException('Config use must be an array of valid traits to append to each model.');
         }
 
@@ -705,10 +717,10 @@ class Model
      */
     public function needsTableName()
     {
-        return false === $this->shouldQualifyTableName() ||
+        return true === $this->shouldQualifyTableName() ||
             $this->shouldRemoveTablePrefix() ||
             $this->blueprint->table() != Str::plural($this->getRecordName()) ||
-            ! $this->shouldPluralizeTableName();
+            !$this->shouldPluralizeTableName();
     }
 
     /**
@@ -716,7 +728,7 @@ class Model
      */
     public function shouldRemoveTablePrefix()
     {
-        return ! empty($this->tablePrefix);
+        return !empty($this->tablePrefix);
     }
 
     /**
@@ -798,6 +810,7 @@ class Model
 
     /**
      * @todo: Improve it
+     *
      * @return string
      */
     public function getPrimaryKey()
@@ -820,6 +833,7 @@ class Model
 
     /**
      * @todo: Check whether it is necessary
+     *
      * @return bool
      */
     public function hasCustomPrimaryKeyCast()
@@ -840,7 +854,7 @@ class Model
      */
     public function doesNotAutoincrement()
     {
-        return ! $this->autoincrement();
+        return !$this->autoincrement();
     }
 
     /**
@@ -944,7 +958,7 @@ class Model
      */
     public function hasCasts()
     {
-        return ! empty($this->getCasts());
+        return !empty($this->getCasts());
     }
 
     /**
@@ -967,7 +981,7 @@ class Model
      */
     public function hasDates()
     {
-        return ! empty($this->getDates());
+        return !empty($this->getDates());
     }
 
     /**
@@ -991,7 +1005,7 @@ class Model
      */
     public function doesNotUseSnakeAttributes()
     {
-        return ! $this->usesSnakeAttributes();
+        return !$this->usesSnakeAttributes();
     }
 
     /**
@@ -999,7 +1013,7 @@ class Model
      */
     public function hasHints()
     {
-        return ! empty($this->getHints());
+        return !empty($this->getHints());
     }
 
     /**
@@ -1029,7 +1043,7 @@ class Model
     }
 
     /**
-     * @return \Reliese\Coders\Model\Relation[]
+     * @return \Pursehouse\Modeler\Coders\Model\Relation[]
      */
     public function getRelations()
     {
@@ -1041,11 +1055,11 @@ class Model
      */
     public function hasRelations()
     {
-        return ! empty($this->relations);
+        return !empty($this->relations);
     }
 
     /**
-     * @return \Reliese\Coders\Model\Mutation[]
+     * @return \Pursehouse\Modeler\Coders\Model\Mutation[]
      */
     public function getMutations()
     {
@@ -1061,7 +1075,7 @@ class Model
     {
         $attributes = $this->config('hidden', []);
 
-        if (! is_array($attributes)) {
+        if (!is_array($attributes)) {
             throw new \RuntimeException('Config field [hidden] must be an array of attributes to hide from array or json.');
         }
 
@@ -1079,7 +1093,7 @@ class Model
      */
     public function hasHidden()
     {
-        return ! empty($this->hidden);
+        return !empty($this->hidden);
     }
 
     /**
@@ -1099,7 +1113,7 @@ class Model
     {
         $guarded = $this->config('guarded', []);
 
-        if (! is_array($guarded)) {
+        if (!is_array($guarded)) {
             throw new \RuntimeException('Config field [guarded] must be an array of attributes to protect from mass assignment.');
         }
 
@@ -1109,8 +1123,10 @@ class Model
             $this->getDeletedAtField(),
         ];
 
-        if ($this->primaryKeys->columns) {
-            $protected = array_merge($protected, $this->primaryKeys->columns);
+        if ($this->autoincrement()) {
+            if ($this->primaryKeys->columns) {
+                $protected = array_merge($protected, $this->primaryKeys->columns);
+            }
         }
 
         foreach (array_merge($guarded, $protected) as $pattern) {
@@ -1127,7 +1143,7 @@ class Model
      */
     public function hasFillable()
     {
-        return ! empty($this->fillable);
+        return !empty($this->fillable);
     }
 
     /**
@@ -1139,7 +1155,7 @@ class Model
     }
 
     /**
-     * @return \Reliese\Meta\Blueprint
+     * @return \Pursehouse\Modeler\Meta\Blueprint
      */
     public function getBlueprint()
     {
@@ -1154,7 +1170,7 @@ class Model
     public function isPrimaryKey(Fluent $command)
     {
         foreach ((array) $this->primaryKeys->columns as $column) {
-            if (! in_array($column, $command->columns)) {
+            if (!in_array($column, $command->columns)) {
                 return false;
             }
         }
@@ -1209,12 +1225,12 @@ class Model
      */
     public function doesNotUseBaseFiles()
     {
-        return ! $this->usesBaseFiles();
+        return !$this->usesBaseFiles();
     }
 
     /**
      * @param string $key
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */

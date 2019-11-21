@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/10/16 11:43 PM.
- */
-
-namespace Reliese\Coders\Model;
+namespace Pursehouse\Modeler\Coders\Model;
 
 use Illuminate\Support\Str;
 

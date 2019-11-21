@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 08:19 PM.
- */
-
-namespace Reliese\Meta;
+namespace Pursehouse\Modeler\Meta;
 
 use Illuminate\Support\Fluent;
 
@@ -132,7 +127,7 @@ class Blueprint
      */
     public function column($name)
     {
-        if (! $this->hasColumn($name)) {
+        if (!$this->hasColumn($name)) {
             throw new \InvalidArgumentException("Column [$name] does not belong to table [{$this->qualifiedTable()}]");
         }
 
@@ -204,7 +199,7 @@ class Blueprint
             return $this->primaryKey;
         }
 
-        if (! empty($this->unique)) {
+        if (!empty($this->unique)) {
             return current($this->unique);
         }
 
@@ -241,7 +236,7 @@ class Blueprint
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $table
+     * @param \Pursehouse\Modeler\Meta\Blueprint $table
      *
      * @return array
      */
@@ -250,7 +245,7 @@ class Blueprint
         $references = [];
 
         foreach ($this->relations() as $relation) {
-            list($foreignDatabase, $foreignTable) = array_values($relation->on);
+            [$foreignDatabase, $foreignTable] = array_values($relation->on);
             if ($table->is($foreignDatabase, $foreignTable)) {
                 $references[] = $relation;
             }

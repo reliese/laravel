@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 04/10/16 11:32 PM.
- */
-
-namespace Reliese\Coders\Model\Relations;
+namespace Pursehouse\Modeler\Coders\Model\Relations;
 
 use Illuminate\Support\Str;
 
@@ -17,20 +12,20 @@ class ReferenceFactory
     protected $related;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $parent;
 
     /**
-     * @var \Reliese\Coders\Model\Model[]
+     * @var \Pursehouse\Modeler\Coders\Model\Model[]
      */
     protected $references = [];
 
     /**
      * ReferenceFactory constructor.
      *
-     * @param array $related
-     * @param \Reliese\Coders\Model\Model $parent
+     * @param array                                  $related
+     * @param \Pursehouse\Modeler\Coders\Model\Model $parent
      */
     public function __construct($related, $parent)
     {
@@ -39,22 +34,24 @@ class ReferenceFactory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Relation[]
+     * @return \Pursehouse\Modeler\Coders\Model\Relation[]
      */
     public function make()
     {
-        if ($this->hasPivot()) {
-            $relations = [];
+        $relations = [];
 
+        if ($this->hasPivot()) {
             foreach ($this->references as $reference) {
                 $relation = new BelongsToMany($this->getRelatedReference(), $reference['command'], $this->parent, $this->getRelatedModel(), $reference['model']);
                 $relations[$relation->name()] = $relation;
             }
-
-            return $relations;
         }
 
-        return [new HasOneOrManyStrategy($this->getRelatedReference(), $this->parent, $this->getRelatedModel())];
+        $relation = new HasOneOrManyStrategy($this->getRelatedReference(), $this->parent, $this->getRelatedModel());
+
+        $relations[$relation->name()] = $relation;
+
+        return $relations;
     }
 
     /**
@@ -68,7 +65,7 @@ class ReferenceFactory
         // See whether this potencial pivot table has the parent record name in it.
         // Not sure whether we should only take into account composite primary keys.
         if (
-            ! Str::contains($pivot, $firstRecord)
+            !Str::contains($pivot, $firstRecord)
         ) {
             return false;
         }
@@ -86,7 +83,7 @@ class ReferenceFactory
             if (Str::contains($pivot, $target->getRecordName())) {
                 $this->references[] = [
                     'command' => $reference,
-                    'model' => $target,
+                    'model'   => $target,
                 ];
             }
         }
@@ -103,7 +100,7 @@ class ReferenceFactory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Model
+     * @return \Pursehouse\Modeler\Coders\Model\Model
      */
     protected function getRelatedModel()
     {
@@ -111,7 +108,7 @@ class ReferenceFactory
     }
 
     /**
-     * @return \Reliese\Meta\Blueprint
+     * @return \Pursehouse\Modeler\Meta\Blueprint
      */
     protected function getRelatedBlueprint()
     {

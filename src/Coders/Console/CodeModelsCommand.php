@@ -1,10 +1,10 @@
 <?php
 
-namespace Reliese\Coders\Console;
+namespace Pursehouse\Modeler\Coders\Console;
 
 use Illuminate\Console\Command;
-use Reliese\Coders\Model\Factory;
 use Illuminate\Contracts\Config\Repository;
+use Pursehouse\Modeler\Coders\Model\Factory;
 
 class CodeModelsCommand extends Command
 {
@@ -13,8 +13,8 @@ class CodeModelsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'code:models
-                            {--s|schema= : The name of the MySQL database}
+    protected $signature = 'pursehouse:modeler
+                            {--s|schema= : The name of the schema ( database in MySQL terms )}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
 
@@ -26,7 +26,7 @@ class CodeModelsCommand extends Command
     protected $description = 'Parse connection schema into models';
 
     /**
-     * @var \Reliese\Coders\Model\Factory
+     * @var \Pursehouse\Modeler\Coders\Model\Factory
      */
     protected $models;
 
@@ -38,8 +38,8 @@ class CodeModelsCommand extends Command
     /**
      * Create a new command instance.
      *
-     * @param \Reliese\Coders\Model\Factory $models
-     * @param \Illuminate\Contracts\Config\Repository $config
+     * @param \Pursehouse\Modeler\Coders\Model\Factory $models
+     * @param \Illuminate\Contracts\Config\Repository  $config
      */
     public function __construct(Factory $models, Repository $config)
     {
@@ -60,14 +60,23 @@ class CodeModelsCommand extends Command
 
         // Check whether we just need to generate one table
         if ($table) {
+            $this->info("Making models for table : $table");
             $this->models->on($connection)->create($schema, $table);
             $this->info("Check out your models for $table");
         }
 
-        // Otherwise map the whole database
-        else {
+        // Otherwise map the schema
+        elseif (!empty($schema)) {
+            $this->info("Making models for schema : $schema");
             $this->models->on($connection)->map($schema);
             $this->info("Check out your models for $schema");
+        }
+
+        // Otherwise map the whole database
+        else {
+            $this->info('Making models for all schemas');
+            $this->models->on($connection)->mapAll();
+            $this->info('Check out your models for all schemas');
         }
     }
 
@@ -86,7 +95,7 @@ class CodeModelsCommand extends Command
      */
     protected function getSchema($connection)
     {
-        return $this->option('schema') ?: $this->config->get("database.connections.$connection.database");
+        return $this->option('schema');
     }
 
     /**

@@ -1,16 +1,12 @@
 <?php
 
-namespace Reliese\Meta\Sqlite;
+namespace Pursehouse\Modeler\Meta\Sqlite;
 
-use Reliese\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
+use Illuminate\Support\Fluent;
+use Pursehouse\Modeler\Meta\Blueprint;
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 06:50 PM.
- */
-class Schema implements \Reliese\Meta\Schema
+class Schema implements \Pursehouse\Modeler\Meta\Schema
 {
     /**
      * @var string
@@ -28,14 +24,14 @@ class Schema implements \Reliese\Meta\Schema
     protected $loaded = false;
 
     /**
-     * @var \Reliese\Meta\Blueprint[]
+     * @var \Pursehouse\Modeler\Meta\Blueprint[]
      */
     protected $tables = [];
 
     /**
      * Mapper constructor.
      *
-     * @param string $schema
+     * @param string                               $schema
      * @param \Illuminate\Database\MySqlConnection $connection
      */
     public function __construct($schema, $connection)
@@ -73,6 +69,7 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @return array
+     *
      * @internal param string $schema
      */
     protected function fetchTables()
@@ -87,7 +84,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      */
     protected function fillColumns(Blueprint $blueprint)
     {
@@ -111,7 +108,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
@@ -126,6 +123,7 @@ class Schema implements \Reliese\Meta\Schema
      * to PDO::FETCH_ASSOC.
      *
      * @param $data
+     *
      * @return mixed
      */
     protected function arraify($data)
@@ -134,7 +132,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @todo: Support named primary keys
      */
     protected function fillPrimaryKey(Blueprint $blueprint)
@@ -142,8 +140,8 @@ class Schema implements \Reliese\Meta\Schema
         $indexes = $this->manager()->listTableIndexes($blueprint->table());
 
         $key = [
-            'name' => 'primary',
-            'index' => '',
+            'name'    => 'primary',
+            'index'   => '',
             'columns' => $indexes['primary']->getColumns(),
         ];
 
@@ -151,7 +149,8 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
+     *
      * @internal param string $sql
      */
     protected function fillIndexes(Blueprint $blueprint)
@@ -161,16 +160,16 @@ class Schema implements \Reliese\Meta\Schema
 
         foreach ($indexes as $setup) {
             $index = [
-                'name' => $setup->isUnique() ? 'unique' : 'index',
+                'name'    => $setup->isUnique() ? 'unique' : 'index',
                 'columns' => $setup->getColumns(),
-                'index' => $setup->getName(),
+                'index'   => $setup->getName(),
             ];
             $blueprint->withIndex(new Fluent($index));
         }
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      * @todo: Support named foreign keys
      */
     protected function fillRelations(Blueprint $blueprint)
@@ -181,11 +180,11 @@ class Schema implements \Reliese\Meta\Schema
             $table = ['database' => '', 'table'=>$setup->getForeignTableName()];
 
             $relation = [
-                'name' => 'foreign',
-                'index' => '',
-                'columns' => $setup->getColumns(),
+                'name'       => 'foreign',
+                'index'      => '',
+                'columns'    => $setup->getColumns(),
                 'references' => $setup->getForeignColumns(),
-                'on' => $table,
+                'on'         => $table,
             ];
 
             $blueprint->withRelation(new Fluent($relation));
@@ -221,7 +220,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @return \Reliese\Meta\Blueprint[]
+     * @return \Pursehouse\Modeler\Meta\Blueprint[]
      */
     public function tables()
     {
@@ -231,11 +230,11 @@ class Schema implements \Reliese\Meta\Schema
     /**
      * @param string $table
      *
-     * @return \Reliese\Meta\Blueprint
+     * @return \Pursehouse\Modeler\Meta\Blueprint
      */
     public function table($table)
     {
-        if (! $this->has($table)) {
+        if (!$this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
         }
 
@@ -251,7 +250,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $table
+     * @param \Pursehouse\Modeler\Meta\Blueprint $table
      *
      * @return array
      */

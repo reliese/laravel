@@ -1,18 +1,13 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 19/09/16 11:58 PM.
- */
+namespace Pursehouse\Modeler\Coders\Model;
 
-namespace Reliese\Coders\Model;
-
-use Illuminate\Support\Str;
-use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
-use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
+use Pursehouse\Modeler\Meta\Blueprint;
+use Pursehouse\Modeler\Meta\SchemaManager;
+use Pursehouse\Modeler\Support\Classify;
 
 class Factory
 {
@@ -22,7 +17,7 @@ class Factory
     private $db;
 
     /**
-     * @var \Reliese\Meta\SchemaManager
+     * @var \Pursehouse\Modeler\Meta\SchemaManager
      */
     protected $schemas = [];
 
@@ -32,32 +27,37 @@ class Factory
     protected $files;
 
     /**
-     * @var \Reliese\Support\Classify
+     * @var \Pursehouse\Modeler\Support\Classify
      */
     protected $class;
 
     /**
-     * @var \Reliese\Coders\Model\Config
+     * @var \Pursehouse\Modeler\Coders\Model\Config
      */
     protected $config;
 
     /**
-     * @var \Reliese\Coders\Model\ModelManager
+     * @var \Pursehouse\Modeler\Coders\Model\ModelManager
      */
     protected $models;
 
     /**
-     * @var \Reliese\Coders\Model\Mutator[]
+     * @var \Pursehouse\Modeler\Coders\Model\Mutator[]
      */
     protected $mutators = [];
 
     /**
+     * @var string
+     */
+    protected $schema_namespace;
+
+    /**
      * ModelsFactory constructor.
      *
-     * @param \Illuminate\Database\DatabaseManager $db
-     * @param \Illuminate\Filesystem\Filesystem $files
-     * @param \Reliese\Support\Classify $writer
-     * @param \Reliese\Coders\Model\Config $config
+     * @param \Illuminate\Database\DatabaseManager    $db
+     * @param \Illuminate\Filesystem\Filesystem       $files
+     * @param \Reliese\Support\Classify               $writer
+     * @param \Pursehouse\Modeler\Coders\Model\Config $config
      */
     public function __construct(DatabaseManager $db, Filesystem $files, Classify $writer, Config $config)
     {
@@ -68,7 +68,7 @@ class Factory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Mutator
+     * @return \Pursehouse\Modeler\Coders\Model\Mutator
      */
     public function mutate()
     {
@@ -76,11 +76,11 @@ class Factory
     }
 
     /**
-     * @return \Reliese\Coders\Model\ModelManager
+     * @return \Pursehouse\Modeler\Coders\Model\ModelManager
      */
     protected function models()
     {
-        if (! isset($this->models)) {
+        if (!isset($this->models)) {
             $this->models = new ModelManager($this);
         }
 
@@ -102,15 +102,29 @@ class Factory
     }
 
     /**
-     * @param string $schema
+     * Map all schemas found in the database.
      */
-    public function map($schema)
+    public function mapAll()
     {
-        if (! isset($this->schemas)) {
+        if (!isset($this->schemas)) {
             $this->on();
         }
 
-        $mapper = $this->makeSchema($schema);
+        foreach ($this->schemas as $schema) {
+            $this->map($schema->schema());
+        }
+    }
+
+    /**
+     * @param string $schemaName
+     */
+    public function map($schemaName)
+    {
+        if (!isset($this->schemas)) {
+            $this->on();
+        }
+
+        $mapper = $this->makeSchema($schemaName);
 
         foreach ($mapper->tables() as $blueprint) {
             if ($this->shouldTakeOnly($blueprint) && $this->shouldNotExclude($blueprint)) {
@@ -120,7 +134,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return bool
      */
@@ -136,7 +150,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return bool
      */
@@ -162,6 +176,7 @@ class Factory
     public function create($schema, $table)
     {
         $model = $this->makeModel($schema, $table);
+
         $template = $this->prepareTemplate($model, 'model');
 
         $file = $this->fillTemplate($template, $model);
@@ -180,10 +195,9 @@ class Factory
     /**
      * @param string $schema
      * @param string $table
+     * @param bool   $withRelations
      *
-     * @param bool $withRelations
-     *
-     * @return \Reliese\Coders\Model\Model
+     * @return \Pursehouse\Modeler\Coders\Model\Model
      */
     public function makeModel($schema, $table, $withRelations = true)
     {
@@ -193,7 +207,7 @@ class Factory
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return \Pursehouse\Modeler\Meta\Schema
      */
     public function makeSchema($schema)
     {
@@ -201,7 +215,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @todo: Delegate workload to SchemaManager and ModelManager
      *
@@ -228,11 +242,12 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
-     * @param string $name
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
+     * @param string                                 $name
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      *
      * @return string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function prepareTemplate(Model $model, $name)
     {
@@ -243,8 +258,8 @@ class Factory
     }
 
     /**
-     * @param string $template
-     * @param \Reliese\Coders\Model\Model $model
+     * @param string                                 $template
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return mixed
      */
@@ -267,9 +282,11 @@ class Factory
 
         $usedClasses = array_unique($usedClasses);
         $usedClassesSection = $this->formatUsedClasses(
+            $model->getClassName(),
             $model->getBaseNamespace(),
             $usedClasses
         );
+        $usedClassesSection = '';
         $template = str_replace('{{imports}}', $usedClassesSection, $template);
 
         return $template;
@@ -279,24 +296,48 @@ class Factory
      * Returns imports section for model.
      *
      * @param string $baseNamespace base namespace to avoid importing classes from same namespace
-     * @param array $usedClasses Array of used in model classes
+     * @param array  $usedClasses   Array of used in model classes
      *
      * @return string
      */
-    private function formatUsedClasses($baseNamespace, $usedClasses)
+    private function formatUsedClasses($nameSpace, $baseNamespace, $usedClasses)
     {
         $result = [];
         foreach ($usedClasses as $usedClass) {
+
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
-            if (! preg_match($namespacePattern, $usedClass)) {
-                $result[] = "use {$usedClass};";
+
+            if (!preg_match($namespacePattern, $usedClass)) {
+                $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
+
+                if (!preg_match($namespacePattern, $usedClass)) {
+                    $result[] = "use {$usedClass};";
+//                     $alias = $this->getUseClassAliasFromString( $usedClass );
+//                     $result[] = "use {$usedClass} as {$alias};";
+                }
             }
         }
 
         sort($result);
 
         return implode("\n", $result);
+    }
+
+    private function getUseClassAliasFromString($usedClass)
+    {
+        // need enhancements to this for handling if Databse or Schema aren't in the class namespace
+        $expl = explode('\\', $usedClass);
+        $tableName = array_pop($expl);
+        $schemaName = array_pop($expl);
+        $databaseName = array_pop($expl);
+
+        return $this->formatUseClassAlias($tableName, $schemaName, $databaseName);
+    }
+
+    private function formatUseClassAlias($tableName, $schemaName, $databaseName)
+    {
+        return $databaseName.'_'.$schemaName.'_'.$tableName;
     }
 
     /**
@@ -317,7 +358,7 @@ class Factory
                 $usedInModelClasses[] = trim($usedClassName, '\\');
                 $namespaceParts = explode('\\', $usedClassName);
                 $resultClassName = array_pop($namespaceParts);
-                $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
+//                 $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
             }
         }
 
@@ -325,7 +366,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -355,7 +396,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -396,7 +437,7 @@ class Factory
 
         $body = trim($body, "\n");
         // Separate constants from fields only if there are constants.
-        if (! empty($body)) {
+        if (!empty($body)) {
             $body .= "\n";
         }
 
@@ -422,7 +463,7 @@ class Factory
             $body .= $this->class->field('perPage', $model->getPerPage());
         }
 
-        if (! $model->usesTimestamps()) {
+        if (!$model->usesTimestamps()) {
             $body .= $this->class->field('timestamps', false, ['visibility' => 'public']);
         }
 
@@ -469,20 +510,59 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
-     * @param array $custom
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
+     * @param array                                  $custom
      *
      * @return string
      */
     protected function modelPath(Model $model, $custom = [])
     {
-        $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
+        $pathParts = [
+            $this->config($model->getBlueprint(), 'path'),
+        ];
 
-        if (! $this->files->isDirectory($modelsDirectory)) {
+        $doConnectionPath = $this->config($model->getBlueprint(), 'path_connection');
+        $doSchemaNamespace = $this->config($model->getBlueprint(), 'namespace_schema');
+
+        if ($doConnectionPath) {
+            $pathParts[] = $this->transformSchemaToNamespace($model->getConnectionName());
+        }
+
+        if ($doSchemaNamespace) {
+            $schema = $model->getSchema();
+            $this->setSchemaNamespace($schema);
+            $pathParts[] = $this->schema_namespace;
+        }
+
+        $pathParts = array_merge($pathParts, $custom);
+
+        $modelsDirectory = $this->path($pathParts);
+
+        if (!$this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
 
         return $this->path([$modelsDirectory, $model->getClassName().'.php']);
+    }
+
+    /**
+     * @param string $schema
+     *
+     * @return string
+     */
+    public function transformSchemaToNamespace($schema)
+    {
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $schema)));
+    }
+
+    /**
+     * @param string $schema
+     *
+     * @return void
+     */
+    protected function setSchemaNamespace($schema)
+    {
+        $this->schema_namespace = $this->transformSchemaToNamespace($schema);
     }
 
     /**
@@ -496,17 +576,17 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return bool
      */
     public function needsUserFile(Model $model)
     {
-        return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
+        return !$this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -526,6 +606,7 @@ class Factory
 
     /**
      * @param Model $model
+     *
      * @return string
      */
     private function formatBaseClasses(Model $model)
@@ -535,6 +616,7 @@ class Factory
 
     /**
      * @param Model $model
+     *
      * @return string
      */
     private function getBaseClassName(Model $model)
@@ -543,7 +625,7 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -566,11 +648,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint|null $blueprint
-     * @param string $key
-     * @param mixed $default
+     * @param \Pursehouse\Modeler\Meta\Blueprint|null $blueprint
+     * @param string                                  $key
+     * @param mixed                                   $default
      *
-     * @return mixed|\Reliese\Coders\Model\Config
+     * @return mixed|\Pursehouse\Modeler\Coders\Model\Config
      */
     public function config(Blueprint $blueprint = null, $key = null, $default = null)
     {

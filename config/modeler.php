@@ -27,6 +27,8 @@ return [
 
         'path' => app_path('Models'),
 
+        'path_connection'       => false,
+
         /*
         |--------------------------------------------------------------------------
         | Model Namespace
@@ -39,6 +41,19 @@ return [
         */
 
         'namespace' => 'App\Models',
+
+        'namespace_connection'  => false,
+
+        /*
+         |--------------------------------------------------------------------------
+         | Schema In Model Namespace
+         |--------------------------------------------------------------------------
+         |
+         | Include database schema into model namespace. {namespace}\{schema}\{table}
+         |
+         */
+
+        'namespace_schema' => false,
 
         /*
         |--------------------------------------------------------------------------
@@ -68,8 +83,8 @@ return [
         */
 
         'use' => [
-            // Reliese\Database\Eloquent\BitBooleans::class,
-            // Reliese\Database\Eloquent\BlamableBehavior::class,
+            // Pursehouse\Modeler\Database\Eloquent\BitBooleans::class,
+            // Pursehouse\Modeler\Database\Eloquent\BlamableBehavior::class,
         ],
 
         /*
@@ -268,6 +283,16 @@ return [
         ],
 
         /*
+         * typeCast
+         *
+         * set custom casts to fields based on the field type
+         *
+         */
+        'typeCast' => [
+//             'array' => \Path\To\My\CustomCast::class,
+        ],
+
+        /*
         |--------------------------------------------------------------------------
         | Excluded Tables
         |--------------------------------------------------------------------------
@@ -407,7 +432,7 @@ return [
     //     'snake_attributes' => false,
     //     'qualified_tables' => true,
     //     'use' => [
-    //         Reliese\Database\Eloquent\BitBooleans::class,
+    //         Pursehouse\Modeler\Database\Eloquent\BitBooleans::class,
     //     ],
     //     'except' => ['migrations'],
     //     'only' => ['users'],

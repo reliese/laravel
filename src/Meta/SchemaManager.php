@@ -1,20 +1,17 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 02/10/16 07:37 PM.
- */
-
-namespace Reliese\Meta;
+namespace Pursehouse\Modeler\Meta;
 
 use ArrayIterator;
-use RuntimeException;
-use IteratorAggregate;
-use Illuminate\Database\MySqlConnection;
-use Illuminate\Database\SQLiteConnection;
 use Illuminate\Database\ConnectionInterface;
-use Reliese\Meta\MySql\Schema as MySqlSchema;
-use Reliese\Meta\Sqlite\Schema as SqliteSchema;
+use Illuminate\Database\MySqlConnection;
+use Illuminate\Database\PostgresConnection;
+use Illuminate\Database\SQLiteConnection;
+use IteratorAggregate;
+use Pursehouse\Modeler\Meta\MySql\Schema as MySqlSchema;
+use Pursehouse\Modeler\Meta\Postgres\Schema as PostgresSchema;
+use Pursehouse\Modeler\Meta\Sqlite\Schema as SqliteSchema;
+use RuntimeException;
 
 class SchemaManager implements IteratorAggregate
 {
@@ -22,9 +19,10 @@ class SchemaManager implements IteratorAggregate
      * @var array
      */
     protected static $lookup = [
-        MySqlConnection::class => MySqlSchema::class,
-        SQLiteConnection::class => SqliteSchema::class,
+        MySqlConnection::class                                       => MySqlSchema::class,
+        SQLiteConnection::class                                      => SqliteSchema::class,
         \Larapack\DoctrineSupport\Connections\MySqlConnection::class => MySqlSchema::class,
+        PostgresConnection::class                                    => PostgresSchema::class,
     ];
 
     /**
@@ -33,7 +31,7 @@ class SchemaManager implements IteratorAggregate
     private $connection;
 
     /**
-     * @var \Reliese\Meta\Schema[]
+     * @var \Pursehouse\Modeler\Meta\Schema[]
      */
     protected $schemas = [];
 
@@ -53,21 +51,15 @@ class SchemaManager implements IteratorAggregate
      */
     public function boot()
     {
-        if (! $this->hasMapping()) {
+        if (!$this->hasMapping()) {
             throw new RuntimeException("There is no Schema Mapper registered for [{$this->type()}] connection.");
-        }
-
-        $schemas = forward_static_call([$this->getMapper(), 'schemas'], $this->connection);
-
-        foreach ($schemas as $schema) {
-            $this->make($schema);
         }
     }
 
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return \Pursehouse\Modeler\Meta\Schema
      */
     public function make($schema)
     {
@@ -81,7 +73,7 @@ class SchemaManager implements IteratorAggregate
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return \Pursehouse\Modeler\Meta\Schema
      */
     protected function makeMapper($schema)
     {
@@ -132,6 +124,13 @@ class SchemaManager implements IteratorAggregate
      */
     public function getIterator()
     {
+        if (empty($this->schemas)) {
+            $schemas = forward_static_call([$this->getMapper(), 'schemas'], $this->connection);
+            foreach ($schemas as $schema) {
+                $this->make($schema);
+            }
+        }
+
         return new ArrayIterator($this->schemas);
     }
 }

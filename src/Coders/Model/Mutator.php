@@ -1,13 +1,8 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 10/10/16 11:46 PM.
- */
+namespace Pursehouse\Modeler\Coders\Model;
 
-namespace Reliese\Coders\Model;
-
-use Reliese\Meta\Blueprint;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Mutator
 {
@@ -39,8 +34,8 @@ class Mutator
     }
 
     /**
-     * @param string $column
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param string                             $column
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
      *
      * @return mixed
      */
@@ -62,8 +57,8 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
-     * @param \Reliese\Coders\Model\Model $model
+     * @param string                                 $attribute
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */
@@ -85,8 +80,8 @@ class Mutator
     }
 
     /**
-     * @param string $attribute
-     * @param \Reliese\Coders\Model\Model $model
+     * @param string                                 $attribute
+     * @param \Pursehouse\Modeler\Coders\Model\Model $model
      *
      * @return string
      */

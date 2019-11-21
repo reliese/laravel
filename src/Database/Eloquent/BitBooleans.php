@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 09/10/16 07:34 PM.
- */
-
-namespace Reliese\Database\Eloquent;
+namespace Pursehouse\Modeler\Database\Eloquent;
 
 trait BitBooleans
 {

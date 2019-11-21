@@ -1,29 +1,24 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/09/16 09:26 PM.
- */
-
-namespace Reliese\Coders\Model\Relations;
+namespace Pursehouse\Modeler\Coders\Model\Relations;
 
 use Illuminate\Support\Fluent;
-use Reliese\Coders\Model\Model;
-use Reliese\Coders\Model\Relation;
+use Pursehouse\Modeler\Coders\Model\Model;
+use Pursehouse\Modeler\Coders\Model\Relation;
 
 class HasOneOrManyStrategy implements Relation
 {
     /**
-     * @var \Reliese\Coders\Model\Relation
+     * @var \Pursehouse\Modeler\Coders\Model\Relation
      */
     protected $relation;
 
     /**
      * HasManyWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent $command
-     * @param \Reliese\Coders\Model\Model $parent
-     * @param \Reliese\Coders\Model\Model $related
+     * @param \Illuminate\Support\Fluent             $command
+     * @param \Pursehouse\Modeler\Coders\Model\Model $parent
+     * @param \Pursehouse\Modeler\Coders\Model\Model $related
      */
     public function __construct(Fluent $command, Model $parent, Model $related)
     {

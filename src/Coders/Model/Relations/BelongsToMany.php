@@ -1,18 +1,13 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 05/10/16 11:47 PM.
- */
+namespace Pursehouse\Modeler\Coders\Model\Relations;
 
-namespace Reliese\Coders\Model\Relations;
-
-use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
-use Illuminate\Support\Fluent;
-use Reliese\Coders\Model\Model;
-use Reliese\Coders\Model\Relation;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
+use Pursehouse\Modeler\Coders\Model\Model;
+use Pursehouse\Modeler\Coders\Model\Relation;
+use Pursehouse\Modeler\Support\Dumper;
 
 class BelongsToMany implements Relation
 {
@@ -27,28 +22,28 @@ class BelongsToMany implements Relation
     protected $referenceCommand;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $parent;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $pivot;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var \Pursehouse\Modeler\Coders\Model\Model
      */
     protected $reference;
 
     /**
      * BelongsToMany constructor.
      *
-     * @param \Illuminate\Support\Fluent $parentCommand
-     * @param \Illuminate\Support\Fluent $referenceCommand
-     * @param \Reliese\Coders\Model\Model $parent
-     * @param \Reliese\Coders\Model\Model $pivot
-     * @param \Reliese\Coders\Model\Model $reference
+     * @param \Illuminate\Support\Fluent             $parentCommand
+     * @param \Illuminate\Support\Fluent             $referenceCommand
+     * @param \Pursehouse\Modeler\Coders\Model\Model $parent
+     * @param \Pursehouse\Modeler\Coders\Model\Model $pivot
+     * @param \Pursehouse\Modeler\Coders\Model\Model $reference
      */
     public function __construct(
         Fluent $parentCommand,
@@ -123,7 +118,7 @@ class BelongsToMany implements Relation
 
         $fields = $this->getPivotFields();
 
-        if (! empty($fields)) {
+        if (!empty($fields)) {
             $body .= "\n\t\t\t\t\t->withPivot(".$this->parametrize($fields).')';
         }
 
@@ -153,7 +148,7 @@ class BelongsToMany implements Relation
      */
     protected function pivotTable()
     {
-        if ($this->parent->getSchema() != $this->pivot->getSchema()) {
+        if ($this->parent->shouldQualifyTableName()) {
             return $this->pivot->getQualifiedTable();
         }
 
@@ -166,6 +161,10 @@ class BelongsToMany implements Relation
     protected function needsForeignKey()
     {
         $defaultForeignKey = $this->parentRecordName().'_id';
+
+        if ($this->parent->shouldQualifyTableName()) {
+            $defaultForeignKey = $this->parent->getTable().'_'.$defaultForeignKey;
+        }
 
         return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
     }

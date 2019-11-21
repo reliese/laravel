@@ -1,15 +1,10 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 08:36 PM.
- */
-
-namespace Reliese\Meta\Sqlite;
+namespace Pursehouse\Modeler\Meta\Sqlite;
 
 use Illuminate\Support\Fluent;
 
-class Column implements \Reliese\Meta\Column
+class Column implements \Pursehouse\Modeler\Meta\Column
 {
     /**
      * @var \Doctrine\DBAL\Schema\Column
@@ -27,10 +22,10 @@ class Column implements \Reliese\Meta\Column
      * @var array
      */
     public static $mappings = [
-        'string' => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
-        'date' => ['datetime', 'year', 'date', 'time', 'timestamp'],
-        'int' => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
-        'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
+        'string'  => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext'],
+        'date'    => ['datetime', 'year', 'date', 'time', 'timestamp'],
+        'int'     => ['bigint', 'int', 'integer', 'tinyint', 'smallint', 'mediumint'],
+        'float'   => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
         'boolean' => ['longblob', 'blob', 'bit'],
     ];
 

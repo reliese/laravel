@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/09/16 05:18 PM.
- */
-
-namespace Reliese\Support;
+namespace Pursehouse\Modeler\Support;
 
 class Dumper
 {
@@ -23,7 +18,7 @@ class Dumper
 
     /**
      * @param mixed $value
-     * @param int $tabs
+     * @param int   $tabs
      *
      * @return string
      */

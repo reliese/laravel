@@ -1,6 +1,6 @@
 <?php
 
-namespace Pursehouse\Modeler\Meta\MySql;
+namespace Pursehouse\Modeler\Meta\Postgres;
 
 use Illuminate\Database\Connection;
 use Illuminate\Support\Arr;
@@ -15,7 +15,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     protected $schema;
 
     /**
-     * @var \Illuminate\Database\MySqlConnection
+     * @var \Illuminate\Database\PostgresConnection
      */
     protected $connection;
 
@@ -32,8 +32,8 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     /**
      * Mapper constructor.
      *
-     * @param string                               $schema
-     * @param \Illuminate\Database\MySqlConnection $connection
+     * @param string                                  $schema
+     * @param \Illuminate\Database\PostgresConnection $connection
      */
     public function __construct($schema, $connection)
     {
@@ -61,10 +61,6 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
         foreach ($tables as $table) {
             $this->loadTable($table);
         }
-        $views = $this->fetchViews($this->schema);
-        foreach ($views as $table) {
-            $this->loadTable($table, true);
-        }
     }
 
     /**
@@ -74,21 +70,21 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     protected function fetchTables($schema)
     {
-        $rows = $this->arraify($this->connection->select('SHOW FULL TABLES FROM '.$this->wrap($schema).' WHERE Table_type="BASE TABLE"'));
-        $names = array_column($rows, 'Tables_in_'.$schema);
+        $sql = '
+SELECT table_name                FROM information_schema.tables WHERE table_schema = :schema
+UNION
+SELECT table_name                FROM information_schema.views  WHERE table_schema = :schema
+UNION
+SELECT matviewname AS table_name FROM pg_matviews WHERE schemaname = :schema
+';
 
-        return Arr::flatten($names);
-    }
+        $params = [
+            'schema'  => $schema,
+        ];
 
-    /**
-     * @param string $schema
-     *
-     * @return array
-     */
-    protected function fetchViews($schema)
-    {
-        $rows = $this->arraify($this->connection->select('SHOW FULL TABLES FROM '.$this->wrap($schema).' WHERE Table_type="VIEW"'));
-        $names = array_column($rows, 'Tables_in_'.$schema);
+        $rows = $this->arraify($this->connection->select($sql, $params));
+
+        $names = array_column($rows, 'table_name');
 
         return Arr::flatten($names);
     }
@@ -98,7 +94,84 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     protected function fillColumns(Blueprint $blueprint)
     {
-        $rows = $this->arraify($this->connection->select('SHOW FULL COLUMNS FROM '.$this->wrap($blueprint->qualifiedTable())));
+        $sql = '
+
+SELECT
+    c.*,
+    pgd.*
+FROM
+                    pg_catalog.pg_statio_all_tables st
+    INNER JOIN      information_schema.columns       c   ON (
+            c.table_schema  = st.schemaname
+        AND c.table_name    = st.relname
+    )
+    LEFT OUTER JOIN pg_catalog.pg_description       pgd ON (
+            pgd.objsubid    = c.ordinal_position
+        AND pgd.objoid = st.relid
+    )
+WHERE
+        st.schemaname   = :schema
+    AND st.relname      = :table
+';
+
+        [$schema, $table] = explode('.', $blueprint->qualifiedTable());
+
+        $params = [
+            'schema'    => $schema,
+            'table'     => $table,
+        ];
+
+        /*/
+
+        "table_catalog" => "my_database_name"
+        "table_schema" => "my_schema_name"
+        "table_name" => "my_table_name"
+        "column_name" => "my_field_name"
+        "ordinal_position" => 1
+        "column_default" => "nextval('my_field_name_id_seq'::regclass)"
+        "is_nullable" => "NO"
+        "data_type" => "integer"
+        "character_maximum_length" => null
+        "character_octet_length" => null
+        "numeric_precision" => 32
+        "numeric_precision_radix" => 2
+        "numeric_scale" => 0
+        "datetime_precision" => null
+        "interval_type" => null
+        "interval_precision" => null
+        "character_set_catalog" => null
+        "character_set_schema" => null
+        "character_set_name" => null
+        "collation_catalog" => null
+        "collation_schema" => null
+        "collation_name" => null
+        "domain_catalog" => null
+        "domain_schema" => null
+        "domain_name" => null
+        "udt_catalog" => "my_database_name"
+        "udt_schema" => "pg_catalog"
+        "udt_name" => "int4"
+        "scope_catalog" => null
+        "scope_schema" => null
+        "scope_name" => null
+        "maximum_cardinality" => null
+        "dtd_identifier" => "1"
+        "is_self_referencing" => "NO"
+        "is_identity" => "NO"
+        "identity_generation" => null
+        "identity_start" => null
+        "identity_increment" => null
+        "identity_maximum" => null
+        "identity_minimum" => null
+        "identity_cycle" => "NO"
+        "is_generated" => "NEVER"
+        "generation_expression" => null
+        "is_updatable" => "YES"
+
+        /**/
+
+        $rows = $this->arraify($this->connection->select($sql, $params));
+
         foreach ($rows as $column) {
             $blueprint->withColumn(
                 $this->parseColumn($column)
@@ -121,14 +194,9 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
-        $row = $this->arraify($this->connection->select('SHOW CREATE TABLE '.$this->wrap($blueprint->qualifiedTable())));
-        $row = array_change_key_case($row[0]);
-        $sql = ($blueprint->isView() ? $row['create view'] : $row['create table']);
-        $sql = str_replace('`', '', $sql);
-
-        $this->fillPrimaryKey($sql, $blueprint);
-        $this->fillIndexes($sql, $blueprint);
-        $this->fillRelations($sql, $blueprint);
+        $this->fillPrimaryKey('', $blueprint);
+        $this->fillIndexes('', $blueprint);
+        $this->fillRelations('', $blueprint);
     }
 
     /**
@@ -151,18 +219,26 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     protected function fillPrimaryKey($sql, Blueprint $blueprint)
     {
-        $pattern = '/\s*(PRIMARY KEY)\s+\(([^\)]+)\)/mi';
-        if (preg_match_all($pattern, $sql, $indexes, PREG_SET_ORDER) == false) {
-            return;
+        $fullTable = $blueprint->qualifiedTable();
+
+        $sql = "
+SELECT a.attname
+FROM   pg_index i
+JOIN   pg_attribute a ON a.attrelid = i.indrelid
+                     AND a.attnum = ANY(i.indkey)
+WHERE  i.indrelid = '$fullTable'::regclass
+AND    i.indisprimary;
+";
+
+        $res = $this->arraify($this->connection->select($sql));
+
+        foreach ($res as $row) {
+            $blueprint->withPrimaryKey(new Fluent([
+                'name'    => 'primary',
+                'index'   => '',
+                'columns' => [$row['attname']],
+            ]));
         }
-
-        $key = [
-            'name'    => 'primary',
-            'index'   => '',
-            'columns' => $this->columnize($indexes[0][2]),
-        ];
-
-        $blueprint->withPrimaryKey(new Fluent($key));
     }
 
     /**
@@ -171,17 +247,50 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     protected function fillIndexes($sql, Blueprint $blueprint)
     {
-        $pattern = '/\s*(UNIQUE)?\s*(KEY|INDEX)\s+(\w+)\s+\(([^\)]+)\)/mi';
-        if (preg_match_all($pattern, $sql, $indexes, PREG_SET_ORDER) == false) {
-            return;
-        }
+        $fullTable = $blueprint->qualifiedTable();
 
-        foreach ($indexes as $setup) {
+        $sql = "
+SELECT
+    ix.indisunique          AS is_unique,
+    ix.indisprimary         AS is_primary,
+    t.relname               AS table_name,
+    i.relname               AS index_name,
+    ARRAY_AGG( a.attname )  AS column_names
+FROM
+    pg_class     t,
+    pg_class     i,
+    pg_index     ix,
+    pg_attribute a
+WHERE
+        t.oid       = ix.indrelid
+    AND i.oid       = ix.indexrelid
+    AND a.attrelid  = t.oid
+    AND a.attnum    = ANY(ix.indkey)
+    AND t.relkind   = 'r'
+    AND ix.indrelid = '$fullTable'::regclass
+GROUP BY
+    1,2,3,4
+ORDER BY
+    t.relname,
+    i.relname;
+";
+
+        $res = $this->arraify($this->connection->select($sql));
+
+        foreach ($res as $row) {
+            $columnNames = explode(',', trim($row['column_names'], '}{'));
+
+            $columns = [];
+            foreach ($columnNames as $v) {
+                $columns[] = $this->columnize($v);
+            }
+
             $index = [
-                'name'    => strcasecmp($setup[1], 'unique') === 0 ? 'unique' : 'index',
-                'columns' => $this->columnize($setup[4]),
-                'index'   => $setup[3],
+                'name'    => ($row['is_unique'] == true ? 'unique' : 'index'),
+                'columns' => $columns,
+                'index'   => $row['index_name'],
             ];
+
             $blueprint->withIndex(new Fluent($index));
         }
     }
@@ -193,17 +302,44 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     protected function fillRelations($sql, Blueprint $blueprint)
     {
-        $pattern = '/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+([^\(^\s]+)\s*\(([^\)]+)\)/mi';
-        preg_match_all($pattern, $sql, $relations, PREG_SET_ORDER);
+        $fullTable = $blueprint->qualifiedTable();
+
+        $sql = "
+SELECT
+    kcu.column_name,
+    ccu.table_schema AS foreign_table_schema,
+    ccu.table_name   AS foreign_table_name,
+    ccu.column_name  AS foreign_column_name
+FROM
+            information_schema.table_constraints        AS tc
+    JOIN    information_schema.key_column_usage         AS kcu  ON tc.constraint_name = kcu.constraint_name
+    JOIN    information_schema.constraint_column_usage  AS ccu  ON ccu.constraint_name = tc.constraint_name
+WHERE
+        constraint_type = 'FOREIGN KEY'
+    AND tc.table_schema = :schema
+    AND tc.table_name   = :table
+";
+
+        $data = [
+            'schema' => $blueprint->schema(),
+            'table'  => $blueprint->table(),
+        ];
+
+        $res = $this->connection->select($sql, $data);
+
+        $relations = $this->arraify($res);
 
         foreach ($relations as $setup) {
-            $table = $this->resolveForeignTable($setup[2], $blueprint);
+            $table = [
+                'database' => $setup['foreign_table_schema'],
+                'table'    => $setup['foreign_table_name'],
+            ];
 
             $relation = [
                 'name'       => 'foreign',
                 'index'      => '',
-                'columns'    => $this->columnize($setup[1]),
-                'references' => $this->columnize($setup[3]),
+                'columns'    => $this->columnize($setup['column_name']),
+                'references' => $this->columnize($setup['foreign_column_name']),
                 'on'         => $table,
             ];
 
@@ -267,12 +403,13 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
      */
     public static function schemas(Connection $connection)
     {
-        $schemas = $connection->getDoctrineSchemaManager()->listDatabases();
+        $schemas = $connection->getDoctrineSchemaManager()->getSchemaNames();
 
         return array_diff($schemas, [
             'information_schema',
             'sys',
-            'mysql',
+            'pgsql',
+            'postgres',
             'performance_schema',
         ]);
     }
@@ -318,7 +455,7 @@ class Schema implements \Pursehouse\Modeler\Meta\Schema
     }
 
     /**
-     * @return \Illuminate\Database\MySqlConnection
+     * @return \Illuminate\Database\PostgresConnection
      */
     public function connection()
     {

@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 05/09/16 11:27 PM.
- */
-
-namespace Reliese\Support;
+namespace Pursehouse\Modeler\Support;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -27,7 +22,7 @@ class Classify
      * Constant template.
      *
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return string
      */
@@ -42,8 +37,8 @@ class Classify
      * Field template.
      *
      * @param string $name
-     * @param mixed $value
-     * @param array $options
+     * @param mixed  $value
+     * @param array  $options
      *
      * @return string
      */
@@ -60,7 +55,7 @@ class Classify
     /**
      * @param string $name
      * @param string $body
-     * @param array $options
+     * @param array  $options
      *
      * @return string
      */

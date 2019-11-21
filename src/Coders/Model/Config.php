@@ -1,14 +1,9 @@
 <?php
 
-/**
- * Created by Cristian.
- * Date: 11/09/16 09:00 PM.
- */
-
-namespace Reliese\Coders\Model;
+namespace Pursehouse\Modeler\Coders\Model;
 
 use Illuminate\Support\Arr;
-use Reliese\Meta\Blueprint;
+use Pursehouse\Modeler\Meta\Blueprint;
 
 class Config
 {
@@ -28,16 +23,17 @@ class Config
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
-     * @param string $key
-     * @param mixed $default
+     * @param \Pursehouse\Modeler\Meta\Blueprint $blueprint
+     * @param string                             $key
+     * @param mixed                              $default
      *
      * @return mixed
      */
     public function get(Blueprint $blueprint, $key, $default = null)
     {
         $default = Arr::get($this->config, "*.$key", $default);
-        $schema = Arr::get($this->config, "{$blueprint->schema()}.$key", $default);
+        $connection = Arr::get($this->config, "{$blueprint->connection()}.$key", $default);
+        $schema = Arr::get($this->config, "{$blueprint->schema()}.$key", $connection);
         $specific = Arr::get($this->config, "{$blueprint->qualifiedTable()}.$key", $schema);
 
         return $specific;
