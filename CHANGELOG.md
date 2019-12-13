@@ -1,5 +1,12 @@
 # Release Notes
 
+## 1.0.0 (2019-12-13)
+
+## Changes
+- Support Laravel 6
+- Change minimum php requirement to 7.2
+- Adopt new versioning scheme
+
 ## v0.0.13 (2017-02-04)
 
 ### Fixed
