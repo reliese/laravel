@@ -1,11 +1,10 @@
 # Reliese Laravel
 
-[![StyleCI](https://styleci.io/repos/71080508/shield?style=flat)](https://styleci.io/repos/71080508)
-[![Build Status](https://travis-ci.org/reliese/laravel.svg?branch=master)](https://travis-ci.org/reliese/laravel)
-[![Latest Stable Version](https://poser.pugx.org/reliese/laravel/v/stable)](https://packagist.org/packages/reliese/laravel)
-[![Total Downloads](https://poser.pugx.org/reliese/laravel/downloads)](https://packagist.org/packages/reliese/laravel)
-[![Latest Unstable Version](https://poser.pugx.org/reliese/laravel/v/unstable)](https://packagist.org/packages/reliese/laravel)
-[![License](https://poser.pugx.org/reliese/laravel/license)](https://packagist.org/packages/reliese/laravel)
+[![Build Status](https://travis-ci.com/kksoftwareag/laravel-model-generator.svg?branch=master)](https://travis-ci.com/kksoftwareag/laravel-model-generator)
+[![Latest Stable Version](https://poser.pugx.org/kksoftwareag/laravel-model-generator/v/stable)](https://packagist.org/packages/kksoftwareag/laravel-model-generator)
+[![Total Downloads](https://poser.pugx.org/kksoftwareag/laravel-model-generator/downloads)](https://packagist.org/packages/kksoftwareag/laravel-model-generator)
+[![Latest Unstable Version](https://poser.pugx.org/kksoftwareag/laravel-model-generator/v/unstable)](https://packagist.org/packages/kksoftwareag/laravel-model-generator)
+[![License](https://poser.pugx.org/kksoftwareag/laravel-model-generator/license)](https://packagist.org/packages/kksoftwareag/laravel-model-generator)
 
 Reliese Laravel is a collection of Laravel Components which aim is 
 to help the development process of Laravel applications by 
