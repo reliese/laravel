@@ -8,13 +8,13 @@
 namespace Reliese\Meta;
 
 use ArrayIterator;
-use RuntimeException;
-use IteratorAggregate;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
-use Illuminate\Database\ConnectionInterface;
+use IteratorAggregate;
 use Reliese\Meta\MySql\Schema as MySqlSchema;
 use Reliese\Meta\Sqlite\Schema as SqliteSchema;
+use RuntimeException;
 
 class SchemaManager implements IteratorAggregate
 {
