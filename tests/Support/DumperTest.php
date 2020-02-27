@@ -1,6 +1,6 @@
 <?php
 
-namespace Reliese\Tests;
+namespace Reliese\Tests\Support;
 
 class DumperTest extends \PHPUnit\Framework\TestCase
 {
