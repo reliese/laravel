@@ -3,7 +3,7 @@ name: Unittests
 on: [push]
 
 jobs:
-  php7.3:
+  php7_3:
     runs-on: ubuntu-latest
     steps:
       - uses: shivammathur/setup-php@v2
@@ -19,7 +19,7 @@ jobs:
 
       - name: Run test suite
         run: composer run-script test
-  php7.4:
+  php7_4:
     runs-on: ubuntu-latest
     steps:
       - uses: shivammathur/setup-php@v2
