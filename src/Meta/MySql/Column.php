@@ -8,8 +8,8 @@
 namespace Reliese\Meta\MySql;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 
 class Column implements \Reliese\Meta\Column
 {

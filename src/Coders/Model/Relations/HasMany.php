@@ -7,8 +7,8 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class HasMany extends HasOneOrMany
 {
