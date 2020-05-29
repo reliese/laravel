@@ -12,40 +12,40 @@ class ModelTest extends TestCase
             'Non-nullable int' => [
                 'castType' => 'int',
                 'nullable' => false,
-                'expect' => 'int'
+                'expect' => 'int',
             ],
             'Nullable int' => [
                 'castType' => 'int',
                 'nullable' => true,
-                'expect' => 'int|null'
+                'expect' => 'int|null',
             ],
             'Non-nullable json' => [
                 'castType' => 'json',
                 'nullable' => false,
-                'expect' => 'array'
+                'expect' => 'array',
             ],
             'Nullable json' => [
                 'castType' => 'json',
                 'nullable' => true,
-                'expect' => 'array|null'
+                'expect' => 'array|null',
             ],
             'Non-nullable date' => [
                 'castType' => 'date',
                 'nullable' => false,
-                'expect' => '\Carbon\Carbon'
+                'expect' => '\Carbon\Carbon',
             ],
             'Nullable date' => [
                 'castType' => 'date',
                 'nullable' => true,
-                'expect' => '\Carbon\Carbon|null'
-            ]
+                'expect' => '\Carbon\Carbon|null',
+            ],
         ];
     }
 
     /**
      * @dataProvider dataForTestPhpTypeHint
      *
-     * @param string$castType
+     * @param string $castType
      * @param bool $nullable
      * @param string $expect
      */
