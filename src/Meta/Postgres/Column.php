@@ -20,7 +20,7 @@ class Column implements \Reliese\Meta\Column
      * @var array
      */
     protected $metas = [
-      'type', 'name', 'autoincrement', 'nullable', 'default', 'comment',
+        'type', 'name', 'autoincrement', 'nullable', 'default', 'comment',
     ];
 
     /**

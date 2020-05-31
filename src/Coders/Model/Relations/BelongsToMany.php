@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use Illuminate\Database\Eloquent\Collection;
+use Reliese\Support\Dumper;
 
 class BelongsToMany implements Relation
 {
