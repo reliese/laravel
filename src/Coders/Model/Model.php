@@ -292,7 +292,7 @@ class Model
         }
 
         // Track PHP type hints
-        $hint = $this->phpTypeHint($cast);
+        $hint = $this->phpTypeHint($cast, $column->nullable);
         $this->properties[$column->name] = $hint;
 
         if ($column->name == $this->getPrimaryKey()) {
@@ -333,28 +333,40 @@ class Model
 
     /**
      * @param string $castType
+     * @param bool $nullable
      *
      * @todo Make tests
      *
      * @return string
      */
-    public function phpTypeHint($castType)
+    public function phpTypeHint($castType, $nullable)
     {
+        $type = $castType;
+
         switch ($castType) {
             case 'object':
-                return '\stdClass';
+                $type = '\stdClass';
+                break;
             case 'array':
             case 'json':
-                return 'array';
+                $type = 'array';
+                break;
             case 'collection':
-                return '\Illuminate\Support\Collection';
+                $type = '\Illuminate\Support\Collection';
+                break;
             case 'date':
-                return '\Carbon\Carbon';
+                $type = '\Carbon\Carbon';
+                break;
             case 'binary':
-                return 'string';
-            default:
-                return $castType;
+                $type = 'string';
+                break;
         }
+
+        if ($nullable) {
+            return $type.'|null';
+        }
+
+        return $type;
     }
 
     /**
