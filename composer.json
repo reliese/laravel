@@ -31,7 +31,7 @@
         "roave/security-advisories": "dev-master",
         "fzaninotto/faker": ">=1.4 <2.0.0",
         "mockery/mockery": "~1.4.0",
-        "phpunit/phpunit": "~9.2.2"
+        "phpunit/phpunit": "~9.3.5"
     },
     "autoload": {
         "psr-4": {
