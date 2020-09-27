@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=7.3.0",
-        "doctrine/dbal": "~2.10.1",
+        "doctrine/dbal": "~2.11.1",
         "illuminate/support": "^6.0 || ^7.0",
         "illuminate/database": "^6.0 || ^7.0",
         "illuminate/contracts": "^6.0 || ^7.0",
