@@ -12,6 +12,7 @@ use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
+use function Couchbase\defaultDecoder;
 
 class BelongsTo implements Relation
 {
@@ -114,7 +115,13 @@ class BelongsTo implements Relation
      */
     public function hint()
     {
-        return $this->related->getQualifiedUserClassName();
+        $base =  $this->related->getQualifiedUserClassName();
+
+        if ($this->isNullable()) {
+            $base .= '|null';
+        }
+
+        return $base;
     }
 
     /**
@@ -185,5 +192,13 @@ class BelongsTo implements Relation
     protected function hasCompositeOtherKey()
     {
         return count($this->command->references) > 1;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isNullable()
+    {
+        return (bool) $this->parent->getBlueprint()->column($this->foreignKey())->get('nullable');
     }
 }
