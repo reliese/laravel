@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Factory;
 use Reliese\Coders\Model\Model;
+use Reliese\Coders\Model\Relations\BelongsTo;
 use Reliese\Meta\Blueprint;
 
 class ModelTest extends TestCase
@@ -63,5 +65,63 @@ class ModelTest extends TestCase
 
         $result = $model->phpTypeHint($castType, $nullable);
         $this->assertSame($expect, $result);
+    }
+
+    /**
+     * @dataProvider provideDataForTestNullableRelationships
+     * @param bool $nullable
+     * @param string $expectedTypehint
+     */
+    public function testBelongsToNullableRelationships($nullable, $expectedTypehint)
+    {
+        $columnDefinition = new Fluent(
+            [
+                'nullable' => $nullable,
+            ]
+        );
+
+        $baseBlueprint = Mockery::mock(Blueprint::class);
+        $baseBlueprint->shouldReceive('columns')->once()->andReturn([$columnDefinition]);
+        $baseBlueprint->shouldReceive('schema')->times(21)->andReturn('test');
+        $baseBlueprint->shouldReceive('qualifiedTable')->times(21)->andReturn('test.test');
+        $baseBlueprint->shouldReceive('connection')->once()->andReturn('test');
+        $baseBlueprint->shouldReceive('primaryKey')->once()->andReturn(new Fluent(['columns' => []]));
+        $baseBlueprint->shouldReceive('relations')->once()->andReturn([]);
+        $baseBlueprint->shouldReceive('table')->once()->andReturn('things');
+        $baseBlueprint->shouldReceive('column')->once()->andReturn($columnDefinition);
+
+        $model = new Model(
+            $baseBlueprint,
+            new Factory(
+                \Mockery::mock(\Illuminate\Database\DatabaseManager::class),
+                \Mockery::mock(Illuminate\Filesystem\Filesystem::class),
+                \Mockery::mock(\Reliese\Support\Classify::class),
+                new \Reliese\Coders\Model\Config()
+            )
+        );
+
+        $relation = new BelongsTo(
+            new Fluent([
+                'columns' => [
+                    $columnDefinition
+                ]
+            ]),
+            $model,
+            $model
+        );
+
+        $this->assertSame($expectedTypehint, $relation->hint());
+    }
+
+    public function provideDataForTestNullableRelationships()
+    {
+        return [
+            'Nullable Relation' => [
+                true, '\\\\Thing|null'
+            ],
+            'Non Nullable Relation' => [
+                false, '\\\\Thing'
+            ]
+        ];
     }
 }
