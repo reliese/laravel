@@ -12,7 +12,6 @@ use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
-use function Couchbase\defaultDecoder;
 
 class BelongsTo implements Relation
 {
