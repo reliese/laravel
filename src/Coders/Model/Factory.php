@@ -268,7 +268,7 @@ class Factory
         $usedClasses = array_unique($usedClasses);
         $usedClassesSection = $this->formatUsedClasses(
             $model->getBaseNamespace(),
-            $usedClasses, 
+            $usedClasses,
             $model->getClassName()
         );
         $template = str_replace('{{imports}}', $usedClassesSection, $template);
@@ -291,7 +291,7 @@ class Factory
             // Do not import classes from same namespace
             $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
             if (! preg_match($namespacePattern, $usedClass)) {
-                
+
                     //Do not import classes with same name of className
                     preg_match('/\\\\[^\\\\]*$/', $usedClass, $matches, PREG_OFFSET_CAPTURE, 0);
                     $usedClassName = str_replace("\\", "", $matches[0][0]);
@@ -316,16 +316,22 @@ class Factory
      */
     private function extractUsedClasses(&$placeholder)
     {
-        $classNamespaceRegExp = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
+        $classNamespaceRegExp = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*( as [a-zA-Z0-9_]+)?)/';
         $matches = [];
         $usedInModelClasses = [];
         if (preg_match_all($classNamespaceRegExp, $placeholder, $matches)) {
             foreach ($matches[1] as $match) {
-                $usedClassName = $match;
-                $usedInModelClasses[] = trim($usedClassName, '\\');
-                $namespaceParts = explode('\\', $usedClassName);
-                $resultClassName = array_pop($namespaceParts);
-                $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
+                if (Str::contains($match, " as ")) {
+                    $parts = explode(" as ", $match);
+                    $usedInModelClasses[] = $match;
+                    $placeholder = $parts[1];
+                } else {
+                    $usedClassName = $match;
+                    $usedInModelClasses[] = trim($usedClassName, '\\');
+                    $namespaceParts = explode('\\', $usedClassName);
+                    $resultClassName = array_pop($namespaceParts);
+                    $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
+                }
             }
         }
 
