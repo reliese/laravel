@@ -417,4 +417,40 @@ return [
     //         'use' => [],
     //     ]
     // ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Connection Specifics
+    |--------------------------------------------------------------------------
+    |
+    | In this section you may define the default configuration for each model
+    | that will be generated from a specific connection. You can also nest
+    | database and table specific configurations.
+    |
+    | This supports nesting with the following key configuration values, in
+    | reverse precedence order (i.e. the last one found becomes the value).
+    |
+    |       connections.{connection_name}.property
+    |       connections.{connection_name}.{database_name}.property
+    |       connections.{connection_name}.{table_name}.property
+    |       connections.{connection_name}.{database_name}.{table_name}.property
+    |
+    | These values will override those defined in the section above.
+    |
+    */
+
+//    'connections' => [
+//        'testing' => [
+//            'parent' => \App\Models\MyBaseModel::class,
+//            'connection' => true,
+//            'users' => [
+//                'connection' => false,
+//            ],
+//            'my_other_database' => [
+//                'password_resets' => [
+//                    'connection' => false,
+//                ]
+//            ]
+//        ],
+//    ],
 ];

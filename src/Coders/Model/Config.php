@@ -40,6 +40,10 @@ class Config
         $schema = Arr::get($this->config, "{$blueprint->schema()}.$key", $default);
         $specific = Arr::get($this->config, "{$blueprint->qualifiedTable()}.$key", $schema);
 
-        return $specific;
+        $connection =  Arr::get($this->config, "connections.{$blueprint->connection()}.$key", $specific);
+        $connectionSchema =  Arr::get($this->config, "connections.{$blueprint->connection()}.{$blueprint->schema()}.$key", $connection);
+        $connectionTable =  Arr::get($this->config, "connections.{$blueprint->connection()}.{$blueprint->table()}.$key", $connectionSchema);
+
+        return Arr::get($this->config, "connections.{$blueprint->connection()}.{$blueprint->qualifiedTable()}.$key", $connectionTable);
     }
 }
