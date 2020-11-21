@@ -427,6 +427,10 @@ return [
     | that will be generated from a specific connection. You can also nest
     | database and table specific configurations.
     |
+    | You may wish to use connection specific config for setting a parent
+    | model with a read only setup, or enforcing a different set of rules
+    | for a connection, e.g. using snake_case naming over CamelCase naming.
+    |
     | This supports nesting with the following key configuration values, in
     | reverse precedence order (i.e. the last one found becomes the value).
     |
@@ -440,8 +444,8 @@ return [
     */
 
 //    'connections' => [
-//        'testing' => [
-//            'parent' => \App\Models\MyBaseModel::class,
+//        'read_only_external' => [
+//            'parent' => \App\Models\ReadOnlyModel::class,
 //            'connection' => true,
 //            'users' => [
 //                'connection' => false,
