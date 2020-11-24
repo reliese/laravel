@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Arr;
 use PHPUnit\Framework\TestCase;
 use Reliese\Coders\Model\Config;
 use Reliese\Meta\Blueprint;
@@ -93,7 +92,103 @@ class ConfigTest extends TestCase
                 ],
                 'ctKey',
                 'Connection Table Value'
-            ]
+            ],
+            'Test Hierarchy Override for Schema' => [
+                [
+                    '*' => [
+                        'FirstKey' => 'Some Value'
+                    ],
+                    'test' => [
+                        'FirstKey' => 'A Second Value'
+                    ]
+                ],
+                'FirstKey',
+                'A Second Value'
+            ],
+            'Test Hierarchy Override for Qualified Table' => [
+                [
+                    '*' => [
+                        'FirstKey' => 'Some Value'
+                    ],
+                    'test' => [
+                        'FirstKey' => 'A Second Value',
+                        'my_table' => [
+                            'FirstKey' => 'A Third Value'
+                        ]
+                    ],
+                ],
+                'FirstKey',
+                'A Third Value'
+            ],
+            'Test Hierarchy Override for Connection Basic Key' => [
+                [
+                    '*' => [
+                        'FirstKey' => 'Some Value'
+                    ],
+                    'test' => [
+                        'FirstKey' => 'A Second Value',
+                        'my_table' => [
+                            'FirstKey' => 'A Third Value'
+                        ]
+                    ],
+                    'connections' => [
+                        'test_connection' => [
+                            'FirstKey' => 'A Fourth Value',
+                        ]
+                    ]
+                ],
+                'FirstKey',
+                'A Fourth Value'
+            ],
+            'Test Hierarchy Override for Connection Schema Key' => [
+                [
+                    '*' => [
+                        'FirstKey' => 'Some Value'
+                    ],
+                    'test' => [
+                        'FirstKey' => 'A Second Value',
+                        'my_table' => [
+                            'FirstKey' => 'A Third Value'
+                        ]
+                    ],
+                    'connections' => [
+                        'test_connection' => [
+                            'FirstKey' => 'A Fourth Value',
+                            'test' => [
+                                'FirstKey' => 'A Fifth Value'
+                            ]
+                        ]
+                    ]
+                ],
+                'FirstKey',
+                'A Fifth Value'
+            ],
+            'Test Hierarchy Override for Connection Table Key' => [
+                [
+                    '*' => [
+                        'FirstKey' => 'Some Value'
+                    ],
+                    'test' => [
+                        'FirstKey' => 'A Second Value',
+                        'my_table' => [
+                            'FirstKey' => 'A Third Value'
+                        ]
+                    ],
+                    'connections' => [
+                        'test_connection' => [
+                            'FirstKey' => 'A Fourth Value',
+                            'test' => [
+                                'FirstKey' => 'A Fifth Value',
+                            ],
+                            'my_table' => [
+                                'FirstKey' => 'A Sixth Value',
+                            ]
+                        ]
+                    ]
+                ],
+                'FirstKey',
+                'A Sixth Value'
+            ],
         ];
     }
 }
