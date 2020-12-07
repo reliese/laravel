@@ -254,24 +254,19 @@ class Factory
         $template = str_replace('{{class}}', $model->getClassName(), $template);
 
         $properties = $this->properties($model);
-        $usedClasses = $this->extractUsedClasses($properties);
+        $dependencies = $this->shortenAndExtractImportableDependencies($properties, $model);
         $template = str_replace('{{properties}}', $properties, $template);
 
         $parentClass = $model->getParentClass();
-        $usedClasses = array_merge($usedClasses, $this->extractUsedClasses($parentClass));
+        $dependencies = array_merge($dependencies, $this->shortenAndExtractImportableDependencies($parentClass, $model));
         $template = str_replace('{{parent}}', $parentClass, $template);
 
         $body = $this->body($model);
-        $usedClasses = array_merge($usedClasses, $this->extractUsedClasses($body));
+        $dependencies = array_merge($dependencies, $this->shortenAndExtractImportableDependencies($body, $model));
         $template = str_replace('{{body}}', $body, $template);
 
-        $usedClasses = array_unique($usedClasses);
-        $usedClassesSection = $this->formatUsedClasses(
-            $model->getBaseNamespace(),
-            $usedClasses, 
-            $model->getClassName()
-        );
-        $template = str_replace('{{imports}}', $usedClassesSection, $template);
+        $imports = $this->imports(array_keys($dependencies), $model);
+        $template = str_replace('{{imports}}', $imports, $template);
 
         return $template;
     }
@@ -279,57 +274,65 @@ class Factory
     /**
      * Returns imports section for model.
      *
-     * @param string $baseNamespace base namespace to avoid importing classes from same namespace
-     * @param array $usedClasses Array of used in model classes
-     *
+     * @param array $dependencies Array of imported classes
+     * @param Model $model
      * @return string
      */
-    private function formatUsedClasses($baseNamespace, $usedClasses, $className)
+    private function imports($dependencies, Model $model)
     {
-        $result = [];
-        foreach ($usedClasses as $usedClass) {
-            // Do not import classes from same namespace
-            $namespacePattern = str_replace('\\', '\\\\', "/{$baseNamespace}\\[a-zA-Z0-9_]*/");
-            if (! preg_match($namespacePattern, $usedClass)) {
-                
-                    //Do not import classes with same name of className
-                    preg_match('/\\\\[^\\\\]*$/', $usedClass, $matches, PREG_OFFSET_CAPTURE, 0);
-                    $usedClassName = str_replace("\\", "", $matches[0][0]);
-
-                    if($usedClassName != $className){
-                        $result[] = "use {$usedClass};";
-                    }
+        $imports = [];
+        foreach ($dependencies as $dependencyClass) {
+            // Skip when the same class
+            if ($dependencyClass == $model->getQualifiedUserClassName()) {
+                continue;
             }
+
+            // Do not import classes from same namespace
+            $inCurrentNamespacePattern = str_replace('\\', '\\\\', "/{$model->getBaseNamespace()}\\[a-zA-Z0-9_]*/");
+            if (preg_match($inCurrentNamespacePattern, $dependencyClass)) {
+                continue;
+            }
+
+            $imports[] = "use {$dependencyClass};";
         }
 
-        sort($result);
+        sort($imports);
 
-        return implode("\n", $result);
+        return implode("\n", $imports);
     }
 
     /**
      * Extract and replace fully-qualified class names from placeholder.
      *
      * @param string $placeholder Placeholder to extract class names from. Rewrites value to content without FQN
+     * @param \Reliese\Coders\Model\Model $model
      *
      * @return array Extracted FQN
      */
-    private function extractUsedClasses(&$placeholder)
+    private function shortenAndExtractImportableDependencies(&$placeholder, $model)
     {
-        $classNamespaceRegExp = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
+        $qualifiedClassesPattern = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
         $matches = [];
-        $usedInModelClasses = [];
-        if (preg_match_all($classNamespaceRegExp, $placeholder, $matches)) {
-            foreach ($matches[1] as $match) {
-                $usedClassName = $match;
-                $usedInModelClasses[] = trim($usedClassName, '\\');
-                $namespaceParts = explode('\\', $usedClassName);
-                $resultClassName = array_pop($namespaceParts);
-                $placeholder = str_replace($usedClassName, $resultClassName, $placeholder);
+        $importableDependencies = [];
+        if (preg_match_all($qualifiedClassesPattern, $placeholder, $matches)) {
+            foreach ($matches[1] as $usedClass) {
+                $namespacePieces = explode('\\', $usedClass);
+                $className = array_pop($namespacePieces);
+
+                //When same class name but different namespace, skip it.
+                if (
+                    $className == $model->getClassName() &&
+                    trim(implode('\\', $namespacePieces), '\\') != trim($model->getNamespace(), '\\')
+                ) {
+                    continue;
+                }
+
+                $importableDependencies[trim($usedClass, '\\')] = true;
+                $placeholder = str_replace($usedClass, $className, $placeholder);
             }
         }
 
-        return array_unique($usedInModelClasses);
+        return $importableDependencies;
     }
 
     /**

@@ -495,7 +495,7 @@ class Model
      */
     public function withParentClass($parent)
     {
-        $this->parentClass = $parent;
+        $this->parentClass = '\\' . ltrim($parent, '\\');
 
         return $this;
     }
