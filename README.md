@@ -16,7 +16,7 @@ You will need to import the `reliese/laravel` package via composer:
 
 ### Configuration
 
-It is recommended that this package should only be used on a local environment for security purposes. You should install it via composer using the --dev option like this:
+It is recommended that this package should only be used on a local environment for security reasons. You should install it via composer using the --dev option like this:
 
 ```shell
 composer require reliese/laravel --dev
