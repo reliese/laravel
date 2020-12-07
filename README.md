@@ -1,6 +1,4 @@
 # Reliese Laravel
-
-[![StyleCI](https://styleci.io/repos/71080508/shield?style=flat)](https://styleci.io/repos/71080508)
 [![Build Status](https://travis-ci.org/reliese/laravel.svg?branch=master)](https://travis-ci.org/reliese/laravel)
 [![Latest Stable Version](https://poser.pugx.org/reliese/laravel/v/stable)](https://packagist.org/packages/reliese/laravel)
 [![Total Downloads](https://poser.pugx.org/reliese/laravel/downloads)](https://packagist.org/packages/reliese/laravel)
@@ -16,28 +14,9 @@ providing some convenient code-generation capabilities.
 This package expects that you are using Laravel 5.1 or above.
 You will need to import the `reliese/laravel` package via composer:
 
-```shell
-composer require reliese/laravel
-```
-
 ### Configuration
 
-Add the service provider to your `config/app.php` file within the `providers` key:
-
-```php
-// ...
-'providers' => [
-    /*
-     * Package Service Providers...
-     */
-
-    Reliese\Coders\CodersServiceProvider::class,
-],
-// ...
-```
-### Configuration for local environment only
-
-If you wish to enable generators only for your local environment, you should install it via composer using the --dev option like this:
+It is recommended that this package should only be used on a local environment for security purposes. You should install it via composer using the --dev option like this:
 
 ```shell
 composer require reliese/laravel --dev
@@ -115,4 +94,4 @@ to decide whether this approach gives value to your project :-)
 
 #### Support
 
-For the time being, this package only supports MySQL databases. Support for other databases will be added soon.
+For the time being, this package supports MySQL, PostgreSQL and SQLite databases. Support for other databases are encouraged to be added through pull requests.
