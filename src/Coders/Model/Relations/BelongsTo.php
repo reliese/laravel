@@ -7,11 +7,11 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
+use Reliese\Support\Dumper;
 
 class BelongsTo implements Relation
 {
@@ -114,7 +114,7 @@ class BelongsTo implements Relation
      */
     public function hint()
     {
-        $base =  $this->related->getQualifiedUserClassName();
+        $base = $this->related->getQualifiedUserClassName();
 
         if ($this->isNullable()) {
             $base .= '|null';
