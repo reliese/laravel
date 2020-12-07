@@ -81,14 +81,14 @@ class ModelTest extends TestCase
         );
 
         $baseBlueprint = Mockery::mock(Blueprint::class);
-        $baseBlueprint->shouldReceive('columns')->once()->andReturn([$columnDefinition]);
-        $baseBlueprint->shouldReceive('schema')->times(21)->andReturn('test');
-        $baseBlueprint->shouldReceive('qualifiedTable')->times(21)->andReturn('test.test');
-        $baseBlueprint->shouldReceive('connection')->once()->andReturn('test');
-        $baseBlueprint->shouldReceive('primaryKey')->once()->andReturn(new Fluent(['columns' => []]));
-        $baseBlueprint->shouldReceive('relations')->once()->andReturn([]);
-        $baseBlueprint->shouldReceive('table')->once()->andReturn('things');
-        $baseBlueprint->shouldReceive('column')->once()->andReturn($columnDefinition);
+        $baseBlueprint->shouldReceive('columns')->andReturn([$columnDefinition]);
+        $baseBlueprint->shouldReceive('schema')->andReturn('test');
+        $baseBlueprint->shouldReceive('qualifiedTable')->andReturn('test.test');
+        $baseBlueprint->shouldReceive('connection')->andReturn('test');
+        $baseBlueprint->shouldReceive('primaryKey')->andReturn(new Fluent(['columns' => []]));
+        $baseBlueprint->shouldReceive('relations')->andReturn([]);
+        $baseBlueprint->shouldReceive('table')->andReturn('things');
+        $baseBlueprint->shouldReceive('column')->andReturn($columnDefinition);
 
         $model = new Model(
             $baseBlueprint,
