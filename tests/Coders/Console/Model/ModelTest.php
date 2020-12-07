@@ -103,8 +103,8 @@ class ModelTest extends TestCase
         $relation = new BelongsTo(
             new Fluent([
                 'columns' => [
-                    $columnDefinition
-                ]
+                    $columnDefinition,
+                ],
             ]),
             $model,
             $model
@@ -117,11 +117,11 @@ class ModelTest extends TestCase
     {
         return [
             'Nullable Relation' => [
-                true, '\\\\Thing|null'
+                true, '\\\\Thing|null',
             ],
             'Non Nullable Relation' => [
-                false, '\\\\Thing'
-            ]
+                false, '\\\\Thing',
+            ],
         ];
     }
 }

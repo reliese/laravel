@@ -32,147 +32,147 @@ class ConfigTest extends TestCase
             'Basic Key' => [
                 [
                     '*' => [
-                        'Key' => 'Value'
+                        'Key' => 'Value',
                     ],
                 ],
                 'Key',
-                'Value'
+                'Value',
             ],
             'Schema Key' => [
                 [
                     'test' => [
-                        'schemaKey' => 'Schema Value'
+                        'schemaKey' => 'Schema Value',
                     ],
                 ],
                 'schemaKey',
-                'Schema Value'
+                'Schema Value',
             ],
             'Qualified Table Key' => [
                 [
                     'test' => [
-                        'qfKey' => 'Qualified Table Value'
+                        'qfKey' => 'Qualified Table Value',
                     ],
                 ],
                 'qfKey',
-                'Qualified Table Value'
+                'Qualified Table Value',
             ],
             'Connection Basic Key' => [
                 [
                     '@connections' => [
                         'test_connection' => [
-                            'cKey' => 'Connection Value'
+                            'cKey' => 'Connection Value',
                         ],
-                    ]
+                    ],
                 ],
                 'cKey',
-                'Connection Value'
+                'Connection Value',
             ],
             'Connection Schema Key' => [
                 [
                     '@connections' => [
                         'test_connection' => [
                             'test' => [
-                                'csKey' => 'Connection Schema Value'
-                            ]
+                                'csKey' => 'Connection Schema Value',
+                            ],
                         ],
-                    ]
+                    ],
                 ],
                 'csKey',
-                'Connection Schema Value'
+                'Connection Schema Value',
             ],
             'Connection Table Key' => [
                 [
                     '@connections' => [
                         'test_connection' => [
                             'my_table' => [
-                                'ctKey' => 'Connection Table Value'
-                            ]
+                                'ctKey' => 'Connection Table Value',
+                            ],
                         ],
-                    ]
+                    ],
                 ],
                 'ctKey',
-                'Connection Table Value'
+                'Connection Table Value',
             ],
             'Test Hierarchy Override for Schema' => [
                 [
                     '*' => [
-                        'FirstKey' => 'Some Value'
+                        'FirstKey' => 'Some Value',
                     ],
                     'test' => [
-                        'FirstKey' => 'A Second Value'
-                    ]
+                        'FirstKey' => 'A Second Value',
+                    ],
                 ],
                 'FirstKey',
-                'A Second Value'
+                'A Second Value',
             ],
             'Test Hierarchy Override for Qualified Table' => [
                 [
                     '*' => [
-                        'FirstKey' => 'Some Value'
+                        'FirstKey' => 'Some Value',
                     ],
                     'test' => [
                         'FirstKey' => 'A Second Value',
                         'my_table' => [
-                            'FirstKey' => 'A Third Value'
-                        ]
+                            'FirstKey' => 'A Third Value',
+                        ],
                     ],
                 ],
                 'FirstKey',
-                'A Third Value'
+                'A Third Value',
             ],
             'Test Hierarchy Override for Connection Basic Key' => [
                 [
                     '*' => [
-                        'FirstKey' => 'Some Value'
+                        'FirstKey' => 'Some Value',
                     ],
                     'test' => [
                         'FirstKey' => 'A Second Value',
                         'my_table' => [
-                            'FirstKey' => 'A Third Value'
-                        ]
+                            'FirstKey' => 'A Third Value',
+                        ],
                     ],
                     '@connections' => [
                         'test_connection' => [
                             'FirstKey' => 'A Fourth Value',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'FirstKey',
-                'A Fourth Value'
+                'A Fourth Value',
             ],
             'Test Hierarchy Override for Connection Schema Key' => [
                 [
                     '*' => [
-                        'FirstKey' => 'Some Value'
+                        'FirstKey' => 'Some Value',
                     ],
                     'test' => [
                         'FirstKey' => 'A Second Value',
                         'my_table' => [
-                            'FirstKey' => 'A Third Value'
-                        ]
+                            'FirstKey' => 'A Third Value',
+                        ],
                     ],
                     '@connections' => [
                         'test_connection' => [
                             'FirstKey' => 'A Fourth Value',
                             'test' => [
-                                'FirstKey' => 'A Fifth Value'
-                            ]
-                        ]
-                    ]
+                                'FirstKey' => 'A Fifth Value',
+                            ],
+                        ],
+                    ],
                 ],
                 'FirstKey',
-                'A Fifth Value'
+                'A Fifth Value',
             ],
             'Test Hierarchy Override for Connection Table Key' => [
                 [
                     '*' => [
-                        'FirstKey' => 'Some Value'
+                        'FirstKey' => 'Some Value',
                     ],
                     'test' => [
                         'FirstKey' => 'A Second Value',
                         'my_table' => [
-                            'FirstKey' => 'A Third Value'
-                        ]
+                            'FirstKey' => 'A Third Value',
+                        ],
                     ],
                     '@connections' => [
                         'test_connection' => [
@@ -182,12 +182,12 @@ class ConfigTest extends TestCase
                             ],
                             'my_table' => [
                                 'FirstKey' => 'A Sixth Value',
-                            ]
-                        ]
-                    ]
+                            ],
+                        ],
+                    ],
                 ],
                 'FirstKey',
-                'A Sixth Value'
+                'A Sixth Value',
             ],
         ];
     }

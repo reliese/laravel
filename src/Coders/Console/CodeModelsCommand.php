@@ -3,8 +3,8 @@
 namespace Reliese\Coders\Console;
 
 use Illuminate\Console\Command;
-use Reliese\Coders\Model\Factory;
 use Illuminate\Contracts\Config\Repository;
+use Reliese\Coders\Model\Factory;
 
 class CodeModelsCommand extends Command
 {

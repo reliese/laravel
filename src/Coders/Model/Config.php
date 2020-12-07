@@ -48,7 +48,7 @@ class Config
         foreach ($priorityKeys as $key) {
             $value = Arr::get($this->config, $key);
 
-            if (!is_null($value)) {
+            if (! is_null($value)) {
                 return $value;
             }
         }
