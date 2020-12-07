@@ -58,7 +58,7 @@ class ConfigTest extends TestCase
             ],
             'Connection Basic Key' => [
                 [
-                    'connections' => [
+                    '@connections' => [
                         'test_connection' => [
                             'cKey' => 'Connection Value'
                         ],
@@ -69,7 +69,7 @@ class ConfigTest extends TestCase
             ],
             'Connection Schema Key' => [
                 [
-                    'connections' => [
+                    '@connections' => [
                         'test_connection' => [
                             'test' => [
                                 'csKey' => 'Connection Schema Value'
@@ -82,7 +82,7 @@ class ConfigTest extends TestCase
             ],
             'Connection Table Key' => [
                 [
-                    'connections' => [
+                    '@connections' => [
                         'test_connection' => [
                             'my_table' => [
                                 'ctKey' => 'Connection Table Value'
@@ -131,7 +131,7 @@ class ConfigTest extends TestCase
                             'FirstKey' => 'A Third Value'
                         ]
                     ],
-                    'connections' => [
+                    '@connections' => [
                         'test_connection' => [
                             'FirstKey' => 'A Fourth Value',
                         ]
@@ -151,7 +151,7 @@ class ConfigTest extends TestCase
                             'FirstKey' => 'A Third Value'
                         ]
                     ],
-                    'connections' => [
+                    '@connections' => [
                         'test_connection' => [
                             'FirstKey' => 'A Fourth Value',
                             'test' => [
@@ -174,7 +174,7 @@ class ConfigTest extends TestCase
                             'FirstKey' => 'A Third Value'
                         ]
                     ],
-                    'connections' => [
+                    '@connections' => [
                         'test_connection' => [
                             'FirstKey' => 'A Fourth Value',
                             'test' => [
