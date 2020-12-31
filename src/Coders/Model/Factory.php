@@ -283,7 +283,7 @@ class Factory
         $imports = [];
         foreach ($dependencies as $dependencyClass) {
             // Skip when the same class
-            if ($dependencyClass == $model->getQualifiedUserClassName()) {
+            if ("\\" . ltrim($dependencyClass, "\\") == "\\" . ltrim($model->getQualifiedUserClassName(), "\\")) {
                 continue;
             }
 
