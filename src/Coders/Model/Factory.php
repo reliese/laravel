@@ -345,7 +345,11 @@ class Factory
         // Process property annotations
         $annotations = '';
 
+        $hints = $model->getHints();
         foreach ($model->getProperties() as $name => $hint) {
+            if (!empty($hints[$name])) {
+                $name .= '  '.$hints[$name];
+            }
             $annotations .= $this->class->annotation('property', "$hint \$$name");
         }
 
