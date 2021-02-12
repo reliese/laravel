@@ -232,7 +232,7 @@ class Model
         foreach ($this->blueprint->relations() as $relation) {
             $model = $this->makeRelationModel($relation);
             $belongsTo = new BelongsTo($relation, $this, $model);
-            $this->relations[$belongsTo->name()] = $belongsTo;
+            $this->relations[implode('_', $relation->get('columns'))] = $belongsTo;
         }
 
         foreach ($this->factory->referencing($this) as $related) {

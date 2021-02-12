@@ -469,8 +469,8 @@ class Factory
             $body .= $this->class->method($mutation->name(), $mutation->body(), ['before' => "\n"]);
         }
 
-        foreach ($model->getRelations() as $constraint) {
-            $body .= $this->class->method($constraint->name(), $constraint->body(), ['before' => "\n"]);
+        foreach ($model->getRelations() as $k => $constraint) {
+            $body .= $this->class->method(Str::camel($k), $constraint->body(), ['before' => "\n"]);
         }
 
         // Make sure there not undesired line breaks
