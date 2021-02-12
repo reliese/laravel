@@ -49,15 +49,26 @@ class BelongsTo implements Relation
      */
     public function name()
     {
-        switch ($this->parent->getRelationNameStrategy()) {
-            case 'foreign_key':
-                $relationName = preg_replace("/[^a-zA-Z0-9]?{$this->otherKey()}$/", '', $this->foreignKey());
-                break;
-            default:
-            case 'related':
-                $relationName = $this->related->getClassName();
-                break;
-        }
+//        if ($this->related->getClassName() === 'Employee') {
+            $relationName = $this->foreignKey();
+            // chop off 'id'
+            if ($this->parent->usesSnakeAttributes()) {
+                $relationName = preg_replace('/_id$/', '', $relationName);
+            } else {
+                $relationName = preg_replace('/(Id)|(ID)$/', '', $relationName);
+            }
+
+
+//        }
+//        switch ($this->parent->getRelationNameStrategy()) {
+//            case 'foreign_key':
+//                $relationName = preg_replace("/[^a-zA-Z0-9]?{$this->otherKey()}$/", '', $this->foreignKey());
+//                break;
+//            default:
+//            case 'related':
+//                $relationName = $this->related->getClassName();
+//                break;
+//        }
 
         if ($this->parent->usesSnakeAttributes()) {
             return Str::snake($relationName);

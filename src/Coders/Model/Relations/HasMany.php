@@ -25,33 +25,48 @@ class HasMany extends HasOneOrMany
      */
     public function name()
     {
-        if ($this->parent->shouldPluralizeTableName()) {
-            $relationBaseName = Str::plural(Str::singular($this->related->getTable(true)));
+        $relationName = $this->foreignKey();
+
+        // chop off 'id'
+        if ($this->parent->usesSnakeAttributes()) {
+            $relationName = preg_replace('/_id$/', '', $relationName);
         } else {
-            $relationBaseName = $this->related->getTable(true);
+            $relationName = preg_replace('/(Id)|(ID)$/', '', $relationName);
         }
 
-        if ($this->parent->shouldLowerCaseTableName()) {
-            $relationBaseName = strtolower($relationBaseName);
+        if (strtolower($relationName) === strtolower($this->parent->getClassName())) {
+            $relationName = Str::plural($this->related->getClassName());
+        } else {
+            $relationName = Str::plural($this->related->getClassName()) . 'Where' . ucfirst(Str::singular($relationName));
         }
 
-        switch ($this->parent->getRelationNameStrategy()) {
-            case 'foreign_key':
-                $suffix = preg_replace("/[^a-zA-Z0-9]?{$this->localKey()}$/", '', $this->foreignKey());
-
-                $relationName = $relationBaseName;
-
-                // Don't make relations such as users_user, just leave it as 'users'.
-                if ($this->parent->getTable(true) !== $suffix) {
-                    $relationName .= "_{$suffix}";
-                }
-
-                break;
-            case 'related':
-            default:
-                $relationName = $relationBaseName;
-                break;
-        }
+//        if ($this->parent->shouldPluralizeTableName()) {
+//            $relationBaseName = Str::plural(Str::singular($this->related->getTable(true)));
+//        } else {
+//            $relationBaseName = $this->related->getTable(true);
+//        }
+//
+//        if ($this->parent->shouldLowerCaseTableName()) {
+//            $relationBaseName = strtolower($relationBaseName);
+//        }
+//
+//        switch ($this->parent->getRelationNameStrategy()) {
+//            case 'foreign_key':
+//                $suffix = preg_replace("/[^a-zA-Z0-9]?{$this->localKey()}$/", '', $this->foreignKey());
+//
+//                $relationName = $relationBaseName;
+//
+//                // Don't make relations such as users_user, just leave it as 'users'.
+//                if ($this->parent->getTable(true) !== $suffix) {
+//                    $relationName .= "_{$suffix}";
+//                }
+//
+//                break;
+//            case 'related':
+//            default:
+//                $relationName = $relationBaseName;
+//                break;
+//        }
 
         if ($this->parent->usesSnakeAttributes()) {
             return Str::snake($relationName);
