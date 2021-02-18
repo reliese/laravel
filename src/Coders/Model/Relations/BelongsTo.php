@@ -7,11 +7,11 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
-use Reliese\Support\Dumper;
 use Illuminate\Support\Fluent;
+use Illuminate\Support\Str;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
+use Reliese\Support\Dumper;
 
 class BelongsTo implements Relation
 {
@@ -49,17 +49,18 @@ class BelongsTo implements Relation
      */
     public function name()
     {
-//        if ($this->related->getClassName() === 'Employee') {
-            $relationName = $this->foreignKey();
-            // chop off 'id'
-            if ($this->parent->usesSnakeAttributes()) {
-                $relationName = preg_replace('/_id$/', '', $relationName);
-            } else {
-                $relationName = preg_replace('/(Id)|(ID)$/', '', $relationName);
-            }
+        $relationName = $this->foreignKey();
+        $primaryKey = $this->otherKey();
+        // chop off 'id'
+        if ($this->parent->usesSnakeAttributes()) {
+            $lowerPrimaryKey = strtolower($primaryKey);
+            $relationName = preg_replace('/(_' . $primaryKey . ')|(_' . $lowerPrimaryKey . ')$/', '', $relationName);
+        } else {
+            $studlyPrimaryKey = Str::studly($primaryKey);
+            $relationName = preg_replace('/(' . $primaryKey . ')|(' . $studlyPrimaryKey . ')$/', '', $relationName);
+        }
 
 
-//        }
 //        switch ($this->parent->getRelationNameStrategy()) {
 //            case 'foreign_key':
 //                $relationName = preg_replace("/[^a-zA-Z0-9]?{$this->otherKey()}$/", '', $this->foreignKey());
@@ -78,73 +79,6 @@ class BelongsTo implements Relation
     }
 
     /**
-     * @return string
-     */
-    public function body()
-    {
-        $body = 'return $this->belongsTo(';
-
-        $body .= $this->related->getQualifiedUserClassName().'::class';
-
-        if ($this->needsForeignKey()) {
-            $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->parent->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
-                : $this->foreignKey();
-            $body .= ', '.Dumper::export($foreignKey);
-        }
-
-        if ($this->needsOtherKey()) {
-            $otherKey = $this->related->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
-                : $this->otherKey();
-            $body .= ', '.Dumper::export($otherKey);
-        }
-
-        $body .= ')';
-
-        if ($this->hasCompositeOtherKey()) {
-            // We will assume that when this happens the referenced columns are a composite primary key
-            // or a composite unique key. Otherwise it should be a has-many relationship which is not
-            // supported at the moment. @todo: Improve relationship resolution.
-            foreach ($this->command->references as $index => $column) {
-                $body .= "\n\t\t\t\t\t->where(".
-                    Dumper::export($this->qualifiedOtherKey($index)).
-                    ", '=', ".
-                    Dumper::export($this->qualifiedForeignKey($index)).
-                    ')';
-            }
-        }
-
-        $body .= ';';
-
-        return $body;
-    }
-
-    /**
-     * @return string
-     */
-    public function hint()
-    {
-        $base =  $this->related->getQualifiedUserClassName();
-
-        if ($this->isNullable()) {
-            $base .= '|null';
-        }
-
-        return $base;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function needsForeignKey()
-    {
-        $defaultForeignKey = $this->related->getRecordName().'_id';
-
-        return $defaultForeignKey != $this->foreignKey() || $this->needsOtherKey();
-    }
-
-    /**
      * @param int $index
      *
      * @return string
@@ -159,9 +93,62 @@ class BelongsTo implements Relation
      *
      * @return string
      */
-    protected function qualifiedForeignKey($index = 0)
+    protected function otherKey($index = 0)
     {
-        return $this->parent->getTable().'.'.$this->foreignKey($index);
+        return $this->command->references[$index];
+    }
+
+    /**
+     * @return string
+     */
+    public function body()
+    {
+        $body = 'return $this->belongsTo(';
+
+        $body .= $this->related->getQualifiedUserClassName() . '::class';
+
+        if ($this->needsForeignKey()) {
+            $foreignKey = $this->parent->usesPropertyConstants()
+                ? $this->parent->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
+                : $this->foreignKey();
+            $body .= ', ' . Dumper::export($foreignKey);
+        }
+
+        if ($this->needsOtherKey()) {
+            $otherKey = $this->related->usesPropertyConstants()
+                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->otherKey())
+                : $this->otherKey();
+            $body .= ', ' . Dumper::export($otherKey);
+        }
+
+        $body .= ')';
+
+        if ($this->hasCompositeOtherKey()) {
+            // We will assume that when this happens the referenced columns are a composite primary key
+            // or a composite unique key. Otherwise it should be a has-many relationship which is not
+            // supported at the moment. @todo: Improve relationship resolution.
+            foreach ($this->command->references as $index => $column) {
+                $body .= "\n\t\t\t\t\t->where(" .
+                         Dumper::export($this->qualifiedOtherKey($index)) .
+                         ", '=', " .
+                         Dumper::export($this->qualifiedForeignKey($index)) .
+                         ')';
+            }
+        }
+
+        $body .= ';';
+
+        return $body;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function needsForeignKey()
+    {
+        $defaultForeignKey = $this->related->getRecordName() . '_id';
+
+        return $defaultForeignKey != $this->foreignKey() || $this->needsOtherKey();
     }
 
     /**
@@ -175,26 +162,6 @@ class BelongsTo implements Relation
     }
 
     /**
-     * @param int $index
-     *
-     * @return string
-     */
-    protected function otherKey($index = 0)
-    {
-        return $this->command->references[$index];
-    }
-
-    /**
-     * @param int $index
-     *
-     * @return string
-     */
-    protected function qualifiedOtherKey($index = 0)
-    {
-        return $this->related->getTable().'.'.$this->otherKey($index);
-    }
-
-    /**
      * Whether the "other key" is a composite foreign key.
      *
      * @return bool
@@ -205,10 +172,44 @@ class BelongsTo implements Relation
     }
 
     /**
+     * @param int $index
+     *
+     * @return string
+     */
+    protected function qualifiedOtherKey($index = 0)
+    {
+        return $this->related->getTable() . '.' . $this->otherKey($index);
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return string
+     */
+    protected function qualifiedForeignKey($index = 0)
+    {
+        return $this->parent->getTable() . '.' . $this->foreignKey($index);
+    }
+
+    /**
+     * @return string
+     */
+    public function hint()
+    {
+        $base = $this->related->getQualifiedUserClassName();
+
+        if ($this->isNullable()) {
+            $base .= '|null';
+        }
+
+        return $base;
+    }
+
+    /**
      * @return bool
      */
     private function isNullable()
     {
-        return (bool) $this->parent->getBlueprint()->column($this->foreignKey())->get('nullable');
+        return (bool)$this->parent->getBlueprint()->column($this->foreignKey())->get('nullable');
     }
 }
