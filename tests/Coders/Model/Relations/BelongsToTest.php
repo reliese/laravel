@@ -11,11 +11,11 @@ class BelongsToTest extends TestCase
     {
         // usesSnakeAttributes, primaryKey, foreignKey, expected
         return [
-            // columns use snake_case
+            // columns use camelCase
             [false, 'id', 'lineManagerId', 'lineManager'],
             [false, 'Id', 'lineManagerId', 'lineManager'],
             [false, 'ID', 'lineManagerID', 'lineManager'],
-            // columns use camelCase
+            // columns use snake_case
             [true, 'id', 'line_manager_id', 'line_manager'],
             [true, 'ID', 'line_manager_id', 'line_manager'],
             // foreign keys without primary key suffix
@@ -36,10 +36,9 @@ class BelongsToTest extends TestCase
     {
         $relation = Mockery::mock(Fluent::class)->makePartial();
 
-        $modelMock = Mockery::mock(Model::class);
-        $relatedModel = $modelMock->makePartial();
+        $relatedModel = Mockery::mock(Model::class)->makePartial();
 
-        $subject = $modelMock->makePartial();
+        $subject = Mockery::mock(Model::class)->makePartial();
         $subject->shouldReceive('getRelationNameStrategy')->andReturn('foreign_key');
         $subject->shouldReceive('usesSnakeAttributes')->andReturn($usesSnakeAttributes);
 
@@ -76,11 +75,10 @@ class BelongsToTest extends TestCase
     {
         $relation = Mockery::mock(Fluent::class)->makePartial();
 
-        $modelMock = Mockery::mock(Model::class);
-        $relatedModel = $modelMock->makePartial();
+        $relatedModel = Mockery::mock(Model::class)->makePartial();
         $relatedModel->shouldReceive('getClassName')->andReturn($relatedClassName);
 
-        $subject = $modelMock->makePartial();
+        $subject = Mockery::mock(Model::class)->makePartial();
         $subject->shouldReceive('getRelationNameStrategy')->andReturn('related');
         $subject->shouldReceive('usesSnakeAttributes')->andReturn($usesSnakeAttributes);
 
