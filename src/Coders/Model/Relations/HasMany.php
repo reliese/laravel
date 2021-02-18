@@ -7,8 +7,8 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class HasMany extends HasOneOrMany
 {
@@ -26,12 +26,14 @@ class HasMany extends HasOneOrMany
     public function name()
     {
         $relationName = $this->foreignKey();
-
-        // chop off 'id'
+        $primaryKey = $this->localKey();
+        // Chop off primary key suffix of foreign key, if it exists (eg. lineManagerId => lineManager)
         if ($this->parent->usesSnakeAttributes()) {
-            $relationName = preg_replace('/_id$/', '', $relationName);
+            $lowerPrimaryKey = strtolower($primaryKey);
+            $relationName = preg_replace('/(_' . $primaryKey . ')|(_' . $lowerPrimaryKey . ')$/', '', $relationName);
         } else {
-            $relationName = preg_replace('/(Id)|(ID)$/', '', $relationName);
+            $studlyPrimaryKey = Str::studly($primaryKey);
+            $relationName = preg_replace('/(' . $primaryKey . ')|(' . $studlyPrimaryKey . ')$/', '', $relationName);
         }
 
         if (strtolower($relationName) === strtolower($this->parent->getClassName())) {
