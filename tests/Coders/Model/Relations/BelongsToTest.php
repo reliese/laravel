@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Fluent;
 use PHPUnit\Framework\TestCase;
+use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relations\BelongsTo;
 
 class BelongsToTest extends TestCase
@@ -35,10 +36,11 @@ class BelongsToTest extends TestCase
     {
         $relation = Mockery::mock(Fluent::class)->makePartial();
 
-        $modelMock = Mockery::mock(\Reliese\Coders\Model\Model::class);
+        $modelMock = Mockery::mock(Model::class);
         $relatedModel = $modelMock->makePartial();
 
         $subject = $modelMock->makePartial();
+        $subject->shouldReceive('getRelationNameStrategy')->andReturn('foreign_key');
         $subject->shouldReceive('usesSnakeAttributes')->andReturn($usesSnakeAttributes);
 
         /** @var BelongsTo|\Mockery\Mock $relationship */
@@ -51,6 +53,44 @@ class BelongsToTest extends TestCase
             $expected,
             $relationship->name(),
             json_encode(compact('usesSnakeAttributes', 'primaryKey', 'foreignKey'))
+        );
+    }
+
+    public function provideRelatedStrategyPermutations()
+    {
+        // usesSnakeAttributes, relatedClassName, expected
+        return [
+            [false, 'LineManager', 'lineManager'],
+            [true, 'LineManager', 'line_manager'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideRelatedStrategyPermutations
+     *
+     * @param bool $usesSnakeAttributes
+     * @param string $relatedClassName
+     * @param string $expected
+     */
+    public function testNameUsingRelatedStrategy($usesSnakeAttributes, $relatedClassName, $expected)
+    {
+        $relation = Mockery::mock(Fluent::class)->makePartial();
+
+        $modelMock = Mockery::mock(Model::class);
+        $relatedModel = $modelMock->makePartial();
+        $relatedModel->shouldReceive('getClassName')->andReturn($relatedClassName);
+
+        $subject = $modelMock->makePartial();
+        $subject->shouldReceive('getRelationNameStrategy')->andReturn('related');
+        $subject->shouldReceive('usesSnakeAttributes')->andReturn($usesSnakeAttributes);
+
+        /** @var BelongsTo|\Mockery\Mock $relationship */
+        $relationship = Mockery::mock(BelongsTo::class, [$relation, $subject, $relatedModel])->makePartial();
+
+        $this->assertEquals(
+            $expected,
+            $relationship->name(),
+            json_encode(compact('usesSnakeAttributes', 'relatedClassName'))
         );
     }
 }

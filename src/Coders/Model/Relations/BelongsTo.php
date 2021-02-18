@@ -49,27 +49,24 @@ class BelongsTo implements Relation
      */
     public function name()
     {
-        $relationName = $this->foreignKey();
-        $primaryKey = $this->otherKey();
-        // chop off 'id'
-        if ($this->parent->usesSnakeAttributes()) {
-            $lowerPrimaryKey = strtolower($primaryKey);
-            $relationName = preg_replace('/(_' . $primaryKey . ')|(_' . $lowerPrimaryKey . ')$/', '', $relationName);
-        } else {
-            $studlyPrimaryKey = Str::studly($primaryKey);
-            $relationName = preg_replace('/(' . $primaryKey . ')|(' . $studlyPrimaryKey . ')$/', '', $relationName);
+        switch ($this->parent->getRelationNameStrategy()) {
+            case 'foreign_key':
+                $relationName = $this->foreignKey();
+                $primaryKey = $this->otherKey();
+                // Chop off primary key suffix of foreign key, if it exists (eg. lineManagerId => lineManager)
+                if ($this->parent->usesSnakeAttributes()) {
+                    $lowerPrimaryKey = strtolower($primaryKey);
+                    $relationName = preg_replace('/(_' . $primaryKey . ')|(_' . $lowerPrimaryKey . ')$/', '', $relationName);
+                } else {
+                    $studlyPrimaryKey = Str::studly($primaryKey);
+                    $relationName = preg_replace('/(' . $primaryKey . ')|(' . $studlyPrimaryKey . ')$/', '', $relationName);
+                }
+                break;
+            default:
+            case 'related':
+                $relationName = $this->related->getClassName();
+                break;
         }
-
-
-//        switch ($this->parent->getRelationNameStrategy()) {
-//            case 'foreign_key':
-//                $relationName = preg_replace("/[^a-zA-Z0-9]?{$this->otherKey()}$/", '', $this->foreignKey());
-//                break;
-//            default:
-//            case 'related':
-//                $relationName = $this->related->getClassName();
-//                break;
-//        }
 
         if ($this->parent->usesSnakeAttributes()) {
             return Str::snake($relationName);
