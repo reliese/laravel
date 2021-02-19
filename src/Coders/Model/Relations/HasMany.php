@@ -27,16 +27,11 @@ class HasMany extends HasOneOrMany
     {
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':
-                $relationName = $this->foreignKey();
-                $primaryKey = $this->localKey();
-                // Chop off primary key suffix of foreign key, if it exists (eg. lineManagerId => lineManager)
-                if ($this->parent->usesSnakeAttributes()) {
-                    $lowerPrimaryKey = strtolower($primaryKey);
-                    $relationName = preg_replace('/(_' . $primaryKey . ')|(_' . $lowerPrimaryKey . ')$/', '', $relationName);
-                } else {
-                    $studlyPrimaryKey = Str::studly($primaryKey);
-                    $relationName = preg_replace('/(' . $primaryKey . ')|(' . $studlyPrimaryKey . ')$/', '', $relationName);
-                }
+                $relationName = RelationHelper::stripSuffixFromForeignKey(
+                    $this->parent->usesSnakeAttributes(),
+                    $this->localKey(),
+                    $this->foreignKey()
+                );
                 if (strtolower($relationName) === strtolower($this->parent->getClassName())) {
                     $relationName = Str::plural($this->related->getClassName());
                 } else {
