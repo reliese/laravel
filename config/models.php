@@ -333,14 +333,19 @@ return [
                             generates Post::user() and User::posts()
         |
         | 'foreign_key' Use the foreign key as the relation name.
-        |                   (post.author --> user.id)
-        |                       generates Post::author() and User::posts_author()
-        |               Column id's are ignored.
+        |               This can help to provide more meaningful relationship names, and avoids naming conflicts
+        |               if you have more than one relationship between two tables.
         |                   (post.author_id --> user.id)
+        |                       generates Post::author() and User::posts_where_author()
+        |                   (post.editor_id --> user.id)
+        |                       generates Post::editor() and User::posts_where_editor()
+        |               ID suffixes can be omitted from foreign keys.
+        |                   (post.author --> user.id)
+        |                   (post.editor --> user.id)
         |                       generates the same as above.
-        |               When the foreign key is redundant, it is omited.
+        |               Where the foreign key matches the related table name, it behaves as per the 'related' strategy.
         |                   (post.user_id --> user.id)
-        |                       generates User::posts() and not User::posts_user()
+        |                       generates Post::user() and User::posts()
         */
 
         'relation_name_strategy' => 'related',
