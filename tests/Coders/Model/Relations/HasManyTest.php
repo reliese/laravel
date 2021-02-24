@@ -13,22 +13,23 @@ class HasManyTest extends TestCase
         // usesSnakeAttributes, subjectName, relationName, primaryKey, foreignKey, expected
         return [
             // camelCase
-            [false, 'Person', 'PublishedBook', 'id', 'authorId', 'publishedBooksWhereAuthor'],
-            [false, 'Person', 'PublishedBook', 'ID', 'authorID', 'publishedBooksWhereAuthor'],
-            [false, 'Person', 'PublishedBook', 'id', 'personId', 'publishedBooks'],
-            [false, 'Person', 'PublishedBook', 'ID', 'personID', 'publishedBooks'],
+            [false, 'StaffMember', 'BlogPost', 'id', 'authorId', 'blogPostsWhereAuthor'],
+            [false, 'StaffMember', 'BlogPost', 'ID', 'authorID', 'blogPostsWhereAuthor'],
+            [false, 'StaffMember', 'BlogPost', 'id', 'staffMemberId', 'blogPosts'],
+            [false, 'StaffMember', 'BlogPost', 'ID', 'staffMemberID', 'blogPosts'],
             // snake_case
-            [true, 'Person', 'PublishedBook', 'id', 'author_id', 'published_books_where_author'],
-            [true, 'Person', 'PublishedBook', 'id', 'person_id', 'published_books'],
-            [true, 'Person', 'PublishedBook', 'ID', 'author_id', 'published_books_where_author'],
-            [true, 'Person', 'PublishedBook', 'ID', 'person_id', 'published_books'],
+            [true, 'StaffMember', 'BlogPost', 'id', 'author_id', 'blog_posts_where_author'],
+            [true, 'StaffMember', 'BlogPost', 'id', 'staff_member_id', 'blog_posts'],
+            [true, 'StaffMember', 'BlogPost', 'ID', 'author_id', 'blog_posts_where_author'],
+            [true, 'StaffMember', 'BlogPost', 'ID', 'staff_member_id', 'blog_posts'],
             // no suffix
-            [false, 'Person', 'PublishedBook', 'id', 'author', 'publishedBooksWhereAuthor'],
-            [false, 'Person', 'PublishedBook', 'id', 'person', 'publishedBooks'],
-            [true, 'Person', 'PublishedBook', 'id', 'author', 'published_books_where_author'],
-            [true, 'Person', 'PublishedBook', 'id', 'person', 'published_books'],
+            [false, 'StaffMember', 'BlogPost', 'id', 'author', 'blogPostsWhereAuthor'],
+            [false, 'StaffMember', 'BlogPost', 'id', 'staff_member', 'blogPosts'],
+            [true, 'StaffMember', 'BlogPost', 'id', 'author', 'blog_posts_where_author'],
+            [true, 'StaffMember', 'BlogPost', 'id', 'staff_member', 'blog_posts'],
             // same table reference
-            [false, 'Person', 'Person', 'id', 'lineManagerId', 'peopleWhereLineManager'],
+            [false, 'StaffMember', 'StaffMember', 'id', 'staffMemberId', 'staffMembers'],
+            [false, 'StaffMember', 'StaffMember', 'id', 'lineManagerId', 'staffMembersWhereLineManager'],
         ];
     }
 
@@ -71,10 +72,10 @@ class HasManyTest extends TestCase
     {
         // usesSnakeAttributes, subjectName, relatedName, expected
         return [
-            [false, 'Person', 'PublishedBook', 'publishedBooks'],
-            [true, 'Person', 'PublishedBook', 'published_books'],
+            [false, 'StaffMember', 'BlogPost', 'blogPosts'],
+            [true, 'StaffMember', 'BlogPost', 'blog_posts'],
             // Same table reference
-            [false, 'Person', 'Person', 'people']
+            [false, 'StaffMember', 'StaffMember', 'staffMembers']
         ];
     }
 
