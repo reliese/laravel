@@ -51,7 +51,11 @@ class BelongsTo implements Relation
     {
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':
-                $relationName = preg_replace("/[^a-zA-Z0-9]?{$this->otherKey()}$/", '', $this->foreignKey());
+                $relationName = RelationHelper::stripSuffixFromForeignKey(
+                    $this->parent->usesSnakeAttributes(),
+                    $this->otherKey(),
+                    $this->foreignKey()
+                );
                 break;
             default:
             case 'related':
