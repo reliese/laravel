@@ -24,7 +24,7 @@ class RelationHelper
             return preg_replace('/(_)(' . $primaryKey . '|' . $lowerPrimaryKey . ')$/', '', $foreignKey);
         } else {
             $studlyPrimaryKey = Str::studly($primaryKey);
-            return preg_replace('/(' . $primaryKey . '|' . $studlyPrimaryKey . ')$/', '', $foreignKey);
+            return preg_replace('/(_)(' . $primaryKey . '|' . $studlyPrimaryKey . ')$/', '', $foreignKey);
         }
     }
 }
