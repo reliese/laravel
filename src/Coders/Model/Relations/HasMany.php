@@ -35,7 +35,7 @@ class HasMany extends HasOneOrMany
                 if (Str::snake($relationName) === Str::snake($this->parent->getClassName())) {
                     $relationName = Str::plural($this->related->getClassName());
                 } else {
-                    $relationName = Str::plural($this->related->getClassName()) . 'Where' . ucfirst(Str::singular($relationName));
+                    $relationName = Str::plural($relationName);
                 }
                 break;
             default:
