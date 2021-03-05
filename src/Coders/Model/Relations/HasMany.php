@@ -35,7 +35,7 @@ class HasMany extends HasOneOrMany
                 if (Str::snake($relationName) === Str::snake($this->parent->getClassName())) {
                     $relationName = Str::plural($this->related->getClassName());
                 } else {
-                    $relationName = Str::plural($relationName);
+                    $relationName = ucfirst(Str::singular($relationName)).Str::plural($this->related->getClassName());
                 }
                 break;
             case 'foreign_key':
