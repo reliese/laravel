@@ -323,6 +323,26 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Model Names
+        |--------------------------------------------------------------------------
+        |
+        | By default the generator will create models with names that match your tables.
+        | However, if you wish to manually override the naming, you can specify a mapping
+        | here between table and model names.
+        |
+        | Example:
+        |   A table called 'billing_invoices' will generate a model called `BillingInvoice`,
+        |   but you'd prefer it to generate a model called 'Invoice'. Therefore, you'd add
+        |   the following array key and value:
+        |     'billing_invoices' => 'Invoice',
+        */
+
+        'model_names' => [
+
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
         | Relation Name Strategy
         |--------------------------------------------------------------------------
         |
