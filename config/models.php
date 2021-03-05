@@ -346,10 +346,26 @@ return [
         |               Where the foreign key matches the related table name, it behaves as per the 'related' strategy.
         |                   (post.user_id --> user.id)
         |                       generates Post::user() and User::posts()
+        |
+        | 'foreign_key_field_name' Use the foreign key as the relation name without its parent table name.
+        |               This can help to provide more meaningful relationship names, and avoids naming conflicts
+        |               if you have more than one relationship between two tables.
+        |                   (post.author_id --> user.id)
+        |                       generates Post::author() and User::authors()
+        |                   (post.editor_id --> user.id)
+        |                       generates Post::editor() and User::editor()
+        |               ID suffixes can be omitted from foreign keys.
+        |                   (post.author --> user.id)
+        |                   (post.editor --> user.id)
+        |                       generates the same as above.
+        |               Where the foreign key matches the related table name, it behaves as per the 'related' strategy.
+        |                   (post.user_id --> user.id)
+        |                       generates Post::user() and User::posts()
         */
-
-        'relation_name_strategy' => 'related',
+        
+        //'relation_name_strategy' => 'related',
         // 'relation_name_strategy' => 'foreign_key',
+        'relation_name_strategy' => 'foreign_key_field_name',
 
         /*
          |--------------------------------------------------------------------------

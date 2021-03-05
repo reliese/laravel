@@ -26,7 +26,7 @@ class HasMany extends HasOneOrMany
     public function name()
     {
         switch ($this->parent->getRelationNameStrategy()) {
-            case 'foreign_key':
+            case 'foreign_key_field_name':
                 $relationName = RelationHelper::stripSuffixFromForeignKey(
                     $this->parent->usesSnakeAttributes(),
                     $this->localKey(),
@@ -36,6 +36,18 @@ class HasMany extends HasOneOrMany
                     $relationName = Str::plural($this->related->getClassName());
                 } else {
                     $relationName = Str::plural($relationName);
+                }
+                break;
+            case 'foreign_key':
+                $relationName = RelationHelper::stripSuffixFromForeignKey(
+                    $this->parent->usesSnakeAttributes(),
+                    $this->localKey(),
+                    $this->foreignKey()
+                );
+                if (Str::snake($relationName) === Str::snake($this->parent->getClassName())) {
+                    $relationName = Str::plural($this->related->getClassName());
+                } else {
+                    $relationName = Str::plural($this->related->getClassName()) . 'Where' . ucfirst(Str::singular($relationName));
                 }
                 break;
             default:
