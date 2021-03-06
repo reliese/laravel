@@ -362,8 +362,7 @@ return [
         |                   (post.user_id --> user.id)
         |                       generates Post::user() and User::posts()
         */
-        
-        //'relation_name_strategy' => 'related',
+        // 'relation_name_strategy' => 'related',
         // 'relation_name_strategy' => 'foreign_key',
         'relation_name_strategy' => 'foreign_key_field_name',
 
