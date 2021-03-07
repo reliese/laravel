@@ -521,6 +521,13 @@ class Model
      */
     public function getClassName()
     {
+        // Model names can be manually overridden by users in the config file.
+        // If a config entry exists for this table, use that name, rather than generating one.
+        $overriddenName = $this->config('model_names.' . $this->getTable());
+        if ($overriddenName) {
+            return $overriddenName;
+        }
+
         if ($this->shouldLowerCaseTableName()) {
             return Str::studly(Str::lower($this->getRecordName()));
         }
