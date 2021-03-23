@@ -1,11 +1,11 @@
-# Laravel Model Generator
+# Reliese Laravel Model Generator
 [![Build Status](https://travis-ci.org/reliese/laravel.svg?branch=master)](https://travis-ci.org/reliese/laravel)
 [![Latest Stable Version](https://poser.pugx.org/reliese/laravel/v/stable)](https://packagist.org/packages/reliese/laravel)
 [![Total Downloads](https://poser.pugx.org/reliese/laravel/downloads)](https://packagist.org/packages/reliese/laravel)
 [![Latest Unstable Version](https://poser.pugx.org/reliese/laravel/v/unstable)](https://packagist.org/packages/reliese/laravel)
 [![License](https://poser.pugx.org/reliese/laravel/license)](https://packagist.org/packages/reliese/laravel)
 
-Laravel Model Generator aims to speed up the development process of Laravel applications by 
+Reliese Laravel Model Generator aims to speed up the development process of Laravel applications by 
 providing some convenient code-generation capabilities. 
 The tool inspects your database structure, including column names and foreign keys, in order 
 to automatically generate Models that have correctly typed properties, along with any relationships to other Models.
