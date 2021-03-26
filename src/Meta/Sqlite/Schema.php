@@ -36,7 +36,7 @@ class Schema implements \Reliese\Meta\Schema
      * Mapper constructor.
      *
      * @param string $schema
-     * @param \Illuminate\Database\MySqlConnection $connection
+     * @param \Illuminate\Database\SQLiteConnection $connection
      */
     public function __construct($schema, $connection)
     {

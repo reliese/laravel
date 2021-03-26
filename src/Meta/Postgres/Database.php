@@ -12,11 +12,20 @@ use function array_diff;
 class Database implements DatabaseInterface
 {
     /**
-     * @var \Illuminate\Database\Connection
+     * @var Schema[]
+     */
+    private $schemaAdapters = [];
+
+    /**
+     * @var \Illuminate\Database\PostgresConnection
      */
     private $connection;
 
-    public function __construct(\Illuminate\Database\Connection $connection)
+    /**
+     * Database constructor.
+     * @param \Illuminate\Database\PostgresConnection $connection
+     */
+    public function __construct(\Illuminate\Database\PostgresConnection $connection)
     {
         $this->connection = $connection;
     }
@@ -33,5 +42,17 @@ class Database implements DatabaseInterface
             'template0',
             'template1',
         ]);
+    }
+
+    /**
+     * @param string $schemaName
+     * @return Schema
+     */
+    public function getSchema($schemaName)
+    {
+        if (!empty($this->schemaAdapters[$schemaName])) {
+            return $this->schemaAdapters[$schemaName];
+        }
+        return $this->schemaAdapters[$schemaName] = new Schema($schemaName, $this->connection);
     }
 }
