@@ -194,12 +194,12 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @param \Illuminate\Database\Connection $connection
-     *
+     * @deprecated use \Reliese\Meta\Sqlite\Database::getSchemaNames
      * @return array
      */
     public static function schemas(Connection $connection)
     {
-        return ['database'];
+        return (new Database($connection))->getSchemaNames();
     }
 
     /**
