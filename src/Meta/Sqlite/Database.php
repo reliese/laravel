@@ -2,10 +2,12 @@
 
 namespace Reliese\Meta\Sqlite;
 
+use Reliese\Meta\DatabaseInterface;
+
 /**
  * Class Database
  */
-class Database
+class Database implements DatabaseInterface
 {
     /**
      * @var \Illuminate\Database\Connection

@@ -2,12 +2,14 @@
 
 namespace Reliese\Meta\MySql;
 
+use Reliese\Meta\DatabaseInterface;
+
 use function array_diff;
 
 /**
  * Class Database
  */
-class Database
+class Database implements DatabaseInterface
 {
     /**
      * @var \Illuminate\Database\Connection
