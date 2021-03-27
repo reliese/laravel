@@ -18,6 +18,7 @@ class TableBlueprint
      * @var SchemaBlueprint
      */
     private $schemaBlueprint;
+
     /**
      * @var DeprecatedTableBlueprint
      */
@@ -25,16 +26,17 @@ class TableBlueprint
 
     /**
      * TableBlueprint constructor.
-     * @param $tableName
      * @param SchemaBlueprint $schemaBlueprint
+     * @param $tableName
+     * @param DeprecatedTableBlueprint $deprecatedTableBlueprint
      */
     public function __construct(
         SchemaBlueprint $schemaBlueprint,
-        $tableName,
-        DeprecatedTableBlueprint $depricatedTableBlueprint
+        string $tableName,
+        DeprecatedTableBlueprint $deprecatedTableBlueprint
     ) {
         $this->tableName = $tableName;
         $this->schemaBlueprint = $schemaBlueprint;
-        $this->deprecatedTableBlueprint = $depricatedTableBlueprint;
+        $this->deprecatedTableBlueprint = $deprecatedTableBlueprint;
     }
 }

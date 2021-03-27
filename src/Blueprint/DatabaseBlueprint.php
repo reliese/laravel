@@ -2,8 +2,8 @@
 
 namespace Reliese\Blueprint;
 
+use Illuminate\Database\ConnectionInterface;
 use Reliese\Meta\DatabaseInterface;
-use RuntimeException;
 
 /**
  * Class DatabaseManager
@@ -18,14 +18,15 @@ class DatabaseBlueprint
     private $connectionName;
 
     /**
-     * @var \Illuminate\Database\Connection
+     * @var ConnectionInterface
      */
     private $connection;
 
     /**
      * @var SchemaBlueprint[]
      */
-    private $schemaBlueprints;
+    private $schemaBlueprints = [];
+
     /**
      * @var DatabaseInterface
      */
@@ -35,12 +36,12 @@ class DatabaseBlueprint
      * DatabaseBlueprint constructor.
      * @param DatabaseInterface $databaseAdapter
      * @param string $connectionName
-     * @param \Illuminate\Database\Connection $connection
+     * @param ConnectionInterface $connection
      */
     public function __construct(
-        $databaseAdapter,
-        $connectionName,
-        $connection
+        DatabaseInterface $databaseAdapter,
+        string $connectionName,
+        ConnectionInterface $connection
     ) {
         $this->connectionName = $connectionName;
         $this->connection = $connection;
@@ -49,10 +50,10 @@ class DatabaseBlueprint
 
     /**
      * If a schema name is not provided, then the default schema for the connection will be used
-     * @param string|null $schemaName
+     * @param string $schemaName
      * @return SchemaBlueprint
      */
-    public function schema($schemaName)
+    public function schema(string $schemaName): SchemaBlueprint
     {
         if (!empty($this->schemaBlueprints[$schemaName])) {
             return $this->schemaBlueprints[$schemaName];
@@ -65,13 +66,11 @@ class DatabaseBlueprint
         );
     }
 
-    # region Accessors
     /**
-     * @return \Illuminate\Database\Connection
+     * @return ConnectionInterface
      */
-    public function getConnection()
+    public function getConnection(): ConnectionInterface
     {
         return $this->connection;
     }
-    # endregion Accessors
 }

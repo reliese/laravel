@@ -3,16 +3,8 @@
 namespace Reliese\Blueprint;
 
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Database\MySqlConnection;
-use Illuminate\Database\PostgresConnection;
-use Illuminate\Database\SQLiteConnection;
 use Reliese\Coders\Model\Config;
-
 use Reliese\Meta\AdapterFactory;
-use Reliese\Meta\DatabaseInterface;
-use Reliese\Meta\MySql\Database as MySqlDatabase;
-use Reliese\Meta\Postgres\Database as PostgresDatabase;
-use Reliese\Meta\Sqlite\Database as SqliteDatabase;
 
 use function get_class;
 
@@ -43,16 +35,16 @@ class BlueprintFactory
 
     /**
      * BlueprintFactory constructor.
-     * @param DatabaseManager $databaseManager
      * @param AdapterFactory $adapterFactory
+     * @param DatabaseManager $laravelDatabaseManager
      * @param Config $config
      */
     public function __construct(
-        $adapterFactory,
-        $databaseManager,
-        $config
+        AdapterFactory $adapterFactory,
+        DatabaseManager $laravelDatabaseManager,
+        Config $config
     ) {
-        $this->laravelDatabaseManager = $databaseManager;
+        $this->laravelDatabaseManager = $laravelDatabaseManager;
         $this->config = $config;
         $this->adapterFactory = $adapterFactory;
     }
@@ -61,7 +53,7 @@ class BlueprintFactory
      * @param $connectionName
      * @return DatabaseBlueprint
      */
-    public function database($connectionName)
+    public function database($connectionName): DatabaseBlueprint
     {
         if (!empty($this->databaseBlueprints[$connectionName])) {
             return $this->databaseBlueprints[$connectionName];

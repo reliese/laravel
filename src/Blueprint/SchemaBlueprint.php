@@ -13,19 +13,19 @@ use function get_class;
 class SchemaBlueprint
 {
     /**
-     * @var
+     * @var string
      */
     private $schemaName;
 
     /**
-     * @var
+     * @var DatabaseBlueprint
      */
     private $databaseBlueprint;
 
     /**
      * @var TableBlueprint[]
      */
-    private $tableBlueprints;
+    private $tableBlueprints = [];
 
     /**
      * @deprecated The SchemaBlueprint class should replace usage of SchemaManager. To maintain backwards compatibility,
@@ -34,6 +34,7 @@ class SchemaBlueprint
      * @var SchemaManager
      */
     private $schemaManager;
+
     /**
      * @var Schema
      */
@@ -42,21 +43,17 @@ class SchemaBlueprint
     /**
      * SchemaBlueprint constructor.
      * @param Schema $schemaAdapter
-     * @param string $schemaName
      * @param DatabaseBlueprint $databaseBlueprint
+     * @param string $schemaName
      */
     public function __construct(
-        $databaseBlueprint,
+        DatabaseBlueprint $databaseBlueprint,
         Schema $schemaAdapter,
-        $schemaName
+        string $schemaName
     ) {
+        $this->databaseBlueprint = $databaseBlueprint;
         $this->schemaAdapter = $schemaAdapter;
         $this->schemaName = $schemaName;
-        $this->databaseBlueprint = $databaseBlueprint;
-
-        $this->schemaManager = new SchemaManager(
-            $databaseBlueprint->getConnection()
-        );
     }
 
     public function table($tableName)
