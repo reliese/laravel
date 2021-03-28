@@ -2,7 +2,7 @@
 
 namespace Reliese\Analyser\MySql;
 
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\MySqlConnection;
 use Reliese\Analyser\DatabaseAnalyserInterface;
 use Reliese\Analyser\SchemaAnalyserInterface;
 use Reliese\Blueprint\DatabaseBlueprint;
@@ -17,7 +17,7 @@ class MySqlDatabaseAnalyser implements DatabaseAnalyserInterface
     const COMPATIBILITY_TYPE_NAME = 'MySql';
 
     /**
-     * @var ConnectionInterface
+     * @var MySqlConnection
      */
     private $connection;
 
@@ -34,10 +34,10 @@ class MySqlDatabaseAnalyser implements DatabaseAnalyserInterface
     /**
      * MySqlDatabaseAnalyser constructor.
      *
-     * @param ConnectionInterface $connection
+     * @param MySqlConnection $connection
      * @param OutputInterface     $output
      */
-    public function __construct(ConnectionInterface $connection, OutputInterface $output)
+    public function __construct(MySqlConnection $connection, OutputInterface $output)
     {
         $this->connection = $connection;
         $this->output = $output;
@@ -52,9 +52,9 @@ class MySqlDatabaseAnalyser implements DatabaseAnalyserInterface
     }
 
     /**
-     * @return ConnectionInterface
+     * @return MySqlConnection
      */
-    public function getConnection(): ConnectionInterface
+    public function getConnection(): MySqlConnection
     {
         return $this->connection;
     }

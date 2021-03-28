@@ -2,7 +2,7 @@
 
 namespace Reliese\Analyser\MySql;
 
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\MySqlConnection;
 
 /**
  * Trait WithMySqlSchemaAnalyserTrait
@@ -39,9 +39,9 @@ trait MySqlSchemaAnalyserTrait
     }
 
     /**
-     * @return ConnectionInterface
+     * @return MySqlConnection
      */
-    public function getConnection() : ConnectionInterface
+    public function getConnection() : MySqlConnection
     {
         return $this->getMySqlSchemaAnalyser()->getConnection();
     }

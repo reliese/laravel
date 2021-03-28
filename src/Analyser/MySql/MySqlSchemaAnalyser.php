@@ -2,7 +2,7 @@
 
 namespace Reliese\Analyser\MySql;
 
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\MySqlConnection;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\SchemaBlueprint;
 
@@ -118,9 +118,9 @@ AND t.TABLE_TYPE = 'VIEW'
     }
 
     /**
-     * @return ConnectionInterface
+     * @return MySqlConnection
      */
-    public function getConnection(): ConnectionInterface
+    public function getConnection(): MySqlConnection
     {
         return $this->mySqlDatabaseAnalyser->getConnection();
     }

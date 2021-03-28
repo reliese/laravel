@@ -2,7 +2,7 @@
 
 namespace Reliese\Analyser\MySql;
 
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\MySqlConnection;
 use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\ColumnOwnerInterface;
 /**
@@ -13,16 +13,16 @@ trait MySqlAnalyseColumnsTrait
     /**
      * @return string
      */
-    abstract function getSchemaName(): string;
+    abstract public function getSchemaName(): string;
 
     /**
-     * @return ConnectionInterface
+     * @return MySqlConnection
      */
-    abstract function getConnection(): ConnectionInterface;
+    abstract public function getConnection(): MySqlConnection;
 
     /**
      * @param ColumnOwnerInterface $columnOwner
-     * @param string               $tableOrViewName
+     * @param string $tableOrViewName
      */
     public function analyseColumns(ColumnOwnerInterface $columnOwner, string $tableOrViewName)
     {
@@ -54,7 +54,11 @@ AND C.TABLE_NAME = '{$tableOrViewName}'
                 $row->numeric_precision,
                 $row->numeric_scale,
                 $row->is_autoincrement,
-                $row->has_default);
+                $row->has_default
+            // Comments
+            // Enums
+            // Unsigned
+            );
 
             $columnOwner->addColumnBlueprint($columnBlueprint);
         }
