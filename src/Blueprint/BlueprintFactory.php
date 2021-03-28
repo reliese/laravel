@@ -2,11 +2,12 @@
 
 namespace Reliese\Blueprint;
 
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\DatabaseManager;
+use Reliese\Analyser\AnalyserFactory;
 use Reliese\Coders\Model\Config;
-use Reliese\Meta\AdapterFactory;
-
-use function get_class;
+use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class DatabaseFactory
@@ -14,14 +15,9 @@ use function get_class;
 class BlueprintFactory
 {
     /**
-     * @var DatabaseBlueprint
+     * @var AnalyserFactory
      */
-    private $laravelDatabaseManager;
-
-    /**
-     * @var DatabaseBlueprint[]
-     */
-    private $databaseBlueprints = [];
+    private $adapterFactory;
 
     /**
      * @var Config
@@ -29,28 +25,42 @@ class BlueprintFactory
     private $config;
 
     /**
-     * @var AdapterFactory
+     * @var DatabaseBlueprint[]
      */
-    private $adapterFactory;
+    private $databaseBlueprints = [];
+
+    /**
+     * @var DatabaseBlueprint
+     */
+    private $laravelDatabaseManager;
+
+    /**
+     * @var OutputInterface
+     */
+    private $output;
 
     /**
      * BlueprintFactory constructor.
-     * @param AdapterFactory $adapterFactory
+     *
+     * @param AnalyserFactory $analyserFactory
      * @param DatabaseManager $laravelDatabaseManager
-     * @param Config $config
+     * @param Config          $config
+     * @param OutputInterface $output
      */
-    public function __construct(
-        AdapterFactory $adapterFactory,
+    public function __construct(AnalyserFactory $analyserFactory,
         DatabaseManager $laravelDatabaseManager,
-        Config $config
-    ) {
+        Config $config,
+        OutputInterface $output)
+    {
         $this->laravelDatabaseManager = $laravelDatabaseManager;
         $this->config = $config;
-        $this->adapterFactory = $adapterFactory;
+        $this->adapterFactory = $analyserFactory;
+        $this->output = $output;
     }
 
     /**
      * @param $connectionName
+     *
      * @return DatabaseBlueprint
      */
     public function database($connectionName): DatabaseBlueprint
@@ -60,13 +70,31 @@ class BlueprintFactory
         }
 
         $connection = $this->laravelDatabaseManager->connection($connectionName);
-
-        $databaseBlueprint = new DatabaseBlueprint(
-            $this->adapterFactory->database($connection),
-            $connectionName,
-            $connection
+        $databaseAnalyser = $this->adapterFactory->database(
+            $connection,
+            $this->output
         );
+        $databaseBlueprint = $databaseAnalyser->analyseDatabase();
+
+        if (!$this->isCompleteBlueprint($databaseBlueprint)) {
+            throw new RuntimeException(get_class($this) . '->initializeBlueprint returned an incomplete blueprint. See console messages for details.');
+        }
 
         return $this->databaseBlueprints[$connectionName] = $databaseBlueprint;
+    }
+
+
+    protected function isCompleteBlueprint(DatabaseBlueprint $databaseBlueprint)
+    {
+        /*
+         * Has at least one schema
+         */
+        if (empty($databaseBlueprint->getSchemaNames())) {
+            $this->output->writeln(sprintf("Blueprint for connection \"%s\" is incomplete because it does not contain at least one schema",
+                $databaseBlueprint->getConnectionName()));
+            return false;
+        }
+
+        return true;
     }
 }

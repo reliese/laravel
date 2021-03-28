@@ -2,25 +2,20 @@
 
 namespace Reliese\Blueprint;
 
-use Reliese\Meta\Schema;
-use Reliese\Meta\SchemaManager;
-
-use function get_class;
-
 /**
  * Class SchemaBlueprint
  */
 class SchemaBlueprint
 {
     /**
-     * @var string
-     */
-    private $schemaName;
-
-    /**
      * @var DatabaseBlueprint
      */
     private $databaseBlueprint;
+
+    /**
+     * @var string
+     */
+    private $schemaName;
 
     /**
      * @var TableBlueprint[]
@@ -28,55 +23,73 @@ class SchemaBlueprint
     private $tableBlueprints = [];
 
     /**
-     * @deprecated The SchemaBlueprint class should replace usage of SchemaManager. To maintain backwards compatibility,
-     * SchemaBlueprint wraps SchemaManager
-     *
-     * @var SchemaManager
+     * @var ViewBlueprint[]
      */
-    private $schemaManager;
-
-    /**
-     * @var Schema
-     */
-    private $schemaAdapter;
+    private $viewBlueprints = [];
 
     /**
      * SchemaBlueprint constructor.
-     * @param Schema $schemaAdapter
+     *
      * @param DatabaseBlueprint $databaseBlueprint
-     * @param string $schemaName
+     * @param string            $schemaName
      */
-    public function __construct(
-        DatabaseBlueprint $databaseBlueprint,
-        Schema $schemaAdapter,
-        string $schemaName
-    ) {
-        $this->databaseBlueprint = $databaseBlueprint;
-        $this->schemaAdapter = $schemaAdapter;
+    public function __construct(DatabaseBlueprint $databaseBlueprint, string $schemaName)
+    {
         $this->schemaName = $schemaName;
+        $this->databaseBlueprint = $databaseBlueprint;
     }
 
-    public function table($tableName)
+    /**
+     * @param TableBlueprint $tableBlueprint
+     */
+    public function addTableBlueprint(TableBlueprint $tableBlueprint)
     {
-        if (!empty($this->tableBlueprints[$tableName])) {
-            return $this->tableBlueprints[$tableName];
-        }
-
-        $blueprint = $this->schemaAdapter->table($tableName);
-
-        return $this->tableBlueprints[$tableName] = new TableBlueprint(
-            $this,
-            $tableName,
-            $blueprint
-        );
+        $this->tableBlueprints[$tableBlueprint->getName()] = $tableBlueprint;
     }
 
-    public function schemaAdapter()
+    /**
+     * @param ViewBlueprint $viewBlueprint
+     */
+    public function addViewBlueprint(ViewBlueprint $viewBlueprint)
     {
-
+        $this->viewBlueprints[$viewBlueprint->getName()] = $viewBlueprint;
     }
 
-    # region Accessors
+    /**
+     * The DatabaseBlueprint that owns this SchemaBlueprint
+     *
+     * @return DatabaseBlueprint
+     */
+    public function getDatabaseBlueprint(): DatabaseBlueprint
+    {
+        return $this->databaseBlueprint;
+    }
 
-    # endregion Accessors
+    /**
+     * The name of this schema within the database
+     *
+     * @return string
+     */
+    public function getSchemaName(): string
+    {
+        return $this->schemaName;
+    }
+
+    /**
+     * @return TableBlueprint[]
+     */
+    public function getTableBlueprints(): array
+    {
+        return $this->tableBlueprints;
+    }
+
+    /**
+     * Returns an array of strings identifying the tables that can be accessed through the current connection.
+     *
+     * @return string[]
+     */
+    public function getTableNames(): array
+    {
+        return array_keys($this->tableBlueprints);
+    }
 }

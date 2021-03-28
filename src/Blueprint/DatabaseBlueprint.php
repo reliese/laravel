@@ -2,25 +2,16 @@
 
 namespace Reliese\Blueprint;
 
-use Illuminate\Database\ConnectionInterface;
-use Reliese\Meta\DatabaseInterface;
-
+use InvalidArgumentException;
 /**
  * Class DatabaseManager
  */
 class DatabaseBlueprint
 {
     /**
-     * The name of the connection from the Laravel config/database.php file
-     *
-     * @var string
+     * @var DatabaseDescriptionDto
      */
-    private $connectionName;
-
-    /**
-     * @var ConnectionInterface
-     */
-    private $connection;
+    private $databaseDescriptionDto;
 
     /**
      * @var SchemaBlueprint[]
@@ -28,49 +19,61 @@ class DatabaseBlueprint
     private $schemaBlueprints = [];
 
     /**
-     * @var DatabaseInterface
-     */
-    private $databaseAdapter;
-
-    /**
      * DatabaseBlueprint constructor.
-     * @param DatabaseInterface $databaseAdapter
-     * @param string $connectionName
-     * @param ConnectionInterface $connection
+     *
+     * @param DatabaseDescriptionDto $databaseDescriptionDto
      */
     public function __construct(
-        DatabaseInterface $databaseAdapter,
-        string $connectionName,
-        ConnectionInterface $connection
+        DatabaseDescriptionDto $databaseDescriptionDto
     ) {
-        $this->connectionName = $connectionName;
-        $this->connection = $connection;
-        $this->databaseAdapter = $databaseAdapter;
+        $this->databaseDescriptionDto = $databaseDescriptionDto;
     }
 
     /**
-     * If a schema name is not provided, then the default schema for the connection will be used
+     * @return DatabaseDescriptionDto
+     */
+    public function getDatabaseDescriptionDto(): DatabaseDescriptionDto
+    {
+        return $this->databaseDescriptionDto;
+    }
+
+    /**
+     * @param SchemaBlueprint $schemaBlueprint
+     */
+    public function addSchemaBlueprint(SchemaBlueprint $schemaBlueprint)
+    {
+        $this->schemaBlueprints[$schemaBlueprint->getSchemaName()] = $schemaBlueprint;
+    }
+
+    /**
      * @param string $schemaName
+     *
      * @return SchemaBlueprint
      */
-    public function schema(string $schemaName): SchemaBlueprint
+    public function getSchemaBlueprint(string $schemaName): SchemaBlueprint
     {
-        if (!empty($this->schemaBlueprints[$schemaName])) {
-            return $this->schemaBlueprints[$schemaName];
+        if (empty($this->getSchemaBlueprints()[$schemaName])) {
+            throw new InvalidArgumentException("Unable to find SchemaBlueprint for \"$schemaName\"");
         }
 
-        return $this->schemaBlueprints[$schemaName] = new SchemaBlueprint(
-            $this,
-            $this->databaseAdapter->getSchema($schemaName),
-            $schemaName
-        );
+        return $this->getSchemaBlueprints()[$schemaName];
     }
 
     /**
-     * @return ConnectionInterface
+     * @return SchemaBlueprint[]
      */
-    public function getConnection(): ConnectionInterface
+    public function getSchemaBlueprints(): array
     {
-        return $this->connection;
+        return $this->schemaBlueprints;
+    }
+
+    /**
+     * Returns an array of strings identifying the schemas that can be accessed through the current connection.
+     *
+     * @return string[]
+     */
+    public function getSchemaNames(): array
+    {
+        return array_keys($this->getSchemaBlueprints());
     }
 }

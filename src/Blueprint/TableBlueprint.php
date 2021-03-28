@@ -2,41 +2,32 @@
 
 namespace Reliese\Blueprint;
 
-use Reliese\Meta\Blueprint as DeprecatedTableBlueprint;
-
 /**
  * Class TableBlueprint
  */
-class TableBlueprint
+class TableBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
 {
-    /**
-     * @var string
-     */
-    private $tableName;
-
-    /**
-     * @var SchemaBlueprint
-     */
-    private $schemaBlueprint;
-
-    /**
-     * @var DeprecatedTableBlueprint
-     */
-    private $deprecatedTableBlueprint;
+    use SchemaMemberTrait;
+    use ColumnOwnerTrait;
 
     /**
      * TableBlueprint constructor.
+     *
      * @param SchemaBlueprint $schemaBlueprint
-     * @param $tableName
-     * @param DeprecatedTableBlueprint $deprecatedTableBlueprint
+     * @param string          $tableName
      */
-    public function __construct(
-        SchemaBlueprint $schemaBlueprint,
-        string $tableName,
-        DeprecatedTableBlueprint $deprecatedTableBlueprint
-    ) {
-        $this->tableName = $tableName;
-        $this->schemaBlueprint = $schemaBlueprint;
-        $this->deprecatedTableBlueprint = $deprecatedTableBlueprint;
+    public function __construct(SchemaBlueprint $schemaBlueprint,
+        string $tableName)
+    {
+        $this->setSchemaBlueprint($schemaBlueprint);
+        $this->setName($tableName);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSchemaMemberType(): SchemaMemberType
+    {
+        return SchemaMemberType::Table();
     }
 }
