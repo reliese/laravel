@@ -14,7 +14,7 @@ class HasOne extends HasOneOrMany
     /**
      * @return string
      */
-    public function hint()
+    public function hint(): string
     {
         return $this->related->getQualifiedUserClassName();
     }
@@ -22,7 +22,7 @@ class HasOne extends HasOneOrMany
     /**
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         if ($this->parent->usesSnakeAttributes()) {
             return Str::snake($this->related->getClassName());
@@ -34,7 +34,7 @@ class HasOne extends HasOneOrMany
     /**
      * @return string
      */
-    public function method()
+    public function method(): string
     {
         return 'hasOne';
     }

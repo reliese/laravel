@@ -7,25 +7,24 @@
 
 namespace Reliese\Coders\Model\Relations;
 
-use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
 
 class HasOneOrManyStrategy implements Relation
 {
     /**
-     * @var \Reliese\Coders\Model\Relation
+     * @var Relation
      */
     protected $relation;
 
     /**
      * HasManyWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent $command
-     * @param \Reliese\Coders\Model\Model $parent
-     * @param \Reliese\Coders\Model\Model $related
+     * @param \Reliese\Meta\Relation $command
+     * @param Model $parent
+     * @param Model $related
      */
-    public function __construct(Fluent $command, Model $parent, Model $related)
+    public function __construct(\Reliese\Meta\Relation $command, Model $parent, Model $related)
     {
         if (
             $related->isPrimaryKey($command) ||
@@ -40,7 +39,7 @@ class HasOneOrManyStrategy implements Relation
     /**
      * @return string
      */
-    public function hint()
+    public function hint(): string
     {
         return $this->relation->hint();
     }
@@ -48,7 +47,7 @@ class HasOneOrManyStrategy implements Relation
     /**
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         return $this->relation->name();
     }
@@ -56,7 +55,7 @@ class HasOneOrManyStrategy implements Relation
     /**
      * @return string
      */
-    public function body()
+    public function body(): string
     {
         return $this->relation->body();
     }

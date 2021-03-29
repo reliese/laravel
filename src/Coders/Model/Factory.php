@@ -7,8 +7,11 @@
 
 namespace Reliese\Coders\Model;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
+use Reliese\Meta\RelationBag;
+use Reliese\Meta\Schema;
 use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
 use Illuminate\Filesystem\Filesystem;
@@ -17,47 +20,47 @@ use Illuminate\Database\DatabaseManager;
 class Factory
 {
     /**
-     * @var \Illuminate\Database\DatabaseManager
+     * @var DatabaseManager
      */
     private $db;
 
     /**
-     * @var \Reliese\Meta\SchemaManager
+     * @var SchemaManager|Schema[]
      */
     protected $schemas = [];
 
     /**
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var Filesystem
      */
     protected $files;
 
     /**
-     * @var \Reliese\Support\Classify
+     * @var Classify
      */
     protected $class;
 
     /**
-     * @var \Reliese\Coders\Model\Config
+     * @var Config
      */
     protected $config;
 
     /**
-     * @var \Reliese\Coders\Model\ModelManager
+     * @var ModelManager
      */
     protected $models;
 
     /**
-     * @var \Reliese\Coders\Model\Mutator[]
+     * @var Mutator[]
      */
     protected $mutators = [];
 
     /**
      * ModelsFactory constructor.
      *
-     * @param \Illuminate\Database\DatabaseManager $db
-     * @param \Illuminate\Filesystem\Filesystem $files
-     * @param \Reliese\Support\Classify $writer
-     * @param \Reliese\Coders\Model\Config $config
+     * @param DatabaseManager $db
+     * @param Filesystem $files
+     * @param Classify $writer
+     * @param Config $config
      */
     public function __construct(DatabaseManager $db, Filesystem $files, Classify $writer, Config $config)
     {
@@ -68,17 +71,17 @@ class Factory
     }
 
     /**
-     * @return \Reliese\Coders\Model\Mutator
+     * @return Mutator
      */
-    public function mutate()
+    public function mutate(): Mutator
     {
         return $this->mutators[] = new Mutator();
     }
 
     /**
-     * @return \Reliese\Coders\Model\ModelManager
+     * @return ModelManager
      */
-    protected function models()
+    protected function models(): ModelManager
     {
         if (! isset($this->models)) {
             $this->models = new ModelManager($this);
@@ -92,9 +95,9 @@ class Factory
      *
      * @param string $connection
      *
-     * @return $this
+     * @return Factory
      */
-    public function on($connection = null)
+    public function on($connection = null): Factory
     {
         $this->schemas = new SchemaManager($this->db->connection($connection));
 
@@ -103,8 +106,10 @@ class Factory
 
     /**
      * @param string $schema
+     *
+     * @throws FileNotFoundException
      */
-    public function map($schema)
+    public function map(string $schema)
     {
         if (! isset($this->schemas)) {
             $this->on();
@@ -120,11 +125,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param Blueprint $blueprint
      *
      * @return bool
      */
-    protected function shouldNotExclude(Blueprint $blueprint)
+    protected function shouldNotExclude(Blueprint $blueprint): bool
     {
         foreach ($this->config($blueprint, 'except', []) as $pattern) {
             if (Str::is($pattern, $blueprint->table())) {
@@ -136,11 +141,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param Blueprint $blueprint
      *
      * @return bool
      */
-    protected function shouldTakeOnly(Blueprint $blueprint)
+    protected function shouldTakeOnly(Blueprint $blueprint): bool
     {
         if ($patterns = $this->config($blueprint, 'only', [])) {
             foreach ($patterns as $pattern) {
@@ -158,8 +163,10 @@ class Factory
     /**
      * @param string $schema
      * @param string $table
+     *
+     * @throws FileNotFoundException
      */
-    public function create($schema, $table)
+    public function create(string $schema, string $table)
     {
         $model = $this->makeModel($schema, $table);
         $template = $this->prepareTemplate($model, 'model');
@@ -180,12 +187,11 @@ class Factory
     /**
      * @param string $schema
      * @param string $table
-     *
      * @param bool $withRelations
      *
-     * @return \Reliese\Coders\Model\Model
+     * @return Model
      */
-    public function makeModel($schema, $table, $withRelations = true)
+    public function makeModel(string $schema, string $table, $withRelations = true): Model
     {
         return $this->models()->make($schema, $table, $this->mutators, $withRelations);
     }
@@ -193,22 +199,22 @@ class Factory
     /**
      * @param string $schema
      *
-     * @return \Reliese\Meta\Schema
+     * @return Schema
      */
-    public function makeSchema($schema)
+    public function makeSchema(string $schema): Schema
     {
         return $this->schemas->make($schema);
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
-     * @todo: Delegate workload to SchemaManager and ModelManager
-     *
-     * @return array
+     * @return RelationBag[]
+     *@todo: Delegate workload to SchemaManager and ModelManager
      */
-    public function referencing(Model $model)
+    public function referencing(Model $model): array
     {
+        /** @var RelationBag[] $references */
         $references = [];
 
         // TODO: SchemaManager should do this
@@ -217,24 +223,27 @@ class Factory
         }
 
         // TODO: ModelManager should do this
-        foreach ($references as &$related) {
-            $blueprint = $related['blueprint'];
-            $related['model'] = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table())
+        foreach ($references as $related) {
+            $blueprint = $related->getBlueprint();
+
+            $model = $model->getBlueprint()->is($blueprint->schema(), $blueprint->table())
                 ? $model
                 : $this->makeModel($blueprint->schema(), $blueprint->table(), false);
+
+            $related->withModel($model);
         }
 
         return $references;
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      * @param string $name
      *
      * @return string
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
-    protected function prepareTemplate(Model $model, $name)
+    protected function prepareTemplate(Model $model, string $name): string
     {
         $defaultFile = $this->path([__DIR__, 'Templates', $name]);
         $file = $this->config($model->getBlueprint(), "*.template.$name", $defaultFile);
@@ -244,11 +253,11 @@ class Factory
 
     /**
      * @param string $template
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
      * @return mixed
      */
-    protected function fillTemplate($template, Model $model)
+    protected function fillTemplate(string $template, Model $model)
     {
         $template = str_replace('{{namespace}}', $model->getBaseNamespace(), $template);
         $template = str_replace('{{class}}', $model->getClassName(), $template);
@@ -278,7 +287,7 @@ class Factory
      * @param Model $model
      * @return string
      */
-    private function imports($dependencies, Model $model)
+    private function imports(array $dependencies, Model $model): string
     {
         $imports = [];
         foreach ($dependencies as $dependencyClass) {
@@ -305,11 +314,11 @@ class Factory
      * Extract and replace fully-qualified class names from placeholder.
      *
      * @param string $placeholder Placeholder to extract class names from. Rewrites value to content without FQN
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
      * @return array Extracted FQN
      */
-    private function shortenAndExtractImportableDependencies(&$placeholder, $model)
+    private function shortenAndExtractImportableDependencies(string &$placeholder, Model $model): array
     {
         $qualifiedClassesPattern = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
         $matches = [];
@@ -336,11 +345,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
      * @return string
      */
-    protected function properties(Model $model)
+    protected function properties(Model $model): string
     {
         // Process property annotations
         $annotations = '';
@@ -366,11 +375,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
      * @return string
      */
-    protected function body(Model $model)
+    protected function body(Model $model): string
     {
         $body = '';
 
@@ -481,12 +490,12 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      * @param array $custom
      *
      * @return string
      */
-    protected function modelPath(Model $model, $custom = [])
+    protected function modelPath(Model $model, $custom = []): string
     {
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
 
@@ -502,25 +511,25 @@ class Factory
      *
      * @return string
      */
-    protected function path($pieces)
+    protected function path(array $pieces): string
     {
         return implode(DIRECTORY_SEPARATOR, (array) $pieces);
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
      * @return bool
      */
-    public function needsUserFile(Model $model)
+    public function needsUserFile(Model $model): bool
     {
         return ! $this->files->exists($this->modelPath($model)) && $model->usesBaseFiles();
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws FileNotFoundException
      */
     protected function createUserFile(Model $model)
     {
@@ -540,7 +549,7 @@ class Factory
      * @param Model $model
      * @return string
      */
-    private function formatBaseClasses(Model $model)
+    private function formatBaseClasses(Model $model): string
     {
         return "use {$model->getBaseNamespace()}\\{$model->getClassName()} as {$this->getBaseClassName($model)};";
     }
@@ -549,17 +558,17 @@ class Factory
      * @param Model $model
      * @return string
      */
-    private function getBaseClassName(Model $model)
+    private function getBaseClassName(Model $model): string
     {
         return 'Base'.$model->getClassName();
     }
 
     /**
-     * @param \Reliese\Coders\Model\Model $model
+     * @param Model $model
      *
      * @return string
      */
-    protected function userFileBody(Model $model)
+    protected function userFileBody(Model $model): string
     {
         $body = '';
 
@@ -578,11 +587,11 @@ class Factory
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint|null $blueprint
+     * @param Blueprint|null $blueprint
      * @param string $key
      * @param mixed $default
      *
-     * @return mixed|\Reliese\Coders\Model\Config
+     * @return mixed|Config
      */
     public function config(Blueprint $blueprint = null, $key = null, $default = null)
     {

@@ -3,8 +3,10 @@
 namespace Reliese\Coders\Console;
 
 use Illuminate\Console\Command;
+use Reliese\Blueprint\BlueprintFactory;
 use Reliese\Coders\Model\Factory;
 use Illuminate\Contracts\Config\Repository;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CodeModelsCommand extends Command
 {
@@ -51,13 +53,36 @@ class CodeModelsCommand extends Command
 
     /**
      * Execute the console command.
+     *
+     * @param BlueprintFactory $blueprintFactory
      */
-    public function handle()
+    public function handle(BlueprintFactory $blueprintFactory)
     {
         $connection = $this->getConnection();
         $schema = $this->getSchema($connection);
         $table = $this->getTable();
 
+        $this->output->writeln("");
+
+        $databaseBlueprint = $blueprintFactory->database($connection);
+
+        foreach ($databaseBlueprint->getSchemaBlueprints() as $schemaBlueprint) {
+            $this->output->writeln(
+                sprintf(
+                    $schemaBlueprint->getSchemaName()." has \"%s\" tables",
+                    count($schemaBlueprint->getTableBlueprints())
+                )
+            );
+            $tableData = [];
+            foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
+                $tableData[] = [$tableBlueprint->getName(), \implode(', ', $tableBlueprint->getColumnNames())];
+            }
+            $this->output->table(
+                ['table', 'columns'],
+                $tableData
+            );
+        }
+        return;
         // Check whether we just need to generate one table
         if ($table) {
             $this->models->on($connection)->create($schema, $table);

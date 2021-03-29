@@ -59,7 +59,7 @@ class ModelTest extends TestCase
                 \Mockery::mock(\Illuminate\Database\DatabaseManager::class),
                 \Mockery::mock(Illuminate\Filesystem\Filesystem::class),
                 \Mockery::mock(\Reliese\Support\Classify::class),
-                new \Reliese\Coders\Model\Config()
+                new \Reliese\Coders\Model\Config($this->getSampleConfig())
             )
         );
 
@@ -74,18 +74,24 @@ class ModelTest extends TestCase
      */
     public function testBelongsToNullableRelationships($nullable, $expectedTypehint)
     {
-        $columnDefinition = new Fluent(
-            [
-                'nullable' => $nullable,
-            ]
-        );
+        $columnBag = new \Reliese\Meta\ColumnBag();
+        $columnBag->withName('')
+            ->withTypeString();
+
+        if ($nullable) {
+            $columnBag->isNullable();
+        }
+
+        $columnDefinition = $columnBag->asColumn();
+
+        $primaryKey = new \Reliese\Meta\Index('', 'primary', []);
 
         $baseBlueprint = Mockery::mock(Blueprint::class);
         $baseBlueprint->shouldReceive('columns')->andReturn([$columnDefinition]);
         $baseBlueprint->shouldReceive('schema')->andReturn('test');
         $baseBlueprint->shouldReceive('qualifiedTable')->andReturn('test.test');
         $baseBlueprint->shouldReceive('connection')->andReturn('test');
-        $baseBlueprint->shouldReceive('primaryKey')->andReturn(new Fluent(['columns' => []]));
+        $baseBlueprint->shouldReceive('primaryKey')->andReturn($primaryKey);
         $baseBlueprint->shouldReceive('relations')->andReturn([]);
         $baseBlueprint->shouldReceive('table')->andReturn('things');
         $baseBlueprint->shouldReceive('column')->andReturn($columnDefinition);
@@ -96,16 +102,13 @@ class ModelTest extends TestCase
                 \Mockery::mock(\Illuminate\Database\DatabaseManager::class),
                 \Mockery::mock(Illuminate\Filesystem\Filesystem::class),
                 \Mockery::mock(\Reliese\Support\Classify::class),
-                new \Reliese\Coders\Model\Config()
+                new \Reliese\Coders\Model\Config($this->getSampleConfig())
             )
         );
 
-        $relation = new BelongsTo(
-            new Fluent([
-                'columns' => [
-                    $columnDefinition
-                ]
-            ]),
+        $relationRule = new \Reliese\Meta\Relation('', '', [$columnDefinition->getName()], [], []);
+
+        $relation = new BelongsTo($relationRule,
             $model,
             $model
         );
@@ -117,10 +120,58 @@ class ModelTest extends TestCase
     {
         return [
             'Nullable Relation' => [
-                true, '\\\\Thing|null'
+                true, '\\App\\Models\\Thing|null'
             ],
             'Non Nullable Relation' => [
-                false, '\\\\Thing'
+                false, '\\App\\Models\\Thing'
+            ]
+        ];
+    }
+
+    /**
+     * @return array[]
+     */
+    private function getSampleConfig(): array
+    {
+        return [
+            '*' => [
+                'path' => 'Models',
+                'namespace' => 'App\Models',
+                'parent' => Illuminate\Database\Eloquent\Model::class,
+                'use' => [],
+                'connection' => false,
+                'timestamps' => true,
+                'soft_deletes' => true,
+                'date_format' => 'Y-m-d H:i:s',
+                'per_page' => 15,
+                'base_files' => false,
+                'snake_attributes' => true,
+                'indent_with_space' => 0,
+                'qualified_tables' => false,
+                'hidden' => [
+                    '*secret*',
+                    '*password',
+                    '*token',
+                ],
+                'guarded' => [// 'created_by', 'updated_by'
+                ],
+                'casts' => [
+                    '*_json' => 'json',
+                ],
+                'except' => [
+                    'migrations',
+                ],
+                'only' => [// 'users',
+                ],
+                'table_prefix' => '',
+                'lower_table_name_first' => false,
+                'model_names' => [
+
+                ],
+                'relation_name_strategy' => 'related',
+                'with_property_constants' => false,
+                'pluralize' => true,
+                'override_pluralize_for' => [],
             ]
         ];
     }

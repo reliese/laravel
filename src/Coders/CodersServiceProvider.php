@@ -2,12 +2,17 @@
 
 namespace Reliese\Coders;
 
+use Illuminate\Database\DatabaseManager;
+use Reliese\Analyser\AnalyserFactory;
+use Reliese\Blueprint\BlueprintFactory;
 use Reliese\Support\Classify;
 use Reliese\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 use Reliese\Coders\Console\CodeModelsCommand;
 use Reliese\Coders\Model\Factory as ModelFactory;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class CodersServiceProvider extends ServiceProvider
 {
@@ -51,6 +56,26 @@ class CodersServiceProvider extends ServiceProvider
      */
     protected function registerModelFactory()
     {
+        /** @var Config $config */
+        $config = new Config($this->app->make('config')->get('models'));
+
+        /** @var DatabaseManager $laravelDatabaseManager */
+        $laravelDatabaseManager = $this->app->make('db');
+
+        $this->app->singleton(OutputInterface::class, function ($app) {
+                return $app->make(ConsoleOutput::class);
+            }
+        );
+
+        $this->app->singleton(BlueprintFactory::class, function ($app) use ($config, $laravelDatabaseManager) {
+            return new BlueprintFactory(
+                $app->make(AnalyserFactory::class),
+                $laravelDatabaseManager,
+                $config,
+                $app->make(OutputInterface::class)
+            );
+        });
+
         $this->app->singleton(ModelFactory::class, function ($app) {
             return new ModelFactory(
                 $app->make('db'),

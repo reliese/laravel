@@ -45,7 +45,7 @@ class HasManyTest extends TestCase
      */
     public function testNameUsingForeignKeyStrategy($usesSnakeAttributes, $subjectName, $relationName, $primaryKey, $foreignKey, $expected)
     {
-        $relation = Mockery::mock(Fluent::class)->makePartial();
+        $relation = Mockery::mock(\Reliese\Meta\Relation::class)->makePartial();
 
         $relatedModel = Mockery::mock(Model::class)->makePartial();
         $relatedModel->shouldReceive('getClassName')->andReturn($relationName);
@@ -89,7 +89,7 @@ class HasManyTest extends TestCase
      */
     public function testNameUsingRelatedStrategy($usesSnakeAttributes, $subjectName, $relationName, $expected)
     {
-        $relation = Mockery::mock(Fluent::class)->makePartial();
+        $relation = Mockery::mock(\Reliese\Meta\Relation::class)->makePartial();
 
         $relatedModel = Mockery::mock(Model::class)->makePartial();
         $relatedModel->shouldReceive('getClassName')->andReturn($relationName);

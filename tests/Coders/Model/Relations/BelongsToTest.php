@@ -7,7 +7,7 @@ use Reliese\Coders\Model\Relations\BelongsTo;
 
 class BelongsToTest extends TestCase
 {
-    public function provideForeignKeyStrategyPermutations()
+    public function provideForeignKeyStrategyPermutations(): array
     {
         // usesSnakeAttributes, primaryKey, foreignKey, expected
         return [
@@ -34,7 +34,7 @@ class BelongsToTest extends TestCase
      */
     public function testNameUsingForeignKeyStrategy($usesSnakeAttributes, $primaryKey, $foreignKey, $expected)
     {
-        $relation = Mockery::mock(Fluent::class)->makePartial();
+        $relation = Mockery::mock(\Reliese\Meta\Relation::class)->makePartial();
 
         $relatedModel = Mockery::mock(Model::class)->makePartial();
 
@@ -73,7 +73,7 @@ class BelongsToTest extends TestCase
      */
     public function testNameUsingRelatedStrategy($usesSnakeAttributes, $relatedClassName, $expected)
     {
-        $relation = Mockery::mock(Fluent::class)->makePartial();
+        $relation = Mockery::mock(\Reliese\Meta\Relation::class)->makePartial();
 
         $relatedModel = Mockery::mock(Model::class)->makePartial();
         $relatedModel->shouldReceive('getClassName')->andReturn($relatedClassName);

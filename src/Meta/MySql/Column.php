@@ -9,9 +9,10 @@ namespace Reliese\Meta\MySql;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Support\Fluent;
+use Reliese\Meta\ColumnBag;
+use Reliese\Meta\ColumnParser;
 
-class Column implements \Reliese\Meta\Column
+class Column implements ColumnParser
 {
     /**
      * @var array
@@ -47,34 +48,34 @@ class Column implements \Reliese\Meta\Column
     }
 
     /**
-     * @return \Illuminate\Support\Fluent
+     * @return \Reliese\Meta\Column
      */
-    public function normalize()
+    public function normalize(): \Reliese\Meta\Column
     {
-        $attributes = new Fluent();
+        $attributes = new ColumnBag();
 
         foreach ($this->metas as $meta) {
             $this->{'parse'.ucfirst($meta)}($attributes);
         }
 
-        return $attributes;
+        return $attributes->asColumn();
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseType(Fluent $attributes)
+    protected function parseType(ColumnBag $attributes)
     {
         $type = $this->get('Type', 'string');
 
         preg_match('/^(\w+)(?:\(([^\)]+)\))?/', $type, $matches);
 
         $dataType = strtolower($matches[1]);
-        $attributes['type'] = $dataType;
+        $attributes->withType($dataType);
 
         foreach (static::$mappings as $phpType => $database) {
             if (in_array($dataType, $database)) {
-                $attributes['type'] = $phpType;
+                $attributes->withType($phpType);
             }
         }
 
@@ -82,23 +83,23 @@ class Column implements \Reliese\Meta\Column
             $this->parsePrecision($dataType, $matches[2], $attributes);
         }
 
-        if ($attributes['type'] == 'int') {
-            $attributes['unsigned'] = Str::contains($type, 'unsigned');
+        if ($attributes->isTypeInt() && Str::contains($type, 'unsigned')) {
+            $attributes->isUnsigned();
         }
     }
 
     /**
      * @param string $databaseType
      * @param string $precision
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parsePrecision($databaseType, $precision, Fluent $attributes)
+    protected function parsePrecision(string $databaseType, string $precision, ColumnBag $attributes)
     {
         $precision = explode(',', str_replace("'", '', $precision));
 
         // Check whether it's an enum
         if ($databaseType == 'enum') {
-            $attributes['enum'] = $precision;
+            $attributes->withEnum($precision);
 
             return;
         }
@@ -108,62 +109,60 @@ class Column implements \Reliese\Meta\Column
         // Check whether it's a boolean
         if ($size == 1 && in_array($databaseType, ['bit', 'tinyint'])) {
             // Make sure this column type is a boolean
-            $attributes['type'] = 'bool';
-
-            if ($databaseType == 'bit') {
-                $attributes['mappings'] = ["\x00" => false, "\x01" => true];
-            }
+            $attributes->withTypeBool();
 
             return;
         }
 
-        $attributes['size'] = $size;
+        $attributes->withSize($size);
 
         if ($scale = next($precision)) {
-            $attributes['scale'] = (int) $scale;
+            $attributes->withScale((int) $scale);
         }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseName(Fluent $attributes)
+    protected function parseName(ColumnBag $attributes)
     {
-        $attributes['name'] = $this->get('Field');
+        $attributes->withName($this->get('Field'));
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseAutoincrement(Fluent $attributes)
+    protected function parseAutoincrement(ColumnBag $attributes)
     {
         if ($this->same('Extra', 'auto_increment')) {
-            $attributes['autoincrement'] = true;
+            $attributes->hasAutoIncrements();
         }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseNullable(Fluent $attributes)
+    protected function parseNullable(ColumnBag $attributes)
     {
-        $attributes['nullable'] = $this->same('Null', 'YES');
+        if ($this->same('Null', 'YES')) {
+            $attributes->isNullable();
+        }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseDefault(Fluent $attributes)
+    protected function parseDefault(ColumnBag $attributes)
     {
-        $attributes['default'] = $this->get('Default');
+        $attributes->withDefault($this->get('Default'));
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseComment(Fluent $attributes)
+    protected function parseComment(ColumnBag $attributes)
     {
-        $attributes['comment'] = $this->get('Comment');
+        $attributes->withComment((string) $this->get('Comment'));
     }
 
     /**
@@ -172,7 +171,7 @@ class Column implements \Reliese\Meta\Column
      *
      * @return mixed
      */
-    protected function get($key, $default = null)
+    protected function get(string $key, $default = null)
     {
         return Arr::get($this->metadata, $key, $default);
     }
@@ -183,7 +182,7 @@ class Column implements \Reliese\Meta\Column
      *
      * @return bool
      */
-    protected function same($key, $value)
+    protected function same(string $key, string $value)
     {
         return strcasecmp($this->get($key, ''), $value) === 0;
     }
