@@ -26,7 +26,8 @@
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": ">=1.4",
-        "phpunit/phpunit": "^9"
+        "phpunit/phpunit": "^9",
+        "behat/behat": "^3.8"
     },
     "autoload": {
         "psr-4": {

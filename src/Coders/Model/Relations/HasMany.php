@@ -15,7 +15,7 @@ class HasMany extends HasOneOrMany
     /**
      * @return string
      */
-    public function hint()
+    public function hint(): string
     {
         return '\\'.Collection::class.'|'.$this->related->getQualifiedUserClassName().'[]';
     }
@@ -23,7 +23,7 @@ class HasMany extends HasOneOrMany
     /**
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':
@@ -54,7 +54,7 @@ class HasMany extends HasOneOrMany
     /**
      * @return string
      */
-    public function method()
+    public function method(): string
     {
         return 'hasMany';
     }

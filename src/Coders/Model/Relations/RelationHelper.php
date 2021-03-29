@@ -15,9 +15,14 @@ class RelationHelper
      * @param bool $usesSnakeAttributes
      * @param string $primaryKey
      * @param string $foreignKey
+     *
      * @return string
      */
-    public static function stripSuffixFromForeignKey($usesSnakeAttributes, $primaryKey, $foreignKey)
+    public static function stripSuffixFromForeignKey(
+        bool $usesSnakeAttributes,
+        string $primaryKey,
+        string $foreignKey
+    ): string
     {
         if ($usesSnakeAttributes) {
             $lowerPrimaryKey = strtolower($primaryKey);

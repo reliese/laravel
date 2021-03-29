@@ -3,13 +3,13 @@
 namespace Reliese\Meta\Postgres;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
+use Reliese\Meta\ColumnBag;
 
 /**
  * Created by rwdim from cristians MySql original.
  * Date: 25/08/18 04:20 PM.
  */
-class Column implements \Reliese\Meta\Column
+class Column implements \Reliese\Meta\ColumnParser
 {
     /**
      * @var array
@@ -47,30 +47,30 @@ class Column implements \Reliese\Meta\Column
     }
 
     /**
-     * @return \Illuminate\Support\Fluent
+     * @return \Reliese\Meta\Column
      */
-    public function normalize()
+    public function normalize(): \Reliese\Meta\Column
     {
-        $attributes = new Fluent();
+        $attributes = new ColumnBag();
 
         foreach ($this->metas as $meta) {
             $this->{'parse'.ucfirst($meta)}($attributes);
         }
 
-        return $attributes;
+        return $attributes->asColumn();
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseType(Fluent $attributes)
+    protected function parseType(ColumnBag $attributes)
     {
         $dataType = $this->get('data_type', 'string');
-        $attributes['type'] = $dataType;
+        $attributes->withType($dataType);
 
         foreach (static::$mappings as $phpType => $database) {
             if (in_array($dataType, $database)) {
-                $attributes['type'] = $phpType;
+                $attributes->withType($phpType);
             }
         }
 
@@ -79,10 +79,11 @@ class Column implements \Reliese\Meta\Column
 
     /**
      * @param string $databaseType
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
+     *
      * @todo handle non numeric precisions
      */
-    protected function parsePrecision($databaseType, Fluent $attributes)
+    protected function parsePrecision(string $databaseType, ColumnBag $attributes)
     {
         $precision = $this->get('numeric_precision', 'string');
         $precision = explode(',', str_replace("'", '', $precision));
@@ -99,69 +100,72 @@ class Column implements \Reliese\Meta\Column
         // Check whether it's a boolean
         if ($size == 1 && in_array($databaseType, self::$mappings['boolean'])) {
             // Make sure this column type is a boolean
-            $attributes['type'] = 'bool';
-
-            if ($databaseType == 'bit') {
-                $attributes['mappings'] = ["\x00" => false, "\x01" => true];
-            }
+            $attributes->withTypeBool();
 
             return;
         }
 
-        $attributes['size'] = $size;
+        $attributes->withSize($size);
 
         if ($scale = next($precision)) {
-            $attributes['scale'] = (int) $scale;
+            $attributes->withScale((int) $scale);
         }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseName(Fluent $attributes)
+    protected function parseName(ColumnBag $attributes)
     {
-        $attributes['name'] = $this->get('column_name');
+        $attributes->withName($this->get('column_name'));
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      * @todo
      */
-    protected function parseAutoincrement(Fluent $attributes)
+    protected function parseAutoincrement(ColumnBag $attributes)
     {
-        $attributes['autoincrement'] = preg_match('/serial/i',
-            $this->get('data_type', '')) || $this->defaultIsNextVal($attributes);
+        $hasAutoincrements = preg_match('/serial/i', $this->get('data_type', ''))
+            || $this->defaultIsNextVal();
+
+        if ($hasAutoincrements) {
+            $attributes->hasAutoIncrements();
+        }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseNullable(Fluent $attributes)
+    protected function parseNullable(ColumnBag $attributes)
     {
-        $attributes['nullable'] = $this->same('is_nullable', 'YES');
+        if ($this->same('is_nullable', 'YES')) {
+            $attributes->isNullable();
+        }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseDefault(Fluent $attributes)
+    protected function parseDefault(ColumnBag $attributes)
     {
         $value = null;
-        if ($this->defaultIsNextVal($attributes)) {
-            $attributes['autoincrement'] = true;
+        if ($this->defaultIsNextVal()) {
+            $attributes->hasAutoIncrements();
         } else {
             $value = $this->get('column_default', $this->get('generation_expression', null));
         }
-        $attributes['default'] = $value;
+
+        $attributes->withDefault($value);
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      * @todo
      */
-    protected function parseComment(Fluent $attributes)
+    protected function parseComment(ColumnBag $attributes)
     {
-        $attributes['comment'] = $this->get('Comment');
+        $attributes->withComment($this->get('Comment'));
     }
 
     /**
@@ -170,7 +174,7 @@ class Column implements \Reliese\Meta\Column
      *
      * @return mixed
      */
-    protected function get($key, $default = null)
+    protected function get(string $key, $default = null)
     {
         return Arr::get($this->metadata, $key, $default);
     }
@@ -181,17 +185,15 @@ class Column implements \Reliese\Meta\Column
      *
      * @return bool
      */
-    protected function same($key, $value)
+    protected function same(string $key, string $value): bool
     {
         return strcasecmp($this->get($key, ''), $value) === 0;
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
-     *
      * @return bool
      */
-    private function defaultIsNextVal(Fluent $attributes)
+    private function defaultIsNextVal(): bool
     {
         $value = $this->get('column_default', $this->get('generation_expression', null));
 

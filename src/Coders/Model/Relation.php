@@ -12,15 +12,15 @@ interface Relation
     /**
      * @return string
      */
-    public function hint();
+    public function hint(): string;
 
     /**
      * @return string
      */
-    public function name();
+    public function name(): string;
 
     /**
      * @return string
      */
-    public function body();
+    public function body(): string;
 }

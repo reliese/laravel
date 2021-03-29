@@ -8,35 +8,34 @@
 namespace Reliese\Coders\Model\Relations;
 
 use Reliese\Support\Dumper;
-use Illuminate\Support\Fluent;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relation;
 
 abstract class HasOneOrMany implements Relation
 {
     /**
-     * @var \Illuminate\Support\Fluent
+     * @var \Reliese\Meta\Relation
      */
     protected $command;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var Model
      */
     protected $parent;
 
     /**
-     * @var \Reliese\Coders\Model\Model
+     * @var Model
      */
     protected $related;
 
     /**
      * HasManyWriter constructor.
      *
-     * @param \Illuminate\Support\Fluent $command
-     * @param \Reliese\Coders\Model\Model $parent
-     * @param \Reliese\Coders\Model\Model $related
+     * @param \Reliese\Meta\Relation $command
+     * @param Model $parent
+     * @param Model $related
      */
-    public function __construct(Fluent $command, Model $parent, Model $related)
+    public function __construct(\Reliese\Meta\Relation $command, Model $parent, Model $related)
     {
         $this->command = $command;
         $this->parent = $parent;
@@ -46,17 +45,17 @@ abstract class HasOneOrMany implements Relation
     /**
      * @return string
      */
-    abstract public function hint();
+    abstract public function hint(): string;
 
     /**
      * @return string
      */
-    abstract public function name();
+    abstract public function name(): string;
 
     /**
      * @return string
      */
-    public function body()
+    public function body(): string
     {
         $body = 'return $this->'.$this->method().'(';
 
@@ -84,12 +83,12 @@ abstract class HasOneOrMany implements Relation
     /**
      * @return string
      */
-    abstract protected function method();
+    abstract protected function method(): string;
 
     /**
      * @return bool
      */
-    protected function needsForeignKey()
+    protected function needsForeignKey(): bool
     {
         $defaultForeignKey = $this->parent->getRecordName().'_id';
 
@@ -99,15 +98,15 @@ abstract class HasOneOrMany implements Relation
     /**
      * @return string
      */
-    protected function foreignKey()
+    protected function foreignKey(): string
     {
-        return $this->command->columns[0];
+        return $this->command->getColumns()[0];
     }
 
     /**
      * @return bool
      */
-    protected function needsLocalKey()
+    protected function needsLocalKey(): bool
     {
         return $this->parent->getPrimaryKey() != $this->localKey();
     }
@@ -115,8 +114,8 @@ abstract class HasOneOrMany implements Relation
     /**
      * @return string
      */
-    protected function localKey()
+    protected function localKey(): string
     {
-        return $this->command->references[0];
+        return $this->command->getReferences()[0];
     }
 }
