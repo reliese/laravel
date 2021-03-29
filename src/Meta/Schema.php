@@ -7,6 +7,8 @@
 
 namespace Reliese\Meta;
 
+use Illuminate\Database\Connection;
+
 /**
  * Created by Cristian.
  * Date: 18/09/16 06:50 PM.
@@ -14,38 +16,38 @@ namespace Reliese\Meta;
 interface Schema
 {
     /**
-     * @return \Illuminate\Database\ConnectionInterface
+     * @return Connection
      */
     public function connection();
 
     /**
      * @return string
      */
-    public function schema();
+    public function schema(): string;
 
     /**
-     * @return \Reliese\Meta\Blueprint[]
+     * @return Blueprint[]
      */
-    public function tables();
+    public function tables(): array;
 
     /**
      * @param string $table
      *
      * @return bool
      */
-    public function has($table);
+    public function has(string $table): bool;
 
     /**
      * @param string $table
      *
-     * @return \Reliese\Meta\Blueprint
+     * @return Blueprint
      */
-    public function table($table);
+    public function table(string $table): Blueprint;
 
     /**
-     * @param \Reliese\Meta\Blueprint $table
+     * @param Blueprint $table
      *
-     * @return array
+     * @return RelationBag[]
      */
-    public function referencing(Blueprint $table);
+    public function referencing(Blueprint $table): array;
 }

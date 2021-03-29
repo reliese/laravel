@@ -2,9 +2,15 @@
 
 namespace Reliese\Meta\Sqlite;
 
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column as DoctrineColumn;
+use Illuminate\Database\SQLiteConnection;
 use Reliese\Meta\Blueprint;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
+use Reliese\Meta\Index;
+use Reliese\Meta\Relation;
+use Reliese\Meta\RelationBag;
 
 /**
  * Created by Cristian.
@@ -18,7 +24,7 @@ class Schema implements \Reliese\Meta\Schema
     protected $schema;
 
     /**
-     * @var \Illuminate\Database\SQLiteConnection
+     * @var SQLiteConnection
      */
     protected $connection;
 
@@ -28,7 +34,7 @@ class Schema implements \Reliese\Meta\Schema
     protected $loaded = false;
 
     /**
-     * @var \Reliese\Meta\Blueprint[]
+     * @var Blueprint[]
      */
     protected $tables = [];
 
@@ -36,9 +42,9 @@ class Schema implements \Reliese\Meta\Schema
      * Mapper constructor.
      *
      * @param string $schema
-     * @param \Illuminate\Database\MySqlConnection $connection
+     * @param SQLiteConnection $connection
      */
-    public function __construct($schema, $connection)
+    public function __construct(string $schema, $connection)
     {
         $this->schema = $schema;
         $this->connection = $connection;
@@ -48,7 +54,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
+     * @return AbstractSchemaManager
      * @todo: Use Doctrine instead of raw database queries
      */
     public function manager()
@@ -72,7 +78,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @return array
+     * @return string[]
      * @internal param string $schema
      */
     protected function fetchTables()
@@ -87,7 +93,9 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param Blueprint $blueprint
+     *
+     * @throws Exception
      */
     protected function fillColumns(Blueprint $blueprint)
     {
@@ -101,57 +109,47 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Doctrine\DBAL\Schema\Column $metadata
+     * @param DoctrineColumn $metadata
      *
-     * @return \Illuminate\Support\Fluent
+     * @return \Reliese\Meta\Column
      */
-    protected function parseColumn($metadata)
+    protected function parseColumn(DoctrineColumn $metadata): \Reliese\Meta\Column
     {
         return (new Column($metadata))->normalize();
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param Blueprint $blueprint
+     *
+     * @throws Exception
      */
     protected function fillConstraints(Blueprint $blueprint)
     {
         $this->fillPrimaryKey($blueprint);
         $this->fillIndexes($blueprint);
-
         $this->fillRelations($blueprint);
     }
 
     /**
-     * Quick little hack since it is no longer possible to set PDO's fetch mode
-     * to PDO::FETCH_ASSOC.
+     * @param Blueprint $blueprint
      *
-     * @param $data
-     * @return mixed
-     */
-    protected function arraify($data)
-    {
-        return json_decode(json_encode($data), true);
-    }
-
-    /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @throws Exception
      * @todo: Support named primary keys
      */
     protected function fillPrimaryKey(Blueprint $blueprint)
     {
         $indexes = $this->manager()->listTableIndexes($blueprint->table());
 
-        $key = [
-            'name' => 'primary',
-            'index' => '',
-            'columns' => $indexes['primary']->getColumns(),
-        ];
-
-        $blueprint->withPrimaryKey(new Fluent($key));
+        $blueprint->withPrimaryKey(new Index(
+            'primary',
+            '',
+            $indexes['primary']->getColumns()
+        ));
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param Blueprint $blueprint
+     *
      * @internal param string $sql
      */
     protected function fillIndexes(Blueprint $blueprint)
@@ -160,17 +158,18 @@ class Schema implements \Reliese\Meta\Schema
         unset($indexes['primary']);
 
         foreach ($indexes as $setup) {
-            $index = [
-                'name' => $setup->isUnique() ? 'unique' : 'index',
-                'columns' => $setup->getColumns(),
-                'index' => $setup->getName(),
-            ];
-            $blueprint->withIndex(new Fluent($index));
+            $blueprint->withIndex(new Index(
+                $setup->isUnique() ? 'unique' : 'index',
+                $setup->getName(),
+                $setup->getColumns()
+            ));
         }
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $blueprint
+     * @param Blueprint $blueprint
+     *
+     * @throws Exception
      * @todo: Support named foreign keys
      */
     protected function fillRelations(Blueprint $blueprint)
@@ -178,17 +177,18 @@ class Schema implements \Reliese\Meta\Schema
         $relations = $this->manager()->listTableForeignKeys($blueprint->table());
 
         foreach ($relations as $setup) {
-            $table = ['database' => '', 'table'=>$setup->getForeignTableName()];
-
-            $relation = [
-                'name' => 'foreign',
-                'index' => '',
-                'columns' => $setup->getColumns(),
-                'references' => $setup->getForeignColumns(),
-                'on' => $table,
+            $table = [
+                'database' => '',
+                'table' => $setup->getForeignTableName()
             ];
 
-            $blueprint->withRelation(new Fluent($relation));
+            $blueprint->withRelation(new Relation(
+                'foreign',
+                $setup->getName(),
+                $setup->getColumns(),
+                $setup->getForeignColumns(),
+                $table,
+            ));
         }
     }
 
@@ -215,15 +215,15 @@ class Schema implements \Reliese\Meta\Schema
      *
      * @return bool
      */
-    public function has($table)
+    public function has(string $table): bool
     {
         return array_key_exists($table, $this->tables);
     }
 
     /**
-     * @return \Reliese\Meta\Blueprint[]
+     * @return Blueprint[]
      */
-    public function tables()
+    public function tables(): array
     {
         return $this->tables;
     }
@@ -231,9 +231,9 @@ class Schema implements \Reliese\Meta\Schema
     /**
      * @param string $table
      *
-     * @return \Reliese\Meta\Blueprint
+     * @return Blueprint
      */
-    public function table($table)
+    public function table(string $table): Blueprint
     {
         if (! $this->has($table)) {
             throw new \InvalidArgumentException("Table [$table] does not belong to schema [{$this->schema}]");
@@ -251,20 +251,20 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @param \Reliese\Meta\Blueprint $table
+     * @param Blueprint $table
      *
      * @return array
      */
-    public function referencing(Blueprint $table)
+    public function referencing(Blueprint $table): array
     {
         $references = [];
 
         foreach ($this->tables as $blueprint) {
             foreach ($blueprint->references($table) as $reference) {
-                $references[] = [
-                    'blueprint' => $blueprint,
-                    'reference' => $reference,
-                ];
+                $references[] = new RelationBag(
+                    $blueprint,
+                    $reference
+                );
             }
         }
 

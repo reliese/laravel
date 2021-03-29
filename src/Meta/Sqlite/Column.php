@@ -7,12 +7,13 @@
 
 namespace Reliese\Meta\Sqlite;
 
-use Illuminate\Support\Fluent;
+use Doctrine\DBAL\Schema\Column as DoctrineColumn;
+use Reliese\Meta\ColumnBag;
 
-class Column implements \Reliese\Meta\Column
+class Column implements \Reliese\Meta\ColumnParser
 {
     /**
-     * @var \Doctrine\DBAL\Schema\Column
+     * @var DoctrineColumn
      */
     protected $metadata;
 
@@ -37,82 +38,86 @@ class Column implements \Reliese\Meta\Column
     /**
      * MysqlColumn constructor.
      *
-     * @param array $metadata
+     * @param DoctrineColumn $metadata
      */
-    public function __construct($metadata = [])
+    public function __construct(DoctrineColumn $metadata)
     {
         $this->metadata = $metadata;
     }
 
     /**
-     * @return \Illuminate\Support\Fluent
+     * @return \Reliese\Meta\Column
      */
-    public function normalize()
+    public function normalize(): \Reliese\Meta\Column
     {
-        $attributes = new Fluent();
+        $attributes = new ColumnBag();
 
         foreach ($this->metas as $meta) {
             $this->{'parse'.ucfirst($meta)}($attributes);
         }
 
-        return $attributes;
+        return $attributes->asColumn();
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseType(Fluent $attributes)
+    protected function parseType(ColumnBag $attributes)
     {
         $dataType = $this->metadata->getType()->getName();
 
         foreach (static::$mappings as $phpType => $database) {
             if (in_array($dataType, $database)) {
-                $attributes['type'] = $phpType;
+                $attributes->withType($phpType);
             }
         }
 
-        if ($attributes['type'] == 'int') {
-            $attributes['unsigned'] = $this->metadata->getUnsigned();
+        if ($attributes->isTypeInt() && $this->metadata->getUnsigned()) {
+            $attributes->isUnsigned();
         }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseName(Fluent $attributes)
+    protected function parseName(ColumnBag $attributes)
     {
-        $attributes['name'] = $this->metadata->getName();
+        $attributes->withName($this->metadata->getName());
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseAutoincrement(Fluent $attributes)
+    protected function parseAutoincrement(ColumnBag $attributes)
     {
-        $attributes['autoincrement'] = $this->metadata->getAutoincrement();
+        if ($this->metadata->getAutoincrement()) {
+            $attributes->hasAutoIncrements();
+        }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseNullable(Fluent $attributes)
+    protected function parseNullable(ColumnBag $attributes)
     {
-        $attributes['nullable'] = $this->metadata->getNotnull();
+        if (!$this->metadata->getNotnull()) {
+            $attributes->isNullable();
+        }
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseDefault(Fluent $attributes)
+    protected function parseDefault(ColumnBag $attributes)
     {
-        $attributes['default'] = $this->metadata->getDefault();
+        $attributes->withDefault($this->metadata->getDefault());
     }
 
     /**
-     * @param \Illuminate\Support\Fluent $attributes
+     * @param ColumnBag $attributes
      */
-    protected function parseComment(Fluent $attributes)
+    protected function parseComment(ColumnBag $attributes)
     {
-        $attributes['comment'] = $this->metadata->getComment();
+        $attributes->withComment($this->metadata->getComment());
     }
 }
