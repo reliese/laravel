@@ -9,10 +9,6 @@ namespace Reliese\Meta;
 
 use Illuminate\Database\Connection;
 
-/**
- * Created by Cristian.
- * Date: 18/09/16 06:50 PM.
- */
 interface Schema
 {
     /**

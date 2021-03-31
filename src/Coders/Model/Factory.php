@@ -210,7 +210,7 @@ class Factory
      * @param Model $model
      *
      * @return RelationBag[]
-     *@todo: Delegate workload to SchemaManager and ModelManager
+     * @todo: Delegate workload to SchemaManager and ModelManager
      */
     public function referencing(Model $model): array
     {

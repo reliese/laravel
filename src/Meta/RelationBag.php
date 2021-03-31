@@ -1,10 +1,9 @@
 <?php
 
-
 namespace Reliese\Meta;
 
-
 use Reliese\Coders\Model\Model;
+
 class RelationBag
 {
     /**

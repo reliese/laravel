@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Reliese\Meta;
-
 
 interface HasColumns
 {

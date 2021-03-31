@@ -4,6 +4,10 @@ namespace Reliese\Meta;
 
 class ColumnBag
 {
+    public const TYPE_BOOL = 'bool';
+    public const TYPE_STRING = 'string';
+    public const TYPE_INT = 'int';
+
     /**
      * @var string
      */
@@ -71,18 +75,18 @@ class ColumnBag
      */
     public function withTypeBool(): ColumnBag
     {
-        $this->type = 'bool';
+        $this->withType(static::TYPE_BOOL);
 
         return $this;
     }
 
     /**
-     * Use PHP boolean data type
+     * Use PHP string data type
      * @return ColumnBag
      */
     public function withTypeString(): ColumnBag
     {
-        $this->type = 'string';
+        $this->withType(static::TYPE_STRING);
 
         return $this;
     }
@@ -191,7 +195,7 @@ class ColumnBag
      */
     public function isTypeInt(): bool
     {
-        return $this->type == 'int';
+        return $this->type == static::TYPE_INT;
     }
 
     public function asColumn(): Column
