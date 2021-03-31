@@ -4,6 +4,10 @@ namespace Reliese\Meta;
 
 class Index implements HasColumns
 {
+    public const NAME_PRIMARY = 'primary';
+    public const NAME_UNIQUE = 'unique';
+    public const NAME_INDEX = 'index';
+
     /**
      * @var string
      */

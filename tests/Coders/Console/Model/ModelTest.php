@@ -84,7 +84,7 @@ class ModelTest extends TestCase
 
         $columnDefinition = $columnBag->asColumn();
 
-        $primaryKey = new \Reliese\Meta\Index('', 'primary', []);
+        $primaryKey = new \Reliese\Meta\Index(\Reliese\Meta\Index::NAME_PRIMARY, '', []);
 
         $baseBlueprint = Mockery::mock(Blueprint::class);
         $baseBlueprint->shouldReceive('columns')->andReturn([$columnDefinition]);
@@ -106,7 +106,7 @@ class ModelTest extends TestCase
             )
         );
 
-        $relationRule = new \Reliese\Meta\Relation('', '', [$columnDefinition->getName()], [], []);
+        $relationRule = new \Reliese\Meta\Relation( '', [$columnDefinition->getName()], [], []);
 
         $relation = new BelongsTo($relationRule,
             $model,

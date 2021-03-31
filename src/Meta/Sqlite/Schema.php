@@ -141,7 +141,7 @@ class Schema implements \Reliese\Meta\Schema
         $indexes = $this->manager()->listTableIndexes($blueprint->table());
 
         $blueprint->withPrimaryKey(new Index(
-            'primary',
+            Index::NAME_PRIMARY,
             '',
             $indexes['primary']->getColumns()
         ));
@@ -159,7 +159,7 @@ class Schema implements \Reliese\Meta\Schema
 
         foreach ($indexes as $setup) {
             $blueprint->withIndex(new Index(
-                $setup->isUnique() ? 'unique' : 'index',
+                $setup->isUnique() ? Index::NAME_UNIQUE : Index::NAME_INDEX,
                 $setup->getName(),
                 $setup->getColumns()
             ));
@@ -183,7 +183,6 @@ class Schema implements \Reliese\Meta\Schema
             ];
 
             $blueprint->withRelation(new Relation(
-                'foreign',
                 $setup->getName(),
                 $setup->getColumns(),
                 $setup->getForeignColumns(),

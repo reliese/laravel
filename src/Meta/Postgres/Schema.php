@@ -180,7 +180,7 @@ class Schema implements \Reliese\Meta\Schema
         }
 
         $blueprint->withPrimaryKey(new Index(
-            'primary',
+            Index::NAME_PRIMARY,
             '',
             $columns
         ));
@@ -198,8 +198,14 @@ class Schema implements \Reliese\Meta\Schema
                 continue;
             }
 
+            $indexName = Index::NAME_INDEX;
+
+            if (strcasecmp($setup[1], 'unique') === 0) {
+                $indexName = Index::NAME_UNIQUE;
+            }
+
             $blueprint->withIndex(new Index(
-                strcasecmp($setup[1], 'unique') === 0 ? 'unique' : 'index',
+                $indexName,
                 $setup[3],
                 $this->columnize($setup[4])
             ));
@@ -232,7 +238,6 @@ class Schema implements \Reliese\Meta\Schema
 
         foreach ($fk as $row) {
             $blueprint->withRelation(new Relation(
-                'foreign',
                 '',
                 $row['columns'],
                 $row['ref'],

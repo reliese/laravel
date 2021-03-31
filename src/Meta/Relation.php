@@ -32,15 +32,14 @@ class Relation implements HasColumns
     /**
      * Relation constructor.
      *
-     * @param string $name
      * @param string $index
      * @param string[]  $columns
      * @param string[]  $references
      * @param string[]  $onTable
      */
-    public function __construct(string $name, string $index, array $columns, array $references, array $onTable)
+    public function __construct(string $index, array $columns, array $references, array $onTable)
     {
-        $this->name = $name;
+        $this->name = 'foreign';
         $this->index = $index;
         $this->columns = $columns;
         $this->references = $references;

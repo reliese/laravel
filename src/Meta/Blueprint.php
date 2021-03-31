@@ -148,7 +148,7 @@ class Blueprint
         $this->indexes[] = $index;
 
         // TODO: Use constants or proper objects instead of the hardcoded string
-        if ($index->getName() == 'unique') {
+        if ($index->getName() == Index::NAME_UNIQUE) {
             $this->unique[] = $index;
         }
 
@@ -209,7 +209,7 @@ class Blueprint
         }
 
         // Null Primary Key. TODO: Check why we need this and how to make it clear
-        return new Index('', '', []);
+        return new Index(Index::NAME_PRIMARY, '', []);
     }
 
     /**
