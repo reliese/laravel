@@ -2,6 +2,7 @@
 
 namespace Reliese\Blueprint;
 
+use Doctrine\DBAL\Schema\View;
 /**
  * Class ViewBlueprint
  */
@@ -19,12 +20,12 @@ class ViewBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
      * ViewBlueprint constructor.
      *
      * @param SchemaBlueprint $schemaBlueprint
-     * @param string          $viewName
+     * @param string $name
      */
-    public function __construct(SchemaBlueprint $schemaBlueprint, string $viewName)
+    public function __construct(SchemaBlueprint $schemaBlueprint, string $name)
     {
         $this->setSchemaBlueprint($schemaBlueprint);
-        $this->setName($viewName);
+        $this->setName($name);
     }
 
     /**

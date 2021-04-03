@@ -30,7 +30,7 @@ trait ColumnOwnerTrait
      */
     public function getColumnBlueprint(string $columnName): ColumnBlueprint
     {
-        if (!empty($this->columnBlueprints[$columnName])) {
+        if (!\array_key_exists($columnName, $this->columnBlueprints)) {
             throw new InvalidArgumentException("Unable to locate a column named \"$columnName\"");
         }
 

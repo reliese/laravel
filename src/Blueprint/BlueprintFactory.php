@@ -70,7 +70,7 @@ class BlueprintFactory
         }
 
         $connection = $this->laravelDatabaseManager->connection($connectionName);
-        $databaseAnalyser = $this->adapterFactory->database(
+        $databaseAnalyser = $this->adapterFactory->databaseAnalyser(
             $connection,
             $this->output
         );

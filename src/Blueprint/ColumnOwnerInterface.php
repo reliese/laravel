@@ -30,4 +30,11 @@ interface ColumnOwnerInterface
      * @return string[]
      */
     public function getColumnNames(): array;
+
+    /**
+     * returns "Schema.[TableName |View Name]"
+     *
+     * @return string
+     */
+    public function getUniqueName(): string;
 }

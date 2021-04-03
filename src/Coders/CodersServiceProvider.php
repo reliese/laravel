@@ -2,6 +2,7 @@
 
 namespace Reliese\Coders;
 
+use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseManager;
 use Reliese\Analyser\AnalyserFactory;
 use Reliese\Blueprint\BlueprintFactory;
@@ -64,6 +65,14 @@ class CodersServiceProvider extends ServiceProvider
 
         $this->app->singleton(OutputInterface::class, function ($app) {
                 return $app->make(ConsoleOutput::class);
+            }
+        );
+
+        $this->app->singleton(AnalyserFactory::class,
+            function ($app) {
+                return new AnalyserFactory(
+                    $app->make(ConnectionFactory::class)
+                );
             }
         );
 

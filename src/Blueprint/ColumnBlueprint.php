@@ -2,6 +2,7 @@
 
 namespace Reliese\Blueprint;
 
+use Doctrine\DBAL\Schema\Column;
 /**
  * Class ColumnBlueprint
  */
@@ -11,6 +12,11 @@ class ColumnBlueprint
      * @var string
      */
     private $columnName;
+
+    /**
+     * @var ColumnOwnerInterface
+     */
+    private $columnOwner;
 
     /**
      * @var string
@@ -48,31 +54,26 @@ class ColumnBlueprint
     private $numericScale;
 
     /**
-     * @var ColumnOwnerInterface
+     * ColumnBlueprint constructor.
+     *
+     * @param ColumnOwnerInterface $tableBlueprint
+     * @param string $columnName
      */
-    private $columnOwner;
 
     /**
      * ColumnBlueprint constructor.
      *
-     * @param ColumnOwnerInterface $tableBlueprint
-     * @param string         $columnName
-     */
-    /**
-     * ColumnBlueprint constructor.
-     *
      * @param ColumnOwnerInterface $columnOwner The Table or View that owns the column
-     * @param string         $columnName
-     * @param string         $dataType
-     * @param bool           $isNullable
-     * @param int            $maximumCharacters
-     * @param int            $numericPrecision
-     * @param int            $numericScale
-     * @param bool           $isAutoincrement
-     * @param bool           $hasDefault
+     * @param string $columnName
+     * @param string $dataType
+     * @param bool $isNullable
+     * @param int $maximumCharacters
+     * @param int $numericPrecision
+     * @param int $numericScale
+     * @param bool $isAutoincrement
+     * @param bool $hasDefault
      */
-    public function __construct(
-        ColumnOwnerInterface $columnOwner,
+    public function __construct(ColumnOwnerInterface $columnOwner,
         string $columnName,
         string $dataType,
         bool $isNullable,
@@ -158,6 +159,25 @@ class ColumnBlueprint
     }
 
     /**
+     * @return string
+     */
+    public function getUniqueName(): string
+    {
+        return sprintf('%s.%s',
+            $this->getOwner()->getUniqueName(),
+            $this->getColumnName()
+        );
+    }
+
+    /**
+     * @return ColumnOwnerInterface
+     */
+    public function getOwner(): ColumnOwnerInterface
+    {
+        return $this->columnOwner;
+    }
+
+    /**
      * @param string $value
      *
      * @return $this
@@ -170,7 +190,6 @@ class ColumnBlueprint
 
     /**
      * The normalized data type which was derived from the raw data type in the database.
-     *
      * For example... 'unsigned bigint' should be 'float'
      *
      * @param string $value

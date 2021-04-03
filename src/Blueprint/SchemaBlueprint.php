@@ -2,6 +2,7 @@
 
 namespace Reliese\Blueprint;
 
+use InvalidArgumentException;
 /**
  * Class SchemaBlueprint
  */
@@ -76,6 +77,24 @@ class SchemaBlueprint
     }
 
     /**
+     * @param string $tableName
+     *
+     * @return TableBlueprint
+     */
+    public function getTableBlueprint(string $tableName) : TableBlueprint
+    {
+        if (!\array_key_exists($tableName, $this->tableBlueprints)) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    "Unable to find a TableBlueprint in \"%s\" for table \"%s\"",
+                    $this->getSchemaName(), $tableName
+                )
+            );
+        }
+        return $this->tableBlueprints[$tableName];
+    }
+
+    /**
      * @return TableBlueprint[]
      */
     public function getTableBlueprints(): array
@@ -91,5 +110,15 @@ class SchemaBlueprint
     public function getTableNames(): array
     {
         return array_keys($this->tableBlueprints);
+    }
+
+    /**
+     * @param string $tableName
+     *
+     * @return bool
+     */
+    public function hasTableBlueprint(string $tableName) : bool
+    {
+        return \array_key_exists($tableName, $this->tableBlueprints);
     }
 }
