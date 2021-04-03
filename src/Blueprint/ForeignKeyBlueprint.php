@@ -35,9 +35,9 @@ class ForeignKeyBlueprint
      *
      * @param ColumnOwnerInterface $columnOwner
      * @param string $name
-     * @param string[] $referencingColumns
+     * @param ColumnBlueprint[] $referencingColumns
      * @param ColumnOwnerInterface $referencedTable
-     * @param string[] $referencedColumns
+     * @param ColumnBlueprint[] $referencedColumns
      */
     public function __construct(
         ColumnOwnerInterface $columnOwner,

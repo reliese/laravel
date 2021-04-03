@@ -6,6 +6,8 @@ use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseManager;
 use Reliese\Analyser\AnalyserFactory;
 use Reliese\Blueprint\BlueprintFactory;
+use Reliese\Command\Blueprint\ShowBlueprintCommand;
+use Reliese\Command\Model\MakeModelsCommand;
 use Reliese\Support\Classify;
 use Reliese\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
@@ -36,6 +38,8 @@ class CodersServiceProvider extends ServiceProvider
 
             $this->commands([
                 CodeModelsCommand::class,
+                MakeModelsCommand::class,
+                ShowBlueprintCommand::class
             ]);
         }
     }

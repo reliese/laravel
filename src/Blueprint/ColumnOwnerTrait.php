@@ -38,6 +38,22 @@ trait ColumnOwnerTrait
     }
 
     /**
+     * @param array $columnBlueprints
+     *
+     * @return $this
+     */
+    public function addColumnBlueprints(array $columnBlueprints) : static
+    {
+        if (empty($columnBlueprints)) {
+            return $this;
+        }
+        foreach ($columnBlueprints as $columnBlueprint) {
+            $this->addColumnBlueprint($columnBlueprint);
+        }
+        return $this;
+    }
+
+    /**
      * @return ColumnBlueprint[]
      */
     public function getColumnBlueprints(): array

@@ -5,45 +5,73 @@ namespace Reliese\Blueprint;
 /**
  * Class IndexBlueprint
  */
-class IndexBlueprint
+class IndexBlueprint implements ColumnOwnerInterface
 {
-    /**
-     * @var array
-     */
-    private $columnNames;
+    use ColumnOwnerTrait;
 
     /**
      * @var string
      */
-    private $indexName;
+    private string $indexName;
+
+    /**
+     * @var bool
+     */
+    private bool $isPrimaryKey;
+
+    /**
+     * @var bool
+     */
+    private bool $isUnique;
 
     /**
      * @var ColumnOwnerInterface
      */
-    private $owner;
+    private ColumnOwnerInterface $owner;
 
     /**
      * IndexBlueprint constructor.
      *
-     * @param ColumnOwnerInterface $owner
+     * @param ColumnOwnerInterface $tableOrView
      * @param string $indexName
-     * @param array $columnNames
+     * @param ColumnBlueprint[] $columnBlueprints
+     * @param bool $isPrimary
+     * @param bool $isUnique
      */
-    public function __construct(
-        ColumnOwnerInterface $owner,
+    public function __construct(ColumnOwnerInterface $tableOrView,
         string $indexName,
-        array $columnNames
-    ) {
-        $this->owner = $owner;
+        array $columnBlueprints,
+        bool $isPrimary,
+        bool $isUnique)
+    {
+        $this->owner = $tableOrView;
         $this->indexName = $indexName;
-        $this->columnNames = $columnNames;
+        $this->addColumnBlueprints($columnBlueprints);
+        $this->isPrimaryKey = $isPrimary;
+        $this->isUnique = $isUnique;
     }
 
     /**
      * @return string
      */
-    public function getName():string
+    public function getUniqueName(): string
     {
         return $this->indexName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrimaryKey(): bool
+    {
+        return $this->isPrimaryKey;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUnique(): bool
+    {
+        return $this->isUnique || $this->isPrimaryKey();
     }
 }

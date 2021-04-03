@@ -147,6 +147,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
 
             $schemaAnalyser = $this->getSchemaAnalyser($schemaName);
             $databaseBlueprint->addSchemaBlueprint(
+                // TODO: Add support for Views
                 $schemaAnalyser->analyseSchemaObjectStructures($databaseBlueprint)
             );
         }

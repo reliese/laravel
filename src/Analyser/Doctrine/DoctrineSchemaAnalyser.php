@@ -15,7 +15,6 @@ use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\IndexBlueprint;
 use Reliese\Blueprint\SchemaBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Blueprint\UniqueKeyBlueprint;
 
 /**
  * Class MySqlSchemaAnalyser
@@ -185,7 +184,18 @@ class DoctrineSchemaAnalyser
      */
     private function analyseIndex(TableBlueprint $tableBlueprint, Index $indexDefinition): IndexBlueprint
     {
-        return new IndexBlueprint($tableBlueprint, $indexDefinition->getName(), $indexDefinition->getColumns());
+        $columnBlueprints = [];
+        foreach ($indexDefinition->getColumns() as $columnName) {
+            $columnBlueprints[] = $tableBlueprint->getColumnBlueprint($columnName);
+        }
+
+        return new IndexBlueprint(
+            $tableBlueprint,
+            $indexDefinition->getName(),
+            $columnBlueprints,
+            $indexDefinition->isPrimary(),
+            false
+        );
     }
 
     /**
@@ -248,12 +258,23 @@ class DoctrineSchemaAnalyser
      * @param ColumnOwnerInterface $columnOwner
      * @param UniqueConstraint $uniqueConstraint
      *
-     * @return UniqueKeyBlueprint
+     * @return IndexBlueprint
      */
     private function analyseTableUniqueConstraint(ColumnOwnerInterface $columnOwner,
-        UniqueConstraint $uniqueConstraint): UniqueKeyBlueprint
+        UniqueConstraint $uniqueConstraint): IndexBlueprint
     {
-        return new UniqueKeyBlueprint($columnOwner, $uniqueConstraint->getName(), $uniqueConstraint->getColumns());
+        $columnBlueprints = [];
+        foreach ($uniqueConstraint->getColumns() as $columnName) {
+            $columnBlueprints[] = $columnOwner->getColumnBlueprint($columnName);
+        }
+
+        return new IndexBlueprint(
+            $columnOwner,
+            $uniqueConstraint->getName(),
+            $columnBlueprints,
+            false,
+            true
+        );
     }
 
     /**
