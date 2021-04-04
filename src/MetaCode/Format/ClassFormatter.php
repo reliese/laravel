@@ -85,6 +85,41 @@ class ClassFormatter
                 . ';';
     }
 
+    /**
+     * @param ClassPropertyDefinition $property
+     * @param ClassDefinition $classDefinition
+     */
+    private function appendSetter(
+        ClassPropertyDefinition $property,
+        ClassDefinition $classDefinition
+    )
+    {
+        $param = new FunctionParameterDefinition($property->getVariableName(), $property->getPhpTypeEnum());
+        $getter = new ClassMethodDefinition('set' . Str::studly($property->getVariableName()),
+            PhpTypeEnum::staticTypeEnum(),
+            [
+                $param
+            ]);
+        $getter->appendBodyStatement(new RawStatementDefinition('$this->' . $property->getVariableName() . ' = $' . $property->getVariableName() . ";\n"))
+               ->appendBodyStatement(new RawStatementDefinition('return $this;'))
+        ;
+
+        $classDefinition->addMethodDefinition($getter);
+    }
+
+    /**
+     * @param ClassPropertyDefinition $property
+     * @param ClassDefinition $classDefinition
+     */
+    private function appendGetter(ClassPropertyDefinition $property, ClassDefinition $classDefinition): void
+    {
+        $getter = new ClassMethodDefinition('get' . Str::studly($property->getVariableName()),
+            $property->getPhpTypeEnum());
+        $getter->appendBodyStatement(new RawStatementDefinition('return $this->' . $property->getVariableName() . ';'));
+
+        $classDefinition->addMethodDefinition($getter);
+    }
+
     private function formatMethod(ClassMethodDefinition $method, int $indentationLevel): string
     {
         $signature = str_repeat($this->getIndentationString(), $indentationLevel);
@@ -125,40 +160,5 @@ class ClassFormatter
         $signature .= str_repeat($this->getIndentationString(), $indentationLevel) . '}';
 
         return $signature;
-    }
-
-    /**
-     * @param ClassPropertyDefinition $property
-     * @param ClassDefinition $classDefinition
-     */
-    private function appendSetter(
-        ClassPropertyDefinition $property,
-        ClassDefinition $classDefinition
-    )
-    {
-        $param = new FunctionParameterDefinition($property->getVariableName(), $property->getPhpTypeEnum());
-        $getter = new ClassMethodDefinition('set' . Str::studly($property->getVariableName()),
-            PhpTypeEnum::staticTypeEnum(),
-            [
-                $param
-            ]);
-        $getter->appendBodyStatement(new RawStatementDefinition('$this->' . $property->getVariableName() . ' = $' . $property->getVariableName() . ";\n"))
-               ->appendBodyStatement(new RawStatementDefinition('return $this;'))
-        ;
-
-        $classDefinition->addMethodDefinition($getter);
-    }
-
-    /**
-     * @param ClassPropertyDefinition $property
-     * @param ClassDefinition $classDefinition
-     */
-    private function appendGetter(ClassPropertyDefinition $property, ClassDefinition $classDefinition): void
-    {
-        $getter = new ClassMethodDefinition('get' . Str::studly($property->getVariableName()),
-            $property->getPhpTypeEnum());
-        $getter->appendBodyStatement(new RawStatementDefinition('return $this->' . $property->getVariableName() . ';'));
-
-        $classDefinition->addMethodDefinition($getter);
     }
 }
