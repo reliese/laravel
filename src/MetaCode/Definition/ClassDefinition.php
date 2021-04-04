@@ -29,6 +29,11 @@ class ClassDefinition
      */
     private string $namespace;
 
+    /**
+     * @var ClassConstantDefinition[]
+     */
+    private array $classConstants = [];
+
     public function __construct(
         string $className,
         string $namespace
@@ -82,5 +87,19 @@ class ClassDefinition
     public function getMethods(): array
     {
         return $this->methodDefinitions;
+    }
+
+    public function addConstant(ClassConstantDefinition $oneConstant): static
+    {
+        $this->classConstants[$oneConstant->getName()] = $oneConstant;
+        return $this;
+    }
+
+    /**
+     * @return ClassConstantDefinition[]
+     */
+    public function getConstants(): array
+    {
+        return $this->classConstants;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace MetaCode\Format;
 
+use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
@@ -112,6 +113,124 @@ PHP;
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
         $classDefinition->addProperty($aProperty);
         $classDefinition->addProperty($anotherProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_constant()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    public const ONE_CONSTANT = 'SomeValue';
+}
+
+PHP;
+
+        $oneConstant = new ClassConstantDefinition('ONE_CONSTANT', 'SomeValue');
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addConstant($oneConstant);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_two_constants()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    public const ONE_CONSTANT = 'SomeValue';
+    public const ANOTHER_CONSTANT = 'AnotherValue';
+}
+
+PHP;
+
+        $oneConstant = new ClassConstantDefinition('ONE_CONSTANT', 'SomeValue');
+        $anotherConstant = new ClassConstantDefinition('ANOTHER_CONSTANT', 'AnotherValue');
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addConstant($oneConstant)
+                        ->addConstant($anotherConstant);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_two_constants_and_two_properties()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    public const ONE_CONSTANT = 'SomeValue';
+    public const ANOTHER_CONSTANT = 'AnotherValue';
+
+    private string \$aProperty;
+    private string \$anotherProperty;
+}
+
+PHP;
+
+        $oneConstant = new ClassConstantDefinition('ONE_CONSTANT', 'SomeValue');
+        $anotherConstant = new ClassConstantDefinition('ANOTHER_CONSTANT', 'AnotherValue');
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::stringType());
+        $anotherProperty = new ClassPropertyDefinition('anotherProperty', PhpTypeEnum::stringType());
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addConstant($oneConstant)
+                        ->addConstant($anotherConstant)
+                        ->addProperty($aProperty)
+                        ->addProperty($anotherProperty);
 
         $classFormatter = new ClassFormatter();
 

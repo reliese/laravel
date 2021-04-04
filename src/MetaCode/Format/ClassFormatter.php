@@ -3,6 +3,7 @@
 namespace Reliese\MetaCode\Format;
 
 use Illuminate\Support\Str;
+use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
@@ -30,12 +31,25 @@ class ClassFormatter
         $lines[] = 'class ' . $classDefinition->getClassName() . "\n";
         $lines[] = "{\n";
 
+        $constants = [];
+        foreach ($classDefinition->getConstants() as $constant) {
+            $constants[] = $this->formatConstants($constant, $indentationLevel + 1);
+        }
+
+        if (count($constants) > 0) {
+            $lines[] = implode("\n", $constants) . "\n";
+        }
+
         $properties = [];
         foreach ($classDefinition->getProperties() as $property) {
             $properties[] = $this->formatProperty($property, $indentationLevel + 1);
         }
 
         if (count($properties) > 0) {
+            if (count($constants) > 0) {
+                $lines[] = "\n";
+            }
+
             $lines[] = implode("\n", $properties) . "\n";
         }
 
@@ -72,6 +86,17 @@ class ClassFormatter
     private function getIndentationString(): string
     {
         return '    ';
+    }
+
+    private function formatConstants(ClassConstantDefinition $constant, int $indentationLevel): string
+    {
+        return str_repeat($this->getIndentationString(), $indentationLevel)
+            . $constant->getVisibilityEnum()->toReservedWord()
+            . ' const '
+            . $constant->getName()
+            . ' = '
+            . var_export($constant->getValue(), true)
+            . ';';
     }
 
     private function formatProperty(ClassPropertyDefinition $property, int $indentationLevel): string
