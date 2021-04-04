@@ -2,6 +2,8 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\PhpTypeEnum;
+
 /**
  * Class FunctionParameterDefinition
  */
@@ -29,10 +31,11 @@ class FunctionParameterDefinition
      * @param PhpTypeEnum $parameterType
      * @param bool $isOutputParameter
      */
-    public function __construct(string $parameterName,
+    public function __construct(
+        string $parameterName,
         PhpTypeEnum $parameterType,
-        bool $isOutputParameter = false)
-    {
+        bool $isOutputParameter = false
+    ) {
         $this->parameterName = $parameterName;
         $this->parameterType = $parameterType;
         $this->isOutputParameter = $isOutputParameter;

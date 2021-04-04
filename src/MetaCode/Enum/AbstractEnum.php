@@ -32,7 +32,7 @@ class AbstractEnum
         return static::CONCRETE_TYPE_ID === $this->modifierTypeId;
     }
 
-    public static function abstractEnum(): static
+    public static function abstractEnum(): AbstractEnum
     {
         if (static::$concreteEnumInstance) {
             return static::$concreteEnumInstance;
@@ -40,7 +40,7 @@ class AbstractEnum
         return static::$concreteEnumInstance = new static(static::ABSTRACT_TYPE_ID);
     }
     
-    public static function concreteEnum(): static
+    public static function concreteEnum(): AbstractEnum
     {
         if (static::$abstractEnumInstance) {
             return static::$abstractEnumInstance;

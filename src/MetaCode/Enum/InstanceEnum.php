@@ -4,7 +4,7 @@ namespace Reliese\MetaCode\Enum;
 
 use RuntimeException;
 /**
- * Class ClassInstanceMemberModifierType
+ * Class InstanceEnum
  */
 class InstanceEnum
 {
@@ -33,7 +33,7 @@ class InstanceEnum
         return static::INSTANCE_TYPE_ID === $this->modifierTypeId;
     }
 
-    public static function staticMemberEnum(): static
+    public static function staticMemberEnum(): InstanceEnum
     {
         if (static::$instanceMemberInstance) {
             return static::$instanceMemberInstance;
@@ -41,7 +41,7 @@ class InstanceEnum
         return static::$instanceMemberInstance = new static(static::STATIC_TYPE_ID);
     }
     
-    public static function instanceEnum(): static
+    public static function instanceEnum(): InstanceEnum
     {
         if (static::$staticMemberInstance) {
             return static::$staticMemberInstance;

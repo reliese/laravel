@@ -5,6 +5,7 @@ namespace Reliese\MetaCode\Definition;
 use Reliese\MetaCode\Enum\InstanceEnum;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
+
 /**
  * Class ClassPropertyDefinition
  */
@@ -94,7 +95,7 @@ class ClassPropertyDefinition
     public function withGetter(
         ?VisibilityEnum $getterVisibilityEnum = null,
         ?InstanceEnum $getterInstanceEnum = null
-    ): static {
+    ): ClassPropertyDefinition {
         $this->getterVisibilityEnum = $getterVisibilityEnum ?? VisibilityEnum::publicEnum();
         $this->getterInstanceEnum = $getterInstanceEnum ?? InstanceEnum::instanceEnum();
         return $this;
@@ -125,7 +126,7 @@ class ClassPropertyDefinition
     public function withSetter(
         ?VisibilityEnum $setterVisibilityEnum = null,
         ?InstanceEnum $setterInstanceEnum = null
-    ): static {
+    ): ClassPropertyDefinition {
         $this->setterVisibilityEnum = $setterVisibilityEnum ?? VisibilityEnum::publicEnum();
         $this->setterInstanceEnum = $setterInstanceEnum ?? InstanceEnum::instanceEnum();
         return $this;

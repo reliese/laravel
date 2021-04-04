@@ -2,6 +2,9 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\PhpTypeEnum;
+use Reliese\MetaCode\Enum\VisibilityEnum;
+
 /**
  * Class FunctionDefinition
  */
@@ -28,19 +31,24 @@ class FunctionDefinition
     private ?VisibilityEnum $visibilityEnum;
 
     /**
+     * @var StatementDefinitionInterface[]
+     */
+    private array $blockStatements;
+
+    /**
      * ClassFunctionDefinition constructor.
      *
      * @param string $functionName
      * @param PhpTypeEnum $returnType
      * @param FunctionParameterDefinition[] $functionParameterDefinitions
      * @param VisibilityEnum|null $visibilityEnum
-     * @param InstanceEnum|null $instanceEnum
-     * @param AbstractEnum|null $abstractEnum
      */
-    public function __construct(string $functionName,
+    public function __construct(
+        string $functionName,
         PhpTypeEnum $returnType,
         array $functionParameterDefinitions,
-        ?VisibilityEnum $visibilityEnum = null)
+        ?VisibilityEnum $visibilityEnum = null
+    )
     {
         $this->functionName = $functionName;
         $this->returnPhpTypeEnum = $returnType;
@@ -81,11 +89,11 @@ class FunctionDefinition
     }
 
     /**
-     * @param StatementDefinition $statementDefinition
+     * @param StatementDefinitionInterface $statementDefinition
      *
      * @return $this
      */
-    public function appendBodyStatement(StatementDefinition $statementDefinition) : static
+    public function appendBodyStatement(StatementDefinitionInterface $statementDefinition): FunctionDefinition
     {
         $this->blockStatements[] = $statementDefinition;
         return $this;

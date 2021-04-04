@@ -95,7 +95,7 @@ class PhpTypeEnum
         return static::STATIC_TYPE_ID === $this->phpTypeId;
     }
 
-    public static function stringType(): static
+    public static function stringType(): PhpTypeEnum
     {
         if (static::$stringTypeInstance) {
             return static::$stringTypeInstance;
@@ -103,7 +103,7 @@ class PhpTypeEnum
         return static::$stringTypeInstance = new static(static::STRING_TYPE_ID);
     }
 
-    public static function intType(): static
+    public static function intType(): PhpTypeEnum
     {
         if (static::$intTypeInstance) {
             return static::$intTypeInstance;
@@ -111,7 +111,7 @@ class PhpTypeEnum
         return static::$intTypeInstance = new static(static::INT_TYPE_ID);
     }
 
-    public static function floatType(): static
+    public static function floatType(): PhpTypeEnum
     {
         if (static::$floatTypeInstance) {
             return static::$floatTypeInstance;
@@ -119,7 +119,7 @@ class PhpTypeEnum
         return static::$floatTypeInstance = new static(static::FLOAT_TYPE_ID);
     }
 
-    public static function boolType(): static
+    public static function boolType(): PhpTypeEnum
     {
         if (static::$boolTypeInstance) {
             return static::$boolTypeInstance;
@@ -127,7 +127,7 @@ class PhpTypeEnum
         return static::$boolTypeInstance = new static(static::BOOL_TYPE_ID);
     }
 
-    public static function arrayType(string $containedTypeName): static
+    public static function arrayType(string $containedTypeName): PhpTypeEnum
     {
         if (\array_key_exists($containedTypeName, static::$arrayTypeInstances)) {
             return static::$arrayTypeInstances[$containedTypeName];
@@ -136,7 +136,7 @@ class PhpTypeEnum
             ->setContainedTypeName($containedTypeName);
     }
 
-    public static function objectType(string $fullyQualifiedClassNameOfObjectType): static
+    public static function objectType(string $fullyQualifiedClassNameOfObjectType): PhpTypeEnum
     {
         if (\array_key_exists($fullyQualifiedClassNameOfObjectType, static::$objectTypeInstance)) {
             return static::$objectTypeInstance[$fullyQualifiedClassNameOfObjectType];
@@ -145,7 +145,7 @@ class PhpTypeEnum
             = (new static(static::OBJECT_TYPE_ID))->setObjectClassType($fullyQualifiedClassNameOfObjectType);
     }
 
-    public static function staticTypeEnum(): static
+    public static function staticTypeEnum(): PhpTypeEnum
     {
         if (static::$staticTypeInstance) {
             return static::$staticTypeInstance;
@@ -228,13 +228,13 @@ class PhpTypeEnum
         return __METHOD__.' failed';
     }
 
-    private function setContainedTypeName(string $containedTypeName) : static
+    private function setContainedTypeName(string $containedTypeName) : PhpTypeEnum
     {
         $this->containedTypeName = $containedTypeName;
         return $this;
     }
 
-    private function setObjectClassType(string $fullyQualifiedObjectClassName) : static
+    private function setObjectClassType(string $fullyQualifiedObjectClassName) : PhpTypeEnum
     {
         $this->fullyQualifiedObjectClassName = $fullyQualifiedObjectClassName;
         return $this;

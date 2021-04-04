@@ -4,7 +4,7 @@ namespace Reliese\MetaCode\Definition;
 
 use Reliese\MetaCode\Definition\ClassFunctionDefinition;
 /**
- * Class GeneratedClass
+ * Class ClassDefinition
  */
 class ClassDefinition
 {
@@ -43,7 +43,7 @@ class ClassDefinition
         $this->functionDefinitions[$classFunctionDefinition->getFunctionName()] = $classFunctionDefinition;
     }
 
-    public function extendsClass(string $fullyQualifiedClassName): static
+    public function extendsClass(string $fullyQualifiedClassName): ClassDefinition
     {
         $this->extendedClassName = $fullyQualifiedClassName;
         return $this;
@@ -64,7 +64,7 @@ class ClassDefinition
         return $this->namespace;
     }
 
-    public function addProperty(ClassPropertyDefinition $classPropertyDefinition) : static {
+    public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition {
         $this->classProperties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
         return $this;
     }

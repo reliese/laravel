@@ -2,6 +2,10 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\AbstractEnum;
+use Reliese\MetaCode\Enum\InstanceEnum;
+use Reliese\MetaCode\Enum\PhpTypeEnum;
+use Reliese\MetaCode\Enum\VisibilityEnum;
 /**
  * Class ClassFunctionDefinition
  */

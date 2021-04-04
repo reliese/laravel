@@ -4,7 +4,7 @@ namespace Reliese\MetaCode\Enum;
 
 use RuntimeException;
 /**
- * Class ClassMemberModifierEnum
+ * Class VisibilityEnum
  */
 class VisibilityEnum
 {
@@ -42,7 +42,7 @@ class VisibilityEnum
         return static::PROTECTED_TYPE_ID === $this->modifierTypeId;
     }
 
-    public static function publicEnum(): static
+    public static function publicEnum(): VisibilityEnum
     {
         if (self::$publicMemberInstance) {
             return self::$publicMemberInstance;
@@ -50,7 +50,7 @@ class VisibilityEnum
         return self::$publicMemberInstance = new static(static::PUBLIC_TYPE_ID);
     }
 
-    public static function protectedEnum(): static
+    public static function protectedEnum(): VisibilityEnum
     {
         if (self::$protectedMemberInstance) {
             return self::$protectedMemberInstance;
@@ -58,7 +58,7 @@ class VisibilityEnum
         return self::$protectedMemberInstance = new static(static::PROTECTED_TYPE_ID);
     }
 
-    public static function privateEnum(): static
+    public static function privateEnum(): VisibilityEnum
     {
         if (self::$privateMemberInstance) {
             return self::$privateMemberInstance;
