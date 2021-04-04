@@ -248,7 +248,7 @@ class OneClass
 {
     private string \$oneProperty;
 
-    public function setOneProperty(string \$oneProperty): static    
+    public function setOneProperty(string \$oneProperty): static
     {
         \$this->oneProperty = \$oneProperty;
 
