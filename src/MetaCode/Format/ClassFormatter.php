@@ -7,6 +7,7 @@ use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
+use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\FunctionParameterDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
@@ -23,27 +24,35 @@ class ClassFormatter
 
         $this->prepareGettersAndSetters($classDefinition);
 
-        $lines[] = "<?php\n\n";
-        $lines[] = 'namespace ' . $classDefinition->getNamespace() . ";\n\n";
-        $lines[] = "/**\n";
-        $lines[] = ' * Class ' . $classDefinition->getClassName() . "\n";
-        $lines[] = " * \n";
-        $lines[] = " * Created by Reliese\n";
-        $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getClassName() . "\n";
-        $lines[] = "{\n";
-
         $body = [];
 
+        $body[] = $this->formatTraits($classDefinition, $depth);
         $body[] = $this->formatConstants($classDefinition, $depth);
         $body[] = $this->formatProperties($classDefinition, $depth);
         $body[] = $this->formatMethods($classDefinition, $depth);
+
+        $lines[] = "<?php\n\n";
+        $lines[] = 'namespace ' . $classDefinition->getNamespace() . ";\n\n";
+
+        $imports = $this->formatImports($classDefinition);
+
+        if (count($imports) > 0) {
+            $lines[] = implode("\n", $imports) . "\n\n";
+        }
+
+        $lines[] = "/**\n";
+        $lines[] = ' * Class ' . $classDefinition->getName() . "\n";
+        $lines[] = " * \n";
+        $lines[] = " * Created by Reliese\n";
+        $lines[] = " */\n";
+        $lines[] = 'class ' . $classDefinition->getName() . "\n";
+        $lines[] = "{\n";
 
         // Filter away empty blocks and space them with one empty line
         $lines[] = implode("\n\n", array_filter($body));
         $lines[] = "\n}\n";
 
-        return implode('', $lines);
+        return implode('', array_filter($lines));
     }
 
     /**
@@ -77,6 +86,36 @@ class ClassFormatter
                 $this->appendGetter($property, $classDefinition);
             }
         }
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     * @param int $depth
+     *
+     * @return string
+     */
+    private function formatTraits(ClassDefinition $classDefinition, int $depth): string
+    {
+        $constants = [];
+
+        foreach ($classDefinition->getTraits() as $trait) {
+            $constants[] = $this->formatTrait($classDefinition, $trait, $depth + 1);
+        }
+
+        return implode("\n", $constants);
+    }
+
+    private function formatTrait(ClassDefinition $classDefinition, ClassTraitDefinition $trait, int $depth): string
+    {
+        $object = $trait->getFullyQualifiedName();
+
+        if (!$classDefinition->willCollideImport($trait)) {
+            $classDefinition->addImport($trait);
+            $object = $trait->getName();
+        }
+
+
+        return $this->getIndentation($depth) . 'use ' . $object . ';';
     }
 
     /**
@@ -230,5 +269,21 @@ class ClassFormatter
         $signature .= $this->getIndentation($depth) . '}';
 
         return $signature;
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return string[]
+     */
+    private function formatImports(ClassDefinition $classDefinition): array
+    {
+        $imports = [];
+
+        foreach ($classDefinition->getImports() as $import) {
+            $imports[] = 'use ' . $import->getFullyQualifiedImportableName() . ';';
+        }
+
+        return $imports;
     }
 }

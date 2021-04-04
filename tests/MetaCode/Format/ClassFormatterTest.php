@@ -6,6 +6,7 @@ use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
+use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\FunctionParameterDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
@@ -41,6 +42,78 @@ class OneClass
 PHP;
 
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_trait()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+use SomeNamespace\SomeNiceTrait;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    use SomeNiceTrait;
+}
+
+PHP;
+
+        $someNiceTrait = new ClassTraitDefinition('SomeNiceTrait', '\SomeNamespace');
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addTrait($someNiceTrait);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_trait_that_has_collided_name()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneName
+ * 
+ * Created by Reliese
+ */
+class OneName
+{
+    use \SomeNamespace\OneName;
+}
+
+PHP;
+
+        $someCollidedTrait = new ClassTraitDefinition('OneName', '\SomeNamespace');
+
+        $classDefinition = new ClassDefinition('OneName', '\OneNamespace');
+        $classDefinition->addTrait($someCollidedTrait);
 
         $classFormatter = new ClassFormatter();
 

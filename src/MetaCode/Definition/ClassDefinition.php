@@ -5,24 +5,9 @@ namespace Reliese\MetaCode\Definition;
 /**
  * Class ClassDefinition
  */
-class ClassDefinition
+class ClassDefinition implements ImportableInterface
 {
-    private string $className;
-
-    /**
-     * @var ClassPropertyDefinition[]
-     */
-    private array $classProperties = [];
-
-    /**
-     * @var string
-     */
-    private string $extendedClassName;
-
-    /**
-     * @var ClassMethodDefinition[]
-     */
-    private array $methodDefinitions = [];
+    private string $name;
 
     /**
      * @var string
@@ -30,21 +15,46 @@ class ClassDefinition
     private string $namespace;
 
     /**
+     * @var string
+     */
+    private string $extendedClassName;
+
+    /**
+     * @var ImportableInterface[]
+     */
+    private array $imports = [];
+
+    /**
+     * @var ClassTraitDefinition[]
+     */
+    private array $traits = [];
+
+    /**
      * @var ClassConstantDefinition[]
      */
-    private array $classConstants = [];
+    private array $constants = [];
+
+    /**
+     * @var ClassPropertyDefinition[]
+     */
+    private array $properties = [];
+
+    /**
+     * @var ClassMethodDefinition[]
+     */
+    private array $methods = [];
 
     public function __construct(
-        string $className,
+        string $name,
         string $namespace
     ) {
-        $this->className = $className;
+        $this->name = $name;
         $this->namespace = trim($namespace, '\\');
     }
 
     public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition)
     {
-        $this->methodDefinitions[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
+        $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
     }
 
     public function extendsClass(string $fullyQualifiedClassName): ClassDefinition
@@ -53,14 +63,14 @@ class ClassDefinition
         return $this;
     }
 
-    public function getClassName(): string
+    public function getName(): string
     {
-        return $this->className;
+        return $this->name;
     }
 
-    public function getFullyQuallifiedClassName() : string
+    public function getFullyQualifiedClassName(): string
     {
-        return '\\'.$this->getNamespace().'\\'.$this->getClassName();
+        return '\\'.$this->getNamespace().'\\'.$this->getName();
     }
 
     public function getNamespace(): string
@@ -69,7 +79,7 @@ class ClassDefinition
     }
 
     public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition {
-        $this->classProperties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
+        $this->properties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
         return $this;
     }
 
@@ -78,7 +88,7 @@ class ClassDefinition
      */
     public function getProperties(): array
     {
-        return $this->classProperties;
+        return $this->properties;
     }
 
     /**
@@ -86,12 +96,12 @@ class ClassDefinition
      */
     public function getMethods(): array
     {
-        return $this->methodDefinitions;
+        return $this->methods;
     }
 
-    public function addConstant(ClassConstantDefinition $oneConstant): static
+    public function addConstant(ClassConstantDefinition $constant): static
     {
-        $this->classConstants[$oneConstant->getName()] = $oneConstant;
+        $this->constants[$constant->getName()] = $constant;
         return $this;
     }
 
@@ -100,6 +110,57 @@ class ClassDefinition
      */
     public function getConstants(): array
     {
-        return $this->classConstants;
+        return $this->constants;
+    }
+
+    public function addTrait(ClassTraitDefinition $trait): static
+    {
+        $this->traits[$trait->getName()] = $trait;
+        return $this;
+    }
+
+    /**
+     * @return ClassTraitDefinition[]
+     */
+    public function getTraits(): array
+    {
+        return $this->traits;
+    }
+
+    public function addImport(ImportableInterface $import): static
+    {
+        $this->imports[$import->getImportableName()] = $import;
+        return $this;
+    }
+
+    public function willCollideImport(ImportableInterface $import): bool
+    {
+        if (strcmp($import->getImportableName(), $this->getImportableName()) == 0) {
+            return true;
+        }
+
+        if (!array_key_exists($import->getImportableName(), $this->imports)) {
+            return false;
+        }
+
+        return strcmp($import->getImportableName(), $this->getImportableName()) === 0;
+    }
+
+    /**
+     * @return ImportableInterface[]
+     */
+    public function getImports(): array
+    {
+        return $this->imports;
+    }
+
+    public function getFullyQualifiedImportableName(): string
+    {
+        return trim($this->getFullyQualifiedClassName(), '\\');
+    }
+
+    public function getImportableName(): string
+    {
+        return $this->getName();
     }
 }
