@@ -68,7 +68,7 @@ class ClassDefinition implements ImportableInterface
         return $this->name;
     }
 
-    public function getFullyQualifiedClassName(): string
+    public function getFullyQualifiedName(): string
     {
         return '\\'.$this->getNamespace().'\\'.$this->getName();
     }
@@ -129,13 +129,26 @@ class ClassDefinition implements ImportableInterface
 
     public function addImport(ImportableInterface $import): static
     {
+        // We'll assume this class is already imported to shorten references to itself
+        if (strcmp($import->getFullyQualifiedImportableName(), $this->getFullyQualifiedImportableName()) === 0) {
+            return $this;
+        }
+
         $this->imports[$import->getImportableName()] = $import;
         return $this;
     }
 
     public function willCollideImport(ImportableInterface $import): bool
     {
+        // When it's the same class name
         if (strcmp($import->getImportableName(), $this->getImportableName()) === 0) {
+            // And it's same namespace as this one
+            if (strcmp($import->getFullyQualifiedImportableName(), $this->getFullyQualifiedImportableName()) === 0) {
+                // The import won't have a collision
+                return false;
+            }
+
+            // Will collide when different namespace
             return true;
         }
 
@@ -152,7 +165,7 @@ class ClassDefinition implements ImportableInterface
 
     public function getFullyQualifiedImportableName(): string
     {
-        return trim($this->getFullyQualifiedClassName(), '\\');
+        return trim($this->getFullyQualifiedName(), '\\');
     }
 
     public function getImportableName(): string

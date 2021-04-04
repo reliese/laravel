@@ -73,22 +73,32 @@ class PhpTypeEnum
         return static::BOOL_TYPE_ID === $this->phpTypeId;
     }
 
-    public function isArray(string $containedTypeName): bool
+    public function isThisArray(string $containedTypeName): bool
     {
-        if (static::ARRAY_TYPE_ID !== $this->phpTypeId) {
+        if (!$this->isArray()) {
             return false;
         }
 
         return $containedTypeName === $this->containedTypeName;
     }
 
-    public function isObject(string $fullyQualifiedObjectClassName): bool
+    public function isArray(): bool
     {
-        if (static::OBJECT_TYPE_ID !== $this->phpTypeId) {
+        return static::ARRAY_TYPE_ID === $this->phpTypeId;
+    }
+
+    public function isThisObject(string $fullyQualifiedObjectClassName): bool
+    {
+        if (!$this->isObject()) {
             return false;
         }
 
         return $fullyQualifiedObjectClassName === $this->fullyQualifiedObjectClassName;
+    }
+
+    public function isObject(): bool
+    {
+        return static::OBJECT_TYPE_ID === $this->phpTypeId;
     }
 
     public function isStatic(): bool

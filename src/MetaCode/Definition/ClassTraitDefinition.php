@@ -46,11 +46,17 @@ class ClassTraitDefinition implements ImportableInterface
         return '\\' . $this->getNamespace() . '\\' . $this->getName();
     }
 
+    /**
+     * @return string
+     */
     public function getFullyQualifiedImportableName(): string
     {
         return trim($this->getFullyQualifiedName(), '\\');
     }
 
+    /**
+     * @return string
+     */
     public function getImportableName(): string
     {
         return $this->getName();

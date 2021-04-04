@@ -160,6 +160,78 @@ PHP;
     /**
      * @test
      */
+    public function it_formats_a_class_with_one_parameter_and_import()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+use SomeNamespace\AnotherClass;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private AnotherClass \$aProperty;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectType('\SomeNamespace\AnotherClass'));
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_parameter_and_does_not_import_when_same_class()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private OneClass \$aProperty;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectType('\OneNamespace\OneClass'));
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
     public function it_formats_a_class_with_two_parameters()
     {
         $expectedClassOutput =
@@ -382,7 +454,7 @@ namespace OneNamespace;
  */
 class OneClass
 {
-    public function aMethod(string \$aParameter, \OneNamespace\OneClass \$anotherParameter): \OneNamespace\OneClass
+    public function aMethod(string \$aParameter, OneClass \$anotherParameter): OneClass
     {
         return \$anotherParameter;
     }

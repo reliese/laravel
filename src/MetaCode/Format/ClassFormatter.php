@@ -9,6 +9,7 @@ use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
 use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\FunctionParameterDefinition;
+use Reliese\MetaCode\Definition\ObjectTypeDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 
@@ -157,18 +158,18 @@ class ClassFormatter
         $properties = [];
 
         foreach ($classDefinition->getProperties() as $property) {
-            $properties[] = $this->formatProperty($property, $depth + 1);
+            $properties[] = $this->formatProperty($classDefinition, $property, $depth + 1);
         }
 
         return implode("\n", $properties);
     }
 
-    private function formatProperty(ClassPropertyDefinition $property, int $depth): string
+    private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
     {
         return $this->getIndentation($depth)
                 . $property->getVisibilityEnum()->toReservedWord()
                 . ' '
-                . $property->getPhpTypeEnum()->toDeclarationType()
+                . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
                 . ' $'
                 . $property->getVariableName()
                 . ';';
@@ -223,13 +224,13 @@ class ClassFormatter
         $methods = [];
 
         foreach ($classDefinition->getMethods() as $method) {
-            $methods[] = $this->formatMethod($method, $depth + 1);
+            $methods[] = $this->formatMethod($classDefinition, $method, $depth + 1);
         }
 
         return implode("\n\n", $methods);
     }
 
-    private function formatMethod(ClassMethodDefinition $method, int $depth): string
+    private function formatMethod(ClassDefinition $classDefinition, ClassMethodDefinition $method, int $depth): string
     {
         $signature = $this->getIndentation($depth);
 
@@ -245,15 +246,15 @@ class ClassFormatter
 
         $parameters = [];
         foreach ($method->getFunctionParameterDefinitions() as $parameter) {
-            $parameters[] = $parameter->getParameterType()->toDeclarationType()
-                . ' $'
-                . $parameter->getParameterName();
+            $hint = $this->shortenTypeHint($classDefinition, $parameter->getParameterType());
+
+            $parameters[] = $hint . ' $' . $parameter->getParameterName();
         }
 
         $signature .= implode(', ', $parameters);
 
         $signature .= '): ';
-        $signature .= $method->getReturnPhpTypeEnum()->toDeclarationType();
+        $signature .= $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
         $signature .= "\n";
 
         $signature .= $this->getIndentation($depth) . "{\n";
@@ -286,4 +287,28 @@ class ClassFormatter
 
         return $imports;
     }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     * @param PhpTypeEnum $phpType
+     *
+     * @return string
+     */
+    private function shortenTypeHint(ClassDefinition $classDefinition, PhpTypeEnum $phpType): string
+    {
+        $typeHint = $phpType->toDeclarationType();
+
+        if ($phpType->isObject()) {
+            $type = new ObjectTypeDefinition($typeHint);
+
+            $typeHint = $type->getFullyQualifiedName();
+
+            if (!$classDefinition->willCollideImport($type)) {
+                $classDefinition->addImport($type);
+                $typeHint = $type->getImportableName();
+            }
+        }
+
+        return $typeHint;
+}
 }
