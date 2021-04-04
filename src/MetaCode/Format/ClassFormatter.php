@@ -89,20 +89,23 @@ class ClassFormatter
      * @param ClassPropertyDefinition $property
      * @param ClassDefinition $classDefinition
      */
-    private function appendSetter(
-        ClassPropertyDefinition $property,
-        ClassDefinition $classDefinition
-    )
+    private function appendSetter(ClassPropertyDefinition $property, ClassDefinition $classDefinition)
     {
         $param = new FunctionParameterDefinition($property->getVariableName(), $property->getPhpTypeEnum());
+
         $getter = new ClassMethodDefinition('set' . Str::studly($property->getVariableName()),
             PhpTypeEnum::staticTypeEnum(),
             [
                 $param
-            ]);
-        $getter->appendBodyStatement(new RawStatementDefinition('$this->' . $property->getVariableName() . ' = $' . $property->getVariableName() . ";\n"))
-               ->appendBodyStatement(new RawStatementDefinition('return $this;'))
-        ;
+            ]
+        );
+
+        $getter->appendBodyStatement(new RawStatementDefinition(
+                   '$this->' . $property->getVariableName() . ' = $' . $property->getVariableName() . ";\n"
+               ))
+               ->appendBodyStatement(new RawStatementDefinition(
+                   'return $this;'
+               ));
 
         $classDefinition->addMethodDefinition($getter);
     }
