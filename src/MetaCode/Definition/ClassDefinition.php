@@ -135,7 +135,7 @@ class ClassDefinition implements ImportableInterface
 
     public function willCollideImport(ImportableInterface $import): bool
     {
-        if (strcmp($import->getImportableName(), $this->getImportableName()) == 0) {
+        if (strcmp($import->getImportableName(), $this->getImportableName()) === 0) {
             return true;
         }
 
