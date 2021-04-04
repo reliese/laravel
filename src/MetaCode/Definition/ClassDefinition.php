@@ -15,8 +15,19 @@ class ClassDefinition
      */
     private array $classProperties = [];
 
+    /**
+     * @var string
+     */
     private string $extendedClassName;
 
+    /**
+     * @var FunctionDefinition[]
+     */
+    private array $functionDefinitions;
+
+    /**
+     * @var string
+     */
     private string $namespace;
 
     public function __construct(
@@ -54,7 +65,7 @@ class ClassDefinition
     }
 
     public function addProperty(ClassPropertyDefinition $classPropertyDefinition) : static {
-        $this->classProperties[$classPropertyDefinition->getMemberVariableName()] = $classPropertyDefinition;
+        $this->classProperties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
         return $this;
     }
 }

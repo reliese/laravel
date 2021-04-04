@@ -2,11 +2,21 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\InstanceEnum;
+use Reliese\MetaCode\Enum\PhpTypeEnum;
+use Reliese\MetaCode\Enum\VisibilityEnum;
 /**
  * Class ClassPropertyDefinition
  */
 class ClassPropertyDefinition
 {
+    /**
+     * @return PhpTypeEnum
+     */
+    public function getPhpTypeEnum(): PhpTypeEnum
+    {
+        return $this->phpTypeEnum;
+    }
     /**
      * @var VisibilityEnum
      */
@@ -20,14 +30,22 @@ class ClassPropertyDefinition
     /**
      * @var InstanceEnum|null
      */
-    private ?InstanceEnum $memberInstanceEnum;
+    private ?InstanceEnum $instanceEnum;
 
-    private string $memberVariableName;
+    /**
+     * @var PhpTypeEnum
+     */
+    private PhpTypeEnum $phpTypeEnum;
+
+    /**
+     * @var string
+     */
+    private string $variableName;
 
     /**
      * @var VisibilityEnum|null
      */
-    private ?VisibilityEnum $memberVisibilityEnum;
+    private ?VisibilityEnum $visibilityEnum;
 
     /**
      * @var InstanceEnum
@@ -39,20 +57,40 @@ class ClassPropertyDefinition
      */
     private VisibilityEnum $setterVisibilityEnum;
 
-    public function __construct(string $memberVariableName,
-        ?VisibilityEnum $memberVisibilityEnum = null,
-        ?InstanceEnum $memberInstanceEnum = null
+    /**
+     * ClassPropertyDefinition constructor.
+     *
+     * @param string $variableName
+     * @param PhpTypeEnum $phpTypeEnum
+     * @param VisibilityEnum|null $visibilityEnum
+     * @param InstanceEnum|null $instanceEnum
+     */
+    public function __construct(
+        string $variableName,
+        PhpTypeEnum $phpTypeEnum,
+        ?VisibilityEnum $visibilityEnum = null,
+        ?InstanceEnum $instanceEnum = null
     ) {
-        $this->memberVariableName = $memberVariableName;
-        $this->memberVisibilityEnum = $memberVisibilityEnum ?? VisibilityEnum::privateEnum();
-        $this->memberInstanceEnum = $memberInstanceEnum ?? InstanceEnum::instanceEnum();
+        $this->variableName = $variableName;
+        $this->visibilityEnum = $visibilityEnum ?? VisibilityEnum::privateEnum();
+        $this->instanceEnum = $instanceEnum ?? InstanceEnum::instanceEnum();
+        $this->phpTypeEnum = $phpTypeEnum;
     }
 
-    public function getMemberVariableName()
+    /**
+     * @return string
+     */
+    public function getVariableName(): string
     {
-        return $this->memberVariableName;
+        return $this->variableName;
     }
 
+    /**
+     * @param VisibilityEnum|null $getterVisibilityEnum
+     * @param InstanceEnum|null $getterInstanceEnum
+     *
+     * @return $this
+     */
     public function withGetter(
         ?VisibilityEnum $getterVisibilityEnum = null,
         ?InstanceEnum $getterInstanceEnum = null
@@ -62,15 +100,28 @@ class ClassPropertyDefinition
         return $this;
     }
 
+    /**
+     * @return VisibilityEnum
+     */
     public function getGetterVisibilityEnum(): VisibilityEnum
     {
         return $this->getterVisibilityEnum;
     }
+
+    /**
+     * @return InstanceEnum
+     */
     public function getGetterInstanceEnum(): InstanceEnum
     {
         return $this->getterInstanceEnum;
     }
 
+    /**
+     * @param VisibilityEnum|null $setterVisibilityEnum
+     * @param InstanceEnum|null $setterInstanceEnum
+     *
+     * @return $this
+     */
     public function withSetter(
         ?VisibilityEnum $setterVisibilityEnum = null,
         ?InstanceEnum $setterInstanceEnum = null
@@ -80,10 +131,17 @@ class ClassPropertyDefinition
         return $this;
     }
 
+    /**
+     * @return VisibilityEnum
+     */
     public function getSetterVisibilityEnum(): VisibilityEnum
     {
         return $this->setterVisibilityEnum;
     }
+
+    /**
+     * @return InstanceEnum
+     */
     public function getSetterInstanceEnum(): InstanceEnum
     {
         return $this->setterInstanceEnum;
