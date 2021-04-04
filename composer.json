@@ -42,6 +42,9 @@
     "config": {
         "preferred-install": "dist"
     },
+    "scripts": {
+      "test": "phpunit --testdox"
+    },
     "extra": {
         "laravel": {
             "providers": [
