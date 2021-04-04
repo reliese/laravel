@@ -1,8 +1,7 @@
 language: php
 
 php:
-  - '7.3'
-  - '7.4'
+  - '8.0'
 
 sudo: false
 
@@ -13,4 +12,4 @@ cache:
 install:
   - travis_retry composer install
 
-script: vendor/bin/phpunit
+script: vendor/bin/phpunit --testdox
