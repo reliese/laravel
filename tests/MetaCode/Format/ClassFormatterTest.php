@@ -12,9 +12,9 @@ use Reliese\MetaCode\Format\ClassFormatter;
 use TestCase;
 
 /**
- * Class ClassWithOnePropertyTest
+ * Class ClassFormatterTest
  */
-class ClassWithOnePropertyTest extends TestCase
+class ClassFormatterTest extends TestCase
 {
     /**
      * @test
