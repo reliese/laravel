@@ -2,7 +2,6 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Reliese\MetaCode\Definition\ClassFunctionDefinition;
 /**
  * Class ClassDefinition
  */
