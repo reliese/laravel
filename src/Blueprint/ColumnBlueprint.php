@@ -2,7 +2,6 @@
 
 namespace Reliese\Blueprint;
 
-use Doctrine\DBAL\Schema\Column;
 /**
  * Class ColumnBlueprint
  */
@@ -16,7 +15,7 @@ class ColumnBlueprint
     /**
      * @var ColumnOwnerInterface
      */
-    private $columnOwner;
+    private ColumnOwnerInterface $columnOwner;
 
     /**
      * @var string
@@ -27,6 +26,11 @@ class ColumnBlueprint
      * @var bool
      */
     private $hasDefault;
+
+    /**
+     * @var IndexBlueprint[]
+     */
+    private array $indexReferences = [];
 
     /**
      * @var bool
@@ -52,6 +56,16 @@ class ColumnBlueprint
      * @var int
      */
     private $numericScale;
+
+    /**
+     * @var ForeignKeyBlueprint[]
+     */
+    private array $referencedForeignKeys = [];
+
+    /**
+     * @var ForeignKeyBlueprint[]
+     */
+    private array $referencingForeignKeys;
 
     /**
      * ColumnBlueprint constructor.
@@ -95,6 +109,39 @@ class ColumnBlueprint
     }
 
     /**
+     * @param IndexBlueprint $indexBlueprint
+     *
+     * @return $this
+     */
+    public function addIndexReference(IndexBlueprint $indexBlueprint): static
+    {
+        $this->indexReferences[$indexBlueprint->getUniqueName()] = $indexBlueprint;
+        return $this;
+    }
+
+    /**
+     * @param ForeignKeyBlueprint $referencedForeignKey
+     *
+     * @return $this
+     */
+    public function addReferencedForeignKey(ForeignKeyBlueprint $referencedForeignKey): static
+    {
+        $this->referencedForeignKeys[$referencedForeignKey->getName()] = $referencedForeignKey;
+        return $this;
+    }
+
+    /**
+     * @param ForeignKeyBlueprint $referencingForeignKey
+     *
+     * @return $this
+     */
+    public function addReferencingForeignKey(ForeignKeyBlueprint $referencingForeignKey): static
+    {
+        $this->referencingForeignKeys[$referencingForeignKey->getName()] = $referencingForeignKey;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getColumnName(): string
@@ -116,6 +163,14 @@ class ColumnBlueprint
     public function getHasDefault(): bool
     {
         return $this->hasDefault;
+    }
+
+    /**
+     * @return IndexBlueprint[]
+     */
+    public function getIndexReferences(): array
+    {
+        return $this->indexReferences;
     }
 
     /**
@@ -159,22 +214,37 @@ class ColumnBlueprint
     }
 
     /**
+     * @return ColumnOwnerInterface
+     */
+    public function getOwner(): ColumnOwnerInterface
+    {
+        return $this->columnOwner;
+    }
+
+    /**
+     * @return ForeignKeyBlueprint[]
+     */
+    public function getReferencedForeignKeys(): array
+    {
+        return $this->getReferencedForeignKeys();
+    }
+
+    /**
+     * @return ForeignKeyBlueprint[]
+     */
+    public function getReferencingForeignKeys(): array
+    {
+        return $this->getReferencingForeignKeys();
+    }
+
+    /**
      * @return string
      */
     public function getUniqueName(): string
     {
         return sprintf('%s.%s',
             $this->getOwner()->getUniqueName(),
-            $this->getColumnName()
-        );
-    }
-
-    /**
-     * @return ColumnOwnerInterface
-     */
-    public function getOwner(): ColumnOwnerInterface
-    {
-        return $this->columnOwner;
+            $this->getColumnName());
     }
 
     /**
@@ -270,5 +340,66 @@ class ColumnBlueprint
     {
         $this->numericScale = $value;
         return $this;
+    }
+
+    public function isIncludedInUniqueIndex():bool
+    {
+        $indexReferences = $this->getIndexReferences();
+        if (empty($indexReference)) {
+            return false;
+        }
+
+        foreach ($indexReferences as $indexReference) {
+            if ($indexReference->isUnique()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isIncludedInIndex():bool
+    {
+        return !empty($this->getIndexReferences());
+    }
+
+    public function referencesAnotherTable(?string $optionalTableNameFilter = null): bool
+    {
+        if (empty($this->referencedForeignKeys)) {
+            return false;
+        }
+
+        if (null === $optionalTableNameFilter) {
+            return true;
+        }
+
+        /** @var ForeignKeyBlueprint $referencedForeignKey */
+        foreach ($this->referencedForeignKeys as $referencedForeignKey) {
+            if ($optionalTableNameFilter === $referencedForeignKey->getReferencedTableName()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function referencedByAnotherTable(?string $optionalTableNameFilter = null): bool
+    {
+        if (empty($this->referencingForeignKeys)) {
+            return false;
+        }
+
+        if (null === $optionalTableNameFilter) {
+            return true;
+        }
+
+        /** @var ForeignKeyBlueprint $referencingForeignKey */
+        foreach ($this->referencingForeignKeys as $referencingForeignKey) {
+            if ($optionalTableNameFilter === $referencingForeignKey->getReferencingObjectName()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

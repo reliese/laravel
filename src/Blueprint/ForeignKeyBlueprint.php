@@ -2,33 +2,32 @@
 
 namespace Reliese\Blueprint;
 
-use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 /**
  * Class ForeignKeyBlueprint
  */
 class ForeignKeyBlueprint
 {
-    /**
-     * @var ColumnOwnerInterface
-     */
-    private $columnOwner;
-
     private $name;
 
     /**
-     * @var array
+     * @var ColumnBlueprint[]
      */
-    private $referencedColumns;
+    private array $referencedColumns = [];
 
     /**
      * @var ColumnOwnerInterface
      */
-    private $referencedTable;
+    private ColumnOwnerInterface $referencedTable;
 
     /**
-     * @var array
+     * @var ColumnBlueprint[]
      */
-    private $referencingColumns;
+    private array $referencingColumns = [];
+
+    /**
+     * @var ColumnOwnerInterface
+     */
+    private ColumnOwnerInterface $tableOrViewBlueprint;
 
     /**
      * ForeignKeyConstraintBlueprint constructor.
@@ -39,25 +38,52 @@ class ForeignKeyBlueprint
      * @param ColumnOwnerInterface $referencedTable
      * @param ColumnBlueprint[] $referencedColumns
      */
-    public function __construct(
-        ColumnOwnerInterface $columnOwner,
+    public function __construct(ColumnOwnerInterface $columnOwner,
         string $name,
         array $referencingColumns,
         ColumnOwnerInterface $referencedTable,
-        array $referencedColumns
-    ) {
-        $this->columnOwner = $columnOwner;
+        array $referencedColumns)
+    {
+        $this->tableOrViewBlueprint = $columnOwner;
         $this->name = $name;
         $this->referencingColumns = $referencingColumns;
         $this->referencedTable = $referencedTable;
         $this->referencedColumns = $referencedColumns;
+
+        foreach ($this->referencingColumns as $referencingColumn) {
+            $referencingColumn->addReferencingForeignKey($this);
+        }
+        
+        foreach ($this->referencedColumns as $referencedColumn) {
+            $referencedColumn->addReferencedForeignKey($this);
+        }
     }
 
     /**
      * @return string
      */
-    public function getName():string
+    public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the name of the table or view that is referenced by this key
+     *
+     * @return string
+     */
+    public function getReferencedTableName(): string
+    {
+        return $this->referencedTable->getUniqueName();
+    }
+
+    /**
+     * Returns the name of the table or view that created this foreign key
+     *
+     * @return string
+     */
+    public function getReferencingObjectName(): string
+    {
+        return $this->tableOrViewBlueprint->getUniqueName();
     }
 }

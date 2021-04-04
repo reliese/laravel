@@ -49,6 +49,11 @@ class IndexBlueprint implements ColumnOwnerInterface
         $this->addColumnBlueprints($columnBlueprints);
         $this->isPrimaryKey = $isPrimary;
         $this->isUnique = $isUnique;
+
+        /** @var ColumnBlueprint $columnBlueprint */
+        foreach ($columnBlueprints as $columnBlueprint) {
+            $columnBlueprint->addIndexReference($this);
+        }
     }
 
     /**
