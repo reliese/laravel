@@ -53,6 +53,7 @@ class ClassFormatter
         }
         $blocks[] = implode("\n\n", $methods);
 
+        // Filter away empty blocks and space them with one empty line
         $lines[] = implode("\n\n", array_filter($blocks));
         $lines[] = "\n}\n";
 
