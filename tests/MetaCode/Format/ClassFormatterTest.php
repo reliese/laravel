@@ -35,6 +35,7 @@ namespace OneNamespace;
  */
 class OneClass
 {
+
 }
 
 PHP;

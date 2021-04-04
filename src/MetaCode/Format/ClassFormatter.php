@@ -21,6 +21,8 @@ class ClassFormatter
         $indentationLevel = 0;
         $lines = [];
 
+        $this->prepareGettersAndSetters($classDefinition);
+
         $lines[] = "<?php\n\n";
         $lines[] = 'namespace ' . $classDefinition->getNamespace() . ";\n\n";
         $lines[] = "/**\n";
@@ -31,28 +33,37 @@ class ClassFormatter
         $lines[] = 'class ' . $classDefinition->getClassName() . "\n";
         $lines[] = "{\n";
 
+        $blocks = [];
+
         $constants = [];
         foreach ($classDefinition->getConstants() as $constant) {
             $constants[] = $this->formatConstants($constant, $indentationLevel + 1);
         }
-
-        if (count($constants) > 0) {
-            $lines[] = implode("\n", $constants) . "\n";
-        }
+        $blocks[] = implode("\n", $constants);
 
         $properties = [];
         foreach ($classDefinition->getProperties() as $property) {
             $properties[] = $this->formatProperty($property, $indentationLevel + 1);
         }
+        $blocks[] = implode("\n", $properties);
 
-        if (count($properties) > 0) {
-            if (count($constants) > 0) {
-                $lines[] = "\n";
-            }
-
-            $lines[] = implode("\n", $properties) . "\n";
+        $methods = [];
+        foreach ($classDefinition->getMethods() as $method) {
+            $methods[] = $this->formatMethod($method, $indentationLevel + 1);
         }
+        $blocks[] = implode("\n\n", $methods);
 
+        $lines[] = implode("\n\n", array_filter($blocks));
+        $lines[] = "\n}\n";
+
+        return implode('', $lines);
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     */
+    private function prepareGettersAndSetters(ClassDefinition $classDefinition): void
+    {
         foreach ($classDefinition->getProperties() as $property) {
             if ($property->hasSetter()) {
                 $this->appendSetter($property, $classDefinition);
@@ -61,23 +72,6 @@ class ClassFormatter
                 $this->appendGetter($property, $classDefinition);
             }
         }
-
-        $methods = [];
-        foreach ($classDefinition->getMethods() as $method) {
-            $methods[] = $this->formatMethod($method, $indentationLevel + 1);
-        }
-
-        if (count($methods) > 0) {
-            if (count($properties) > 0) {
-                $lines[] = "\n";
-            }
-
-            $lines[] = implode("\n\n", $methods) . "\n";
-        }
-
-        $lines[] = "}\n";
-
-        return implode('', $lines);
     }
 
     /**
