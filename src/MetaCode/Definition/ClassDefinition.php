@@ -20,9 +20,9 @@ class ClassDefinition
     private string $extendedClassName;
 
     /**
-     * @var FunctionDefinition[]
+     * @var ClassMethodDefinition[]
      */
-    private array $functionDefinitions;
+    private array $methodDefinitions = [];
 
     /**
      * @var string
@@ -34,12 +34,12 @@ class ClassDefinition
         string $namespace
     ) {
         $this->className = $className;
-        $this->namespace = $namespace;
+        $this->namespace = trim($namespace, '\\');
     }
 
-    public function addFunctionDefinition(ClassFunctionDefinition $classFunctionDefinition)
+    public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition)
     {
-        $this->functionDefinitions[$classFunctionDefinition->getFunctionName()] = $classFunctionDefinition;
+        $this->methodDefinitions[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
     }
 
     public function extendsClass(string $fullyQualifiedClassName): ClassDefinition
@@ -58,7 +58,7 @@ class ClassDefinition
         return '\\'.$this->getNamespace().'\\'.$this->getClassName();
     }
 
-    private function getNamespace() : string
+    public function getNamespace(): string
     {
         return $this->namespace;
     }
@@ -66,5 +66,21 @@ class ClassDefinition
     public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition {
         $this->classProperties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
         return $this;
+    }
+
+    /**
+     * @return ClassPropertyDefinition[]
+     */
+    public function getProperties(): array
+    {
+        return $this->classProperties;
+    }
+
+    /**
+     * @return ClassMethodDefinition[]
+     */
+    public function getMethods(): array
+    {
+        return $this->methodDefinitions;
     }
 }

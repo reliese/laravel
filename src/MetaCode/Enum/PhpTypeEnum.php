@@ -3,6 +3,7 @@
 namespace Reliese\MetaCode\Enum;
 
 use RuntimeException;
+
 /**
  * Class PhpType
  */

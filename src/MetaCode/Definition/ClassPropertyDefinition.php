@@ -19,12 +19,12 @@ class ClassPropertyDefinition
         return $this->phpTypeEnum;
     }
     /**
-     * @var VisibilityEnum
+     * @var VisibilityEnum|null
      */
     private ?VisibilityEnum $getterVisibilityEnum = null;
 
     /**
-     * @var InstanceEnum
+     * @var InstanceEnum|null
      */
     private ?InstanceEnum $getterInstanceEnum = null;
 
@@ -49,14 +49,14 @@ class ClassPropertyDefinition
     private ?VisibilityEnum $visibilityEnum;
 
     /**
-     * @var InstanceEnum
+     * @var InstanceEnum|null
      */
-    private InstanceEnum $setterInstanceEnum;
+    private ?InstanceEnum $setterInstanceEnum = null;
 
     /**
-     * @var VisibilityEnum
+     * @var VisibilityEnum|null
      */
-    private VisibilityEnum $setterVisibilityEnum;
+    private ?VisibilityEnum $setterVisibilityEnum = null;
 
     /**
      * ClassPropertyDefinition constructor.
@@ -146,5 +146,23 @@ class ClassPropertyDefinition
     public function getSetterInstanceEnum(): InstanceEnum
     {
         return $this->setterInstanceEnum;
+    }
+
+    /**
+     * @return VisibilityEnum
+     */
+    public function getVisibilityEnum(): VisibilityEnum
+    {
+        return $this->visibilityEnum;
+    }
+
+    public function hasGetter(): bool
+    {
+        return !is_null($this->getterVisibilityEnum);
+    }
+
+    public function hasSetter(): bool
+    {
+        return !is_null($this->setterVisibilityEnum);
     }
 }

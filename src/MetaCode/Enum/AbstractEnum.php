@@ -24,12 +24,12 @@ class AbstractEnum
 
     public function isConcrete(): bool
     {
-        return static::ABSTRACT_TYPE_ID === $this->modifierTypeId;
+        return static::CONCRETE_TYPE_ID === $this->modifierTypeId;
     }
 
     public function isAbstract(): bool
     {
-        return static::CONCRETE_TYPE_ID === $this->modifierTypeId;
+        return static::ABSTRACT_TYPE_ID === $this->modifierTypeId;
     }
 
     public static function abstractEnum(): AbstractEnum

@@ -33,7 +33,7 @@ class FunctionDefinition
     /**
      * @var StatementDefinitionInterface[]
      */
-    private array $blockStatements;
+    private array $blockStatements = [];
 
     /**
      * ClassFunctionDefinition constructor.
@@ -97,5 +97,13 @@ class FunctionDefinition
     {
         $this->blockStatements[] = $statementDefinition;
         return $this;
+    }
+
+    /**
+     * @return StatementDefinitionInterface[]
+     */
+    public function getBlockStatements(): array
+    {
+        return $this->blockStatements;
     }
 }
