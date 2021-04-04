@@ -139,11 +139,7 @@ class ClassDefinition implements ImportableInterface
             return true;
         }
 
-        if (!array_key_exists($import->getImportableName(), $this->imports)) {
-            return false;
-        }
-
-        return strcmp($import->getImportableName(), $this->getImportableName()) === 0;
+        return array_key_exists($import->getImportableName(), $this->imports);
     }
 
     /**
