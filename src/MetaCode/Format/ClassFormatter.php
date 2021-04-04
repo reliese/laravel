@@ -33,14 +33,14 @@ class ClassFormatter
         $lines[] = 'class ' . $classDefinition->getClassName() . "\n";
         $lines[] = "{\n";
 
-        $blocks = [];
+        $body = [];
 
-        $blocks[] = $this->formatConstants($classDefinition, $indentationLevel);
-        $blocks[] = $this->formatProperties($classDefinition, $indentationLevel);
-        $blocks[] = $this->formatMethods($classDefinition, $indentationLevel);
+        $body[] = $this->formatConstants($classDefinition, $indentationLevel);
+        $body[] = $this->formatProperties($classDefinition, $indentationLevel);
+        $body[] = $this->formatMethods($classDefinition, $indentationLevel);
 
         // Filter away empty blocks and space them with one empty line
-        $lines[] = implode("\n\n", array_filter($blocks));
+        $lines[] = implode("\n\n", array_filter($body));
         $lines[] = "\n}\n";
 
         return implode('', $lines);
