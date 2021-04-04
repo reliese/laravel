@@ -35,29 +35,23 @@ class ClassFormatter
 
         $blocks = [];
 
-        $constants = [];
-        foreach ($classDefinition->getConstants() as $constant) {
-            $constants[] = $this->formatConstants($constant, $indentationLevel + 1);
-        }
-        $blocks[] = implode("\n", $constants);
-
-        $properties = [];
-        foreach ($classDefinition->getProperties() as $property) {
-            $properties[] = $this->formatProperty($property, $indentationLevel + 1);
-        }
-        $blocks[] = implode("\n", $properties);
-
-        $methods = [];
-        foreach ($classDefinition->getMethods() as $method) {
-            $methods[] = $this->formatMethod($method, $indentationLevel + 1);
-        }
-        $blocks[] = implode("\n\n", $methods);
+        $blocks[] = $this->formatConstants($classDefinition, $indentationLevel);
+        $blocks[] = $this->formatProperties($classDefinition, $indentationLevel);
+        $blocks[] = $this->formatMethods($classDefinition, $indentationLevel);
 
         // Filter away empty blocks and space them with one empty line
         $lines[] = implode("\n\n", array_filter($blocks));
         $lines[] = "\n}\n";
 
         return implode('', $lines);
+    }
+
+    /**
+     * @return string
+     */
+    private function getIndentationString(): string
+    {
+        return '    ';
     }
 
     /**
@@ -76,14 +70,23 @@ class ClassFormatter
     }
 
     /**
+     * @param ClassDefinition $classDefinition
+     * @param int $indentationLevel
+     *
      * @return string
      */
-    private function getIndentationString(): string
+    private function formatConstants(ClassDefinition $classDefinition, int $indentationLevel): string
     {
-        return '    ';
+        $constants = [];
+
+        foreach ($classDefinition->getConstants() as $constant) {
+            $constants[] = $this->formatConstant($constant, $indentationLevel + 1);
+        }
+
+        return implode("\n", $constants);
     }
 
-    private function formatConstants(ClassConstantDefinition $constant, int $indentationLevel): string
+    private function formatConstant(ClassConstantDefinition $constant, int $indentationLevel): string
     {
         return str_repeat($this->getIndentationString(), $indentationLevel)
             . $constant->getVisibilityEnum()->toReservedWord()
@@ -92,6 +95,23 @@ class ClassFormatter
             . ' = '
             . var_export($constant->getValue(), true)
             . ';';
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     * @param int $indentationLevel
+     *
+     * @return string
+     */
+    private function formatProperties(ClassDefinition $classDefinition, int $indentationLevel): string
+    {
+        $properties = [];
+
+        foreach ($classDefinition->getProperties() as $property) {
+            $properties[] = $this->formatProperty($property, $indentationLevel + 1);
+        }
+
+        return implode("\n", $properties);
     }
 
     private function formatProperty(ClassPropertyDefinition $property, int $indentationLevel): string
@@ -141,6 +161,23 @@ class ClassFormatter
         $getter->appendBodyStatement(new RawStatementDefinition('return $this->' . $property->getVariableName() . ';'));
 
         $classDefinition->addMethodDefinition($getter);
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     * @param int $indentationLevel
+     *
+     * @return string
+     */
+    private function formatMethods(ClassDefinition $classDefinition, int $indentationLevel): string
+    {
+        $methods = [];
+
+        foreach ($classDefinition->getMethods() as $method) {
+            $methods[] = $this->formatMethod($method, $indentationLevel + 1);
+        }
+
+        return implode("\n\n", $methods);
     }
 
     private function formatMethod(ClassMethodDefinition $method, int $indentationLevel): string
