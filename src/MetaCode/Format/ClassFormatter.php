@@ -107,7 +107,7 @@ class ClassFormatter
         $parent = '';
 
         if ($classDefinition->hasParentClass()) {
-            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
+            $phpType = PhpTypeEnum::objectOfType($classDefinition->getParentClassName());
             $parent = $this->shortenTypeHint($classDefinition, $phpType);
         }
 
