@@ -14,9 +14,7 @@ abstract class ClassNameTool
 
     public static function snakeCaseToClassName(?string $prefix, string $identifier, ?string $suffix):string
     {
-        $name = Str::camel(Str::singular($identifier));
-
-        $name[0] = Str::upper($name[0]);
+        $name = Str::studly(Str::singular($identifier));
 
         return $prefix . $name . $suffix;
     }
