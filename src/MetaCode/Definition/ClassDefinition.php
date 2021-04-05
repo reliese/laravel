@@ -15,9 +15,9 @@ class ClassDefinition implements ImportableInterface
     private string $namespace;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $extendedClassName;
+    private ?string $baseClassName = null;
 
     /**
      * @var ImportableInterface[]
@@ -57,10 +57,20 @@ class ClassDefinition implements ImportableInterface
         $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
     }
 
-    public function extendsClass(string $fullyQualifiedClassName): ClassDefinition
+    public function setBaseClass(string $fullyQualifiedClassName): ClassDefinition
     {
-        $this->extendedClassName = $fullyQualifiedClassName;
+        $this->baseClassName = $fullyQualifiedClassName;
         return $this;
+    }
+
+    public function hasBaseClass(): bool
+    {
+        return !\is_null($this->baseClassName);
+    }
+
+    public function getBaseClassName() : string
+    {
+        return $this->baseClassName;
     }
 
     public function getName(): string

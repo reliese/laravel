@@ -46,7 +46,11 @@ class ClassFormatter
         $lines[] = " * \n";
         $lines[] = " * Created by Reliese\n";
         $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getName() . "\n";
+        $lines[] = 'class ' . $classDefinition->getName();
+        if ($classDefinition->hasBaseClass()) {
+            $lines[] = ' extends '.$classDefinition->getBaseClassName();
+        }
+        $lines[] = "\n";
         $lines[] = "{\n";
 
         // Filter away empty blocks and space them with one empty line
