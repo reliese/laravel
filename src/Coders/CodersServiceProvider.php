@@ -8,7 +8,7 @@ use Reliese\Analyser\AnalyserFactory;
 use Reliese\Blueprint\BlueprintFactory;
 use Reliese\Command\Blueprint\ShowBlueprintCommand;
 use Reliese\Command\DataTransport\DataTransportGenerateCommand;
-use Reliese\Command\Model\MakeModelsCommand;
+use Reliese\Command\Model\ModelGenerateCommand;
 use Reliese\Support\Classify;
 use Reliese\Coders\Model\Config;
 use Illuminate\Filesystem\Filesystem;
@@ -39,7 +39,7 @@ class CodersServiceProvider extends ServiceProvider
 
             $this->commands([
                 CodeModelsCommand::class,
-                MakeModelsCommand::class,
+                ModelGenerateCommand::class,
                 ShowBlueprintCommand::class,
                 DataTransportGenerateCommand::class,
             ]);

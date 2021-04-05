@@ -5,20 +5,19 @@ namespace Reliese\Command\Model;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Reliese\Blueprint\BlueprintFactory;
-use Reliese\Coders\Console\CodeModelsCommand;
 use Reliese\Coders\Model\Factory;
 
 /**
- * Class MakeModelsCommand
+ * Class ModelGenerateCommand
  */
-class MakeModelsCommand extends Command
+class ModelGenerateCommand extends Command
 {
     /**
      * The name and signature of the console command.
      * @see Keep in sync with \Reliese\Coders\Console\CodeModelsCommand::$signature
      * @var string
      */
-    protected $signature = 'reliese:model:make
+    protected $signature = 'reliese:model:generate
                             {--s|schema= : The name of the MySQL database}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
@@ -65,27 +64,6 @@ class MakeModelsCommand extends Command
         $schema = $this->getSchema($connection);
         $table = $this->getTable();
 
-        $this->output->writeln("");
-
-        $databaseBlueprint = $blueprintFactory->database($connection);
-
-        foreach ($databaseBlueprint->getSchemaBlueprints() as $schemaBlueprint) {
-            $this->output->writeln(
-                sprintf(
-                    $schemaBlueprint->getSchemaName()." has \"%s\" tables",
-                    count($schemaBlueprint->getTableBlueprints())
-                )
-            );
-            $tableData = [];
-            foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-                $tableData[] = [$tableBlueprint->getName(), \implode(', ', $tableBlueprint->getColumnNames())];
-            }
-            $this->output->table(
-                ['table', 'columns'],
-                $tableData
-            );
-        }
-        return;
         // Check whether we just need to generate one table
         if ($table) {
             $this->models->on($connection)->create($schema, $table);
