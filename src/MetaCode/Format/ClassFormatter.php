@@ -314,5 +314,5 @@ class ClassFormatter
         }
 
         return $typeHint;
-}
+    }
 }
