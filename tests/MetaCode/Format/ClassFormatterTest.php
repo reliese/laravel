@@ -53,6 +53,74 @@ PHP;
     /**
      * @test
      */
+    public function it_formats_an_empty_class_with_imported_parent()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+use OtherNamespace\OtherClass;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass extends OtherClass
+{
+
+}
+
+PHP;
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->setParentClass('\OtherNamespace\OtherClass');
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_an_empty_class_with_imported_parent_collision()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass extends \OtherNamespace\OneClass
+{
+
+}
+
+PHP;
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->setParentClass('\OtherNamespace\OneClass');
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
     public function it_formats_a_class_with_one_trait()
     {
         $expectedClassOutput =

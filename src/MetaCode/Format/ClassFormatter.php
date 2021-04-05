@@ -32,6 +32,12 @@ class ClassFormatter
         $body[] = $this->formatProperties($classDefinition, $depth);
         $body[] = $this->formatMethods($classDefinition, $depth);
 
+        $parent = '';
+        if ($classDefinition->hasParentClass()) {
+            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
+            $parent = $this->shortenTypeHint($classDefinition, $phpType);
+        }
+
         $lines[] = "<?php\n\n";
         $lines[] = 'namespace ' . $classDefinition->getNamespace() . ";\n\n";
 
@@ -47,9 +53,11 @@ class ClassFormatter
         $lines[] = " * Created by Reliese\n";
         $lines[] = " */\n";
         $lines[] = 'class ' . $classDefinition->getName();
-        if ($classDefinition->hasBaseClass()) {
-            $lines[] = ' extends '.$classDefinition->getBaseClassName();
+
+        if (!empty($parent)) {
+            $lines[] = ' extends ' . $parent;
         }
+
         $lines[] = "\n";
         $lines[] = "{\n";
 
