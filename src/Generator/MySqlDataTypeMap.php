@@ -20,6 +20,7 @@ class MySqlDataTypeMap
      * @param int $length
      * @param int $precision
      * @param int $scale
+     * @param bool $isNullable
      *
      * @return PhpTypeEnum
      */
@@ -44,9 +45,9 @@ class MySqlDataTypeMap
             case 'time':
             case 'timestamp':
                 if ($isNullable) {
-                    return PhpTypeEnum::nullableObjectOfType(\DateTime::class);
+                    return PhpTypeEnum::nullableObjectOfType('\\'.\DateTime::class);
                 }
-                return PhpTypeEnum::objectOfType(\DateTime::class);
+                return PhpTypeEnum::objectOfType('\\'.\DateTime::class);
             case 'int':
             case 'integer':
             case 'smallint':
