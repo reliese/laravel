@@ -182,7 +182,7 @@ class OneClass
 
 PHP;
 
-        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectType('\SomeNamespace\AnotherClass'));
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectOfType('\SomeNamespace\AnotherClass'));
 
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
         $classDefinition->addProperty($aProperty);
@@ -217,7 +217,7 @@ class OneClass
 
 PHP;
 
-        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectType('\OneNamespace\OneClass'));
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectOfType('\OneNamespace\OneClass'));
 
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
         $classDefinition->addProperty($aProperty);
@@ -469,12 +469,12 @@ PHP;
 
         $anotherParameter = new FunctionParameterDefinition(
             'anotherParameter',
-            PhpTypeEnum::objectType('\OneNamespace\OneClass')
+            PhpTypeEnum::objectOfType('\OneNamespace\OneClass')
         );
 
         $aMethod = new ClassMethodDefinition(
             'aMethod',
-            PhpTypeEnum::objectType('\OneNamespace\OneClass'),
+            PhpTypeEnum::objectOfType('\OneNamespace\OneClass'),
             [
                 $aParameter,
                 $anotherParameter
