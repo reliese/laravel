@@ -25,18 +25,18 @@ class ClassFormatter
 
         $this->prepareGettersAndSetters($classDefinition);
 
+        $parent = '';
+        if ($classDefinition->hasParentClass()) {
+            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
+            $parent = $this->shortenTypeHint($classDefinition, $phpType);
+        }
+
         $body = [];
 
         $body[] = $this->formatTraits($classDefinition, $depth);
         $body[] = $this->formatConstants($classDefinition, $depth);
         $body[] = $this->formatProperties($classDefinition, $depth);
         $body[] = $this->formatMethods($classDefinition, $depth);
-
-        $parent = '';
-        if ($classDefinition->hasParentClass()) {
-            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
-            $parent = $this->shortenTypeHint($classDefinition, $phpType);
-        }
 
         $lines[] = "<?php\n\n";
         $lines[] = 'namespace ' . $classDefinition->getNamespace() . ";\n\n";
