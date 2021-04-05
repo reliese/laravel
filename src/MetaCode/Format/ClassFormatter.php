@@ -43,7 +43,7 @@ class ClassFormatter
 
         $imports = $this->formatImports($classDefinition);
 
-        if (count($imports) > 0) {
+        if (!empty($imports)) {
             $lines[] = implode("\n", $imports) . "\n\n";
         }
 
