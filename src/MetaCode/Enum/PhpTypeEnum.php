@@ -81,7 +81,7 @@ class PhpTypeEnum
 
     public function isNullable(): bool
     {
-        return $this->isNullable();
+        return $this->isNullable;
     }
 
     public function isString(): bool
