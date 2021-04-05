@@ -89,24 +89,14 @@ class PhpTypeEnum
         return static::STRING_TYPE_ID === $this->phpTypeId;
     }
 
-    public function isInt(): bool
-    {
-        return static::INT_TYPE_ID === $this->phpTypeId;
-    }
-
-    public function isFloat(): bool
-    {
-        return static::FLOAT_TYPE_ID === $this->phpTypeId;
-    }
-
-    public function isBool(): bool
-    {
-        return static::BOOL_TYPE_ID === $this->phpTypeId;
-    }
-
     public function isNullableString(): bool
     {
         return static::NULLABLE_STRING_TYPE_ID === $this->phpTypeId;
+    }
+
+    public function isInt(): bool
+    {
+        return static::INT_TYPE_ID === $this->phpTypeId;
     }
 
     public function isNullableInt(): bool
@@ -114,9 +104,19 @@ class PhpTypeEnum
         return static::NULLABLE_INT_TYPE_ID === $this->phpTypeId;
     }
 
+    public function isFloat(): bool
+    {
+        return static::FLOAT_TYPE_ID === $this->phpTypeId;
+    }
+
     public function isNullableFloat(): bool
     {
         return static::NULLABLE_FLOAT_TYPE_ID === $this->phpTypeId;
+    }
+
+    public function isBool(): bool
+    {
+        return static::BOOL_TYPE_ID === $this->phpTypeId;
     }
 
     public function isNullableBool(): bool

@@ -25,6 +25,8 @@ class ClassFormatter
 
         $this->prepareGettersAndSetters($classDefinition);
 
+        $parent = $this->formatParentClass($classDefinition);
+
         $body = [];
 
         $body[] = $this->formatTraits($classDefinition, $depth);
@@ -37,7 +39,7 @@ class ClassFormatter
 
         $imports = $this->formatImports($classDefinition);
 
-        if (count($imports) > 0) {
+        if (!empty($imports)) {
             $lines[] = implode("\n", $imports) . "\n\n";
         }
 
@@ -47,9 +49,11 @@ class ClassFormatter
         $lines[] = " * Created by Reliese\n";
         $lines[] = " */\n";
         $lines[] = 'class ' . $classDefinition->getName();
-        if ($classDefinition->hasBaseClass()) {
-            $lines[] = ' extends '.$classDefinition->getBaseClassName();
+
+        if (!empty($parent)) {
+            $lines[] = ' extends ' . $parent;
         }
+
         $lines[] = "\n";
         $lines[] = "{\n";
 
@@ -91,6 +95,23 @@ class ClassFormatter
                 $this->appendGetter($property, $classDefinition);
             }
         }
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return string
+     */
+    private function formatParentClass(ClassDefinition $classDefinition): string
+    {
+        $parent = '';
+
+        if ($classDefinition->hasParentClass()) {
+            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
+            $parent = $this->shortenTypeHint($classDefinition, $phpType);
+        }
+
+        return $parent;
     }
 
     /**
