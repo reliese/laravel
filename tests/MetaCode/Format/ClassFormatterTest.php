@@ -228,6 +228,41 @@ PHP;
     /**
      * @test
      */
+    public function it_formats_a_class_with_one_nullable_parameter()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private ?string \$aProperty;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::nullableStringType());
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
     public function it_formats_a_class_with_one_parameter_and_import()
     {
         $expectedClassOutput =
