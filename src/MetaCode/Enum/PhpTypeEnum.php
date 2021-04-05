@@ -73,7 +73,7 @@ class PhpTypeEnum
         return static::BOOL_TYPE_ID === $this->phpTypeId;
     }
 
-    public function isThisArray(string $containedTypeName): bool
+    public function isArrayOfType(string $containedTypeName): bool
     {
         if (!$this->isArray()) {
             return false;
@@ -87,7 +87,7 @@ class PhpTypeEnum
         return static::ARRAY_TYPE_ID === $this->phpTypeId;
     }
 
-    public function isThisObject(string $fullyQualifiedObjectClassName): bool
+    public function isObjectOfType(string $fullyQualifiedObjectClassName): bool
     {
         if (!$this->isObject()) {
             return false;
