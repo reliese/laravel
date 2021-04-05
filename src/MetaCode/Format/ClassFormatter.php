@@ -25,11 +25,7 @@ class ClassFormatter
 
         $this->prepareGettersAndSetters($classDefinition);
 
-        $parent = '';
-        if ($classDefinition->hasParentClass()) {
-            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
-            $parent = $this->shortenTypeHint($classDefinition, $phpType);
-        }
+        $parent = $this->formatParentClass($classDefinition);
 
         $body = [];
 
@@ -99,6 +95,23 @@ class ClassFormatter
                 $this->appendGetter($property, $classDefinition);
             }
         }
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return string
+     */
+    private function formatParentClass(ClassDefinition $classDefinition): string
+    {
+        $parent = '';
+
+        if ($classDefinition->hasParentClass()) {
+            $phpType = PhpTypeEnum::objectType($classDefinition->getParentClassName());
+            $parent = $this->shortenTypeHint($classDefinition, $phpType);
+        }
+
+        return $parent;
     }
 
     /**
