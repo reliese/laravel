@@ -82,7 +82,6 @@ class DataTransportGenerator
                 $columnBlueprint->getNumericScale(),
                 $columnBlueprint->getIsNullable()
             );
-Log::notice("Defining Property: $propertyName of type ".$phpTypeEnum->toDeclarationType());
             $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
                 ->withSetter()
                 ->withGetter()
