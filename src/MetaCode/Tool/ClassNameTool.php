@@ -12,6 +12,13 @@ abstract class ClassNameTool
     {
     }
 
+    /**
+     * @param string|null $prefix
+     * @param string $identifier
+     * @param string|null $suffix
+     *
+     * @return string
+     */
     public static function snakeCaseToClassName(?string $prefix, string $identifier, ?string $suffix):string
     {
         $name = Str::camel(Str::singular($identifier));
@@ -19,5 +26,35 @@ abstract class ClassNameTool
         $name[0] = Str::upper($name[0]);
 
         return $prefix . $name . $suffix;
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return string
+     */
+    public static function classNameToParameterName(string $className): string
+    {
+        return \strtolower($className[0]).\substr($className, 1);
+    }
+
+    /**
+     * @param string $columnName
+     *
+     * @return string
+     */
+    public static function columnNameToPropertyName(string $columnName): string
+    {
+        return Str::camel($columnName);
+    }
+
+    public static function columnNameToGetterName(string $columnName): string
+    {
+        return 'get'.str::studly($columnName);
+    }
+
+    public static function columnNameToSetterName(string $columnName): string
+    {
+        return 'set'.str::studly($columnName);
     }
 }

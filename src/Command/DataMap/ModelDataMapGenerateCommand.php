@@ -10,6 +10,8 @@ use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataMap\ModelDataMapGenerator;
+use Reliese\Generator\DataTransport\DataTransportGenerator;
+use Reliese\Generator\Model\ModelGenerator;
 
 /**
  * Class ModelDataMapGenerateCommand
@@ -51,7 +53,9 @@ class ModelDataMapGenerateCommand extends Command
      * @param \Reliese\Coders\Model\Factory $models
      * @param \Illuminate\Contracts\Config\Repository $config
      */
-    public function __construct(Factory $models, Repository $config)
+    public function __construct(
+        Factory $models,
+        Repository $config)
     {
         $this->signature .= self::$configurationProfileOptionDescription;
         parent::__construct();
@@ -92,14 +96,21 @@ class ModelDataMapGenerateCommand extends Command
          */
         $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
-        $dataMapGenerator = new ModelDataMapGenerator($relieseConfiguration->getModelDataMapGeneratorConfiguration());
-
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
+
+        /*
+         * Create a ModelDataMapGenerator
+         */
+        $modelDataMapGenerator = new ModelDataMapGenerator(
+            $relieseConfiguration->getModelDataMapGeneratorConfiguration(),
+            new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration()),
+            new DataTransportGenerator($relieseConfiguration->getDataTransportGeneratorConfiguration()),
+        );
 
         if (!empty($table)) {
             // Generate only for the specified table
             $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
-            $dataMapGenerator->fromTableBlueprint($tableBlueprint);
+            $modelDataMapGenerator->fromTableBlueprint($tableBlueprint);
             return;
         }
 
@@ -107,7 +118,7 @@ class ModelDataMapGenerateCommand extends Command
          * Display the data that would be used to perform code generation
          */
         foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-            $dataMapGenerator->fromTableBlueprint($tableBlueprint);
+            $modelDataMapGenerator->fromTableBlueprint($tableBlueprint);
         }
     }
 

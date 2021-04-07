@@ -51,22 +51,18 @@ class DataTransportGenerator
 
     /**
      * @param TableBlueprint $tableBlueprint
-     *
-     * @return ClassDefinition
      */
     public function fromTableBlueprint(
         TableBlueprint $tableBlueprint
     ) {
 
-        $className = ClassNameTool::snakeCaseToClassName(
-            null,
-            $tableBlueprint->getName(),
-            $this->dataTransportGeneratorConfiguration->getClassSuffix()
-        );
+        $className = $this->getClassName($tableBlueprint);
 
-        $abstractClassName = $this->dataTransportGeneratorConfiguration->getParentClassPrefix().$className;
-        $namespace = $this->dataTransportGeneratorConfiguration->getNamespace();
-        $abstractNamespace = $namespace .'\\Generated';
+        $abstractClassName = $this->getAbstractClassName($tableBlueprint);
+
+        $namespace = $this->getClassNamespace($tableBlueprint);
+
+        $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
 
         $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
 
@@ -74,7 +70,9 @@ class DataTransportGenerator
         $dtoClassDefinition->setParentClass($dtoAbstractClassDefinition->getFullyQualifiedName());
 
         foreach ($tableBlueprint->getColumnBlueprints() as $columnBlueprint) {
-            $propertyName = Str::camel($columnBlueprint->getColumnName());
+
+            $propertyName = ClassNameTool::columnNameToPropertyName($columnBlueprint->getColumnName());
+
             $phpTypeEnum = $this->dataTypeMap->getPhpTypeEnumFromDatabaseType(
                 $columnBlueprint->getDataType(),
                 $columnBlueprint->getMaximumCharacters(),
@@ -82,6 +80,7 @@ class DataTransportGenerator
                 $columnBlueprint->getNumericScale(),
                 $columnBlueprint->getIsNullable()
             );
+
             $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
                 ->withSetter()
                 ->withGetter()
@@ -90,17 +89,64 @@ class DataTransportGenerator
             $dtoAbstractClassDefinition->addProperty($columnClassProperty);
         }
 
+        /*
+         * Write the Class Files
+         */
+        $this->writeClassFiles($dtoClassDefinition, $dtoAbstractClassDefinition);
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return string
+     */
+    public function getFullyQualifiedClassName(TableBlueprint $tableBlueprint): string
+    {
+        return $this->getClassNamespace($tableBlueprint).'\\'.$this->getClassName($tableBlueprint);
+    }
+
+    public function getClassNamespace(TableBlueprint $tableBlueprint): string
+    {
+        return $this->dataTransportGeneratorConfiguration->getNamespace();
+    }
+
+    public function getClassName(TableBlueprint $tableBlueprint): string
+    {
+        return ClassNameTool::snakeCaseToClassName(
+            null,
+            $tableBlueprint->getName(),
+            $this->dataTransportGeneratorConfiguration->getClassSuffix()
+        );
+    }
+
+    private function getAbstractClassName(TableBlueprint $tableBlueprint): string
+    {
+        return $this->dataTransportGeneratorConfiguration->getParentClassPrefix()
+            . $this->getClassName($tableBlueprint);
+    }
+
+    private function getAbstractClassNamespace(TableBlueprint $tableBlueprint): string
+    {
+        return $this->getClassNamespace($tableBlueprint) .'\\Generated';
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     * @param ClassDefinition $abstractClassDefinition
+     */
+    private function writeClassFiles(
+        ClassDefinition $classDefinition,
+        ClassDefinition $abstractClassDefinition,
+    ): void
+    {
         $classFormatter = new ClassFormatter();
 
-        $dtoClassPhpCode = $classFormatter->format($dtoClassDefinition);
-        $abstractDtoPhpCode = $classFormatter->format($dtoAbstractClassDefinition);
-//        echo "\n---DTO Class---\n$dtoClassPhpCode\n\n\n---Base Class---\n$abstractDtoPhpCode\n\n";
+        $dtoClassPhpCode = $classFormatter->format($classDefinition);
+        $abstractDtoPhpCode = $classFormatter->format($abstractClassDefinition);
+        //        echo "\n---Class---\n$dtoClassPhpCode\n\n\n---Base Class---\n$abstractDtoPhpCode\n\n";
 
-        /*
-         * Create the directory for the Data Transport Objects
-         */
         $dtoClassFolder = $this->dataTransportGeneratorConfiguration->getPath();
-        $abstractDtoClassFolder = $dtoClassFolder.DIRECTORY_SEPARATOR.'Generated';
+        $abstractDtoClassFolder = $dtoClassFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($dtoClassFolder)) {
             \mkdir($dtoClassFolder, 0777, true);
         }
@@ -108,22 +154,12 @@ class DataTransportGenerator
             \mkdir($abstractDtoClassFolder, 0777, true);
         }
 
-        $dtoFilePath = $dtoClassFolder.DIRECTORY_SEPARATOR.$dtoClassDefinition->getName().'.php';
-        $abstractDtoFilePath = $abstractDtoClassFolder.DIRECTORY_SEPARATOR.$dtoAbstractClassDefinition->getName().'.php';
+        $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
+        $abstractDtoFilePath = $abstractDtoClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getName() . '.php';
 
         if (!\file_exists($dtoFilePath)) {
             \file_put_contents($dtoFilePath, $dtoClassPhpCode);
         }
         \file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
-    }
-
-    private function getDataTransportObjectNamespace(): string
-    {
-        return "App\DataTransportObjects";
-    }
-
-    private function getDataTransportClassSuffix(): string
-    {
-        return 'Dto';
     }
 }
