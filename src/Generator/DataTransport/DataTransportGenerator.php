@@ -2,10 +2,11 @@
 
 namespace Reliese\Generator\DataTransport;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DataTransportGenerationConfiguration;
+use Reliese\Configuration\DataTransportGeneratorConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
@@ -19,9 +20,9 @@ use const DIRECTORY_SEPARATOR;
 class DataTransportGenerator
 {
     /**
-     * @var DataTransportGenerationConfiguration
+     * @var DataTransportGeneratorConfiguration
      */
-    private DataTransportGenerationConfiguration $dataTransportGenerationConfiguration;
+    private DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration;
 
     /**
      * @var MySqlDataTypeMap
@@ -33,10 +34,15 @@ class DataTransportGenerator
      */
     private DatabaseBlueprint $databaseBlueprint;
 
+    /**
+     * DataTransportGenerator constructor.
+     *
+     * @param DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
+     */
     public function __construct(
-        DataTransportGenerationConfiguration $dataTransportGenerationConfiguration
+        DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
     ) {
-        $this->dataTransportGenerationConfiguration = $dataTransportGenerationConfiguration;
+        $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */
@@ -50,7 +56,7 @@ class DataTransportGenerator
      */
     public function fromTableBlueprint(
         TableBlueprint $tableBlueprint
-    ): ClassDefinition {
+    ) {
 
         $className = ClassNameTool::snakeCaseToClassName(
             null,
@@ -58,18 +64,9 @@ class DataTransportGenerator
             $this->getDataTransportClassSuffix()
         );
 
-        $abstractClassName = $this->getAbstractClassPrefix().$className;
-
-        $namespaceParts = explode('\\', $this->getDataTransportObjectNamespace());
-        $namespaceParts[] = ClassNameTool::snakeCaseToClassName(
-            null,
-            $tableBlueprint->getSchemaBlueprint()->getSchemaName(),
-            null
-        );
-        $namespace = implode('\\', $namespaceParts);
-
-        $namespaceParts[] = 'Generated';
-        $abstractNamespace = implode('\\', $namespaceParts);
+        $abstractClassName = $this->dataTransportGeneratorConfiguration->getParentClassPrefix().$className;
+        $namespace = $this->dataTransportGeneratorConfiguration->getNamespace();
+        $abstractNamespace = $namespace .'\\Generated';
 
         $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
 
@@ -85,8 +82,8 @@ class DataTransportGenerator
                 $columnBlueprint->getNumericScale(),
                 $columnBlueprint->getIsNullable()
             );
-
-            $columnClassProperty = (new ClassPropertyDefinition($propertyName,$phpTypeEnum))
+Log::notice("Defining Property: $propertyName of type ".$phpTypeEnum->toDeclarationType());
+            $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
                 ->withSetter()
                 ->withGetter()
             ;
@@ -103,10 +100,7 @@ class DataTransportGenerator
         /*
          * Create the directory for the Data Transport Objects
          */
-        $directory = \ltrim($namespace, '\\');
-        $directory = \ltrim($directory, 'App\\');
-        $directoryPathParts = explode('\\', $directory);
-        $dtoClassFolder = app_path().DIRECTORY_SEPARATOR.\implode(DIRECTORY_SEPARATOR, $directoryPathParts);
+        $dtoClassFolder = $this->dataTransportGeneratorConfiguration->getPath();
         $abstractDtoClassFolder = $dtoClassFolder.DIRECTORY_SEPARATOR.'Generated';
         if (!is_dir($dtoClassFolder)) {
             \mkdir($dtoClassFolder, 0777, true);
@@ -122,18 +116,6 @@ class DataTransportGenerator
             \file_put_contents($dtoFilePath, $dtoClassPhpCode);
         }
         \file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
-
-        return $dtoClassDefinition;
-    }
-
-    private function getAbstractClassPrefix(): string
-    {
-        return 'Abstract';
-    }
-
-    private function getDataTransportObjectAbstractNamespace(): string
-    {
-        return "App\DataTransportObjects\Abstract";
     }
 
     private function getDataTransportObjectNamespace(): string
@@ -144,10 +126,5 @@ class DataTransportGenerator
     private function getDataTransportClassSuffix(): string
     {
         return 'Dto';
-    }
-
-    private function getDataTransportObjectPath(): string
-    {
-        return app_path('DataTransport');
     }
 }

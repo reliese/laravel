@@ -1,37 +1,38 @@
 <?php
 
-namespace Reliese\Command\Blueprint;
+namespace Reliese\Command\Model;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Reliese\Analyser\AnalyserFactory;
+use Reliese\Blueprint\BlueprintFactory;
 use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
+use Reliese\Configuration\ModelGeneratorConfiguration;
+use Reliese\Configuration\RelieseConfiguration;
 use Reliese\Configuration\RelieseConfigurationFactory;
+use Reliese\Generator\Model\ModelGenerator;
 
 /**
- * Class ShowBlueprintCommand
+ * Class NewModelGenerateCommand
  */
-class ShowBlueprintCommand extends Command
+class NewModelGenerateCommand extends Command
 {
     use ConfigurationProfileOptionTrait;
 
     /**
      * The name and signature of the console command.
-     *
+     * @see Keep in sync with \Reliese\Coders\Console\CodeModelsCommand::$signature
      * @var string
      */
-    protected $signature = 'reliese:blueprint:show
-                            {--s|schema= : The name of the MySQL database}
-                            {--c|connection= : The name of the connection}
-                            {--t|table= : The name of the table}';
+    protected $signature = null;
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Shows the information that would be used to generate files after configuration values are applied.';
+    protected $description = 'Parse connection schema into models';
 
     /**
      * @var \Reliese\Coders\Model\Factory
@@ -51,7 +52,10 @@ class ShowBlueprintCommand extends Command
      */
     public function __construct(Factory $models, Repository $config)
     {
-        $this->signature .= self::$configurationProfileOptionDescription;
+        $this->signature = 'reliese:model:generate'.(self::$configurationProfileOptionDescription).'
+                            {--s|schema= : The name of the MySQL database}
+                            {--c|connection= : The name of the connection}
+                            {--t|table= : The name of the table}';
         parent::__construct();
 
         $this->models = $models;
@@ -90,28 +94,23 @@ class ShowBlueprintCommand extends Command
          */
         $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
+        // TODO: Apply Command Line options that override the configuration values
+        $modelGenerator = new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration());
+
+        $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
+
+        if (!empty($table)) {
+            // Generate only for the specified table
+            $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
+            $modelGenerator->fromTableBlueprint($tableBlueprint);
+            return;
+        }
+
         /*
          * Display the data that would be used to perform code generation
          */
-        foreach ($databaseBlueprint->getSchemaBlueprints() as $schemaBlueprint) {
-            $this->output->writeln(
-                sprintf(
-                    $schemaBlueprint->getSchemaName()." has \"%s\" tables",
-                    count($schemaBlueprint->getTableBlueprints())
-                )
-            );
-            $tableData = [];
-            foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-                $tableData[] = [
-                    $tableBlueprint->getUniqueName(),
-                    \implode(', ', $tableBlueprint->getColumnNames()),
-                    \implode(', ', $tableBlueprint->getForeignKeyNames())
-                ];
-            }
-            $this->output->table(
-                ['table', 'columns', 'keys'],
-                $tableData
-            );
+        foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
+            $modelGenerator->fromTableBlueprint($tableBlueprint);
         }
     }
 

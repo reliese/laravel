@@ -333,6 +333,10 @@ class ClassFormatter
                 $typeHint = $type->getImportableName();
             }
         }
+        // TODO: fixes cases where '\\DateTime' was being rendered. This is not a good fix, but currenty need a quick fix
+        while (\str_starts_with($typeHint, '\\\\')) {
+            $typeHint = ltrim($typeHint, '\\');
+        }
 
         return $typeHint;
     }

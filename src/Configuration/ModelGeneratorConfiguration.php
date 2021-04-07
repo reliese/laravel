@@ -7,7 +7,8 @@ namespace Reliese\Configuration;
  */
 class ModelGeneratorConfiguration
 {
-    public function __construct()
+    public function __construct(array $configuration)
     {
+
     }
 }

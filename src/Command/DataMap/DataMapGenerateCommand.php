@@ -1,18 +1,21 @@
 <?php
+/** @noinspection PhpMissingFieldTypeInspection */
 
-namespace Reliese\Command\Blueprint;
+namespace Reliese\Command\DataMap;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Reliese\Analyser\AnalyserFactory;
 use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
+use Reliese\Configuration\DataMapGeneratorConfiguration;
 use Reliese\Configuration\RelieseConfigurationFactory;
+use Reliese\Generator\DataMap\ModelDataMapGenerator;
 
 /**
- * Class ShowBlueprintCommand
+ * Class DataMapGenerateCommand
  */
-class ShowBlueprintCommand extends Command
+class DataMapGenerateCommand extends Command
 {
     use ConfigurationProfileOptionTrait;
 
@@ -21,7 +24,7 @@ class ShowBlueprintCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'reliese:blueprint:show
+    protected $signature = 'reliese:map:generate
                             {--s|schema= : The name of the MySQL database}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
@@ -31,7 +34,7 @@ class ShowBlueprintCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Shows the information that would be used to generate files after configuration values are applied.';
+    protected $description = 'Generate Blueprints from the specified connection, schema, and table then output them to specified path.';
 
     /**
      * @var \Reliese\Coders\Model\Factory
@@ -76,6 +79,9 @@ class ShowBlueprintCommand extends Command
         /*
          * TODO: allow command line options to modify state of the $relieseConfiguration graph
          */
+        if (!empty($table)) {
+
+        }
 
         /*
          * Create the correct analyser for the configuration profile
@@ -90,29 +96,28 @@ class ShowBlueprintCommand extends Command
          */
         $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
+        $dataMapGenerator = new ModelDataMapGenerator($relieseConfiguration->getDataMapGeneratorConfiguration());
+
+        $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
+
+        if (!empty($table)) {
+            // Generate only for the specified table
+            $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
+            $dataMapGenerator->fromTableBlueprint($tableBlueprint);
+            return;
+        }
+
         /*
          * Display the data that would be used to perform code generation
          */
-        foreach ($databaseBlueprint->getSchemaBlueprints() as $schemaBlueprint) {
-            $this->output->writeln(
-                sprintf(
-                    $schemaBlueprint->getSchemaName()." has \"%s\" tables",
-                    count($schemaBlueprint->getTableBlueprints())
-                )
-            );
-            $tableData = [];
-            foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-                $tableData[] = [
-                    $tableBlueprint->getUniqueName(),
-                    \implode(', ', $tableBlueprint->getColumnNames()),
-                    \implode(', ', $tableBlueprint->getForeignKeyNames())
-                ];
-            }
-            $this->output->table(
-                ['table', 'columns', 'keys'],
-                $tableData
-            );
+        foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
+            $dataMapGenerator->fromTableBlueprint($tableBlueprint);
         }
+    }
+
+    protected function generateServiceProvider()
+    {
+
     }
 
     /**

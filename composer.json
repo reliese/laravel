@@ -48,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Reliese\\Coders\\CodersServiceProvider"
+                "Reliese\\RelieseServiceProvider"
             ]
         }
     }

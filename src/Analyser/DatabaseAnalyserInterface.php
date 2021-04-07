@@ -3,6 +3,7 @@
 namespace Reliese\Analyser;
 
 use Reliese\Blueprint\DatabaseBlueprint;
+use Reliese\Configuration\DatabaseBlueprintConfiguration;
 
 /**
  * Interface DatabaseAnalyserInterface
@@ -10,7 +11,9 @@ use Reliese\Blueprint\DatabaseBlueprint;
 interface DatabaseAnalyserInterface
 {
     /**
+     * @param DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
+     *
      * @return DatabaseBlueprint
      */
-    public function analyseDatabase(): DatabaseBlueprint;
+    public function analyseDatabase(DatabaseBlueprintConfiguration $databaseBlueprintConfiguration): DatabaseBlueprint;
 }

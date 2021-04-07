@@ -10,6 +10,8 @@ use Reliese\Analyser\DatabaseAnalyserInterface;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\DatabaseDescriptionDto;
 use Reliese\Blueprint\ForeignKeyBlueprint;
+use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Reliese\Filter\SchemaFilter;
 use Reliese\Filter\StringFilter;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,120 +20,39 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
 {
-    const COMPATIBILITY_TYPE_NAME = 'MySql';
-
-    /**
-     * @var ConnectionInterface
-     */
-    private $connection;
-
-    /**
-     * @var ConnectionFactory
-     */
-    private $connectionFactory;
-
     /**
      * @var DatabaseBlueprint
      */
     private DatabaseBlueprint $databaseBlueprint;
 
     /**
-     * @var callable
+     * @var DoctrineDatabaseAssistantInterface
      */
-    private $doctrineSchemaManagerConfigurationDelegate;
-
-    /**
-     * @var string[]
-     */
-    private array $excludeSchemas = [];
+    private DoctrineDatabaseAssistantInterface $doctrineDatabaseAssistant;
 
     /**
      * @var DoctrineSchemaAnalyser[]
      */
-    private $schemaAnalysers = [];
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
-     * @var ConnectionInterface[]
-     */
-    private $schemaConnections;
-
-    /**
-     * @var StringFilter
-     */
-    private StringFilter $schemaFilter;
+    private array $schemaAnalysers = [];
 
     /**
      * MySqlDatabaseAnalyser constructor.
      *
-     * @param StringFilter $schemaFilter
-     * @param callable $doctrineSchemaManagerConfigurationDelegate
-     * @param ConnectionFactory $connectionFactory
-     * @param ConnectionInterface $connection
-     * @param OutputInterface $output
+     * @param DoctrineDatabaseAssistantInterface $doctrineDatabaseAssistant
      */
-    public function __construct(
-        StringFilter $schemaFilter,
-        callable $doctrineSchemaManagerConfigurationDelegate,
-        ConnectionFactory $connectionFactory,
-        ConnectionInterface $connection,
-        OutputInterface $output
-    ) {
-        $this->connectionFactory = $connectionFactory;
-        $this->doctrineSchemaManagerConfigurationDelegate = $doctrineSchemaManagerConfigurationDelegate;
-        $this->connection = $connection;
-        $this->output = $output;
-        $this->schemaFilter = $schemaFilter;
-
-        $databaseDescriptionDto = new DatabaseDescriptionDto($this->getCompatibilityTypeName(),
-            $this->getDatabaseName(),
-            $this->getReleaseVersion());
-
-        $this->databaseBlueprint = new DatabaseBlueprint($databaseDescriptionDto);
-    }
-
-    /**
-     * @return string
-     */
-    public function getCompatibilityTypeName(): string
+    public function __construct(DoctrineDatabaseAssistantInterface $doctrineDatabaseAssistant)
     {
-        return static::COMPATIBILITY_TYPE_NAME;
+        $this->doctrineDatabaseAssistant = $doctrineDatabaseAssistant;
     }
 
     /**
-     * Returns connections configured for the specified schema
+     * @param DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
      *
-     * @param string|null $schemaName
-     *
-     * @return ConnectionInterface
-     */
-    public function getConnection(?string $schemaName = null): ConnectionInterface
-    {
-        if (empty($schemaName)) {
-            return $this->connection;
-        }
-
-        if (!empty($this->schemaConnections[$schemaName])) {
-            return $this->schemaConnections[$schemaName];
-        }
-
-        $config = $this->connection->getConfig();
-        $config["database"] = $schemaName;
-
-        return $this->schemaConnections[$schemaName] = $this->connectionFactory->make($config);
-    }
-
-    /**
      * @return DatabaseBlueprint
-     * @throws \Doctrine\DBAL\Exception
      */
-    public function analyseDatabase(): DatabaseBlueprint
+    public function analyseDatabase(DatabaseBlueprintConfiguration $databaseBlueprintConfiguration): DatabaseBlueprint
     {
-        $databaseBlueprint = $this->getDatabaseBlueprint();
+        $databaseBlueprint = new DatabaseBlueprint($databaseBlueprintConfiguration);
         /*
          * Create a SchemaBlueprint for each schema
          */
@@ -139,13 +60,15 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
         foreach ($schemaNames as $schemaName) {
             /*
              * Check to see if the current schema should be analyzed
+             *
+             * Must be specifically included and NOT match an exclude filter
              */
-            if ($this->schemaFilter->isExcluded($schemaName)) {
+            if ($databaseBlueprintConfiguration->getSchemaFilter()->isExcludedSchema($schemaName)) {
                 Log::debug("Skipping Schema \"$schemaName\"");
                 continue;
             }
 
-            $schemaAnalyser = $this->getSchemaAnalyser($schemaName);
+            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName);
             $databaseBlueprint->addSchemaBlueprint(
                 // TODO: Add support for Views
                 $schemaAnalyser->analyseSchemaObjectStructures($databaseBlueprint)
@@ -156,7 +79,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
          * Analyse foreign key constraint relationships which could potentially span schemas
          */
         foreach ($schemaNames as $schemaName) {
-            $schemaAnalyser = $this->getSchemaAnalyser($schemaName);
+            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName);
 
             foreach ($schemaAnalyser->getTableDefinitions() as $tableName => $doctrineTableDefinition) {
 
@@ -234,36 +157,9 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
     /**
      * @inheritDoc
      */
-    protected function getDatabaseName(): string
-    {
-        return $this->getConnection()->getDoctrineConnection()->getDatabase();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getReleaseVersion(): string
-    {
-        $rows = $this->connection->select("SHOW VARIABLES LIKE 'version'");
-        return $rows[0]->Value;
-    }
-
-    /**
-     * @inheritDoc
-     */
     protected function getSchemaNames(): array
     {
-        return $this->getDoctrineSchemaManager()->listDatabases();
-    }
-
-    /**
-     * @param AbstractSchemaManager $abstractSchemaManager
-     *
-     * @return AbstractSchemaManager
-     */
-    public function configureDoctrineSchemaManager(AbstractSchemaManager $abstractSchemaManager) : AbstractSchemaManager
-    {
-        return ($this->doctrineSchemaManagerConfigurationDelegate)($abstractSchemaManager);
+        return $this->doctrineDatabaseAssistant->getDoctrineSchemaManager()->listDatabases();
     }
 
     /**
@@ -275,35 +171,24 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
     }
 
     /**
-     * @param string|null $schemaName
-     *
-     * @return AbstractSchemaManager
-     * @throws \Doctrine\DBAL\Exception
-     */
-    private function getDoctrineSchemaManager(?string $schemaName = null) : AbstractSchemaManager
-    {
-        return $this->configureDoctrineSchemaManager($this->getConnection($schemaName)->getDoctrineSchemaManager());
-    }
-
-    /**
+     * @param DatabaseBlueprint $databaseBlueprint
      * @param string $schemaName
      *
      * @return DoctrineSchemaAnalyser
      */
-    protected function getSchemaAnalyser(string $schemaName): DoctrineSchemaAnalyser
+    protected function getSchemaAnalyser(DatabaseBlueprint $databaseBlueprint, string $schemaName): DoctrineSchemaAnalyser
     {
         if (\array_key_exists($schemaName, $this->schemaAnalysers)) {
             return $this->schemaAnalysers[$schemaName];
         }
 
-        $schemaSpecificConnection = $this->getConnection($schemaName);
+        $schemaSpecificConnection = $this->doctrineDatabaseAssistant->getConnection($schemaName);
         return $this->schemaAnalysers[$schemaName] = $this->schemaAnalysers[$schemaName] =  new DoctrineSchemaAnalyser(
             $schemaName,
-            $this->getDatabaseBlueprint(),
+            $databaseBlueprint,
             $this,
             $schemaSpecificConnection,
-            $this->configureDoctrineSchemaManager($schemaSpecificConnection->getDoctrineSchemaManager())
+            $schemaSpecificConnection->getDoctrineSchemaManager()
         );
-
     }
 }

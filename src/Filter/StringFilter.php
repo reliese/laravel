@@ -9,7 +9,20 @@ use InvalidArgumentException;
  */
 class StringFilter
 {
+    /**
+     * @var bool
+     */
     private bool $defaultToIncluded;
+
+    /**
+     * @var string[]
+     */
+    private array $exactMatchExceptions;
+
+    /**
+     * @var string[]
+     */
+    private array $regularExpressionExceptions = [];
 
     /**
      * DoctrineAnalyserConfiguration constructor.
@@ -22,49 +35,21 @@ class StringFilter
     }
 
     /**
-     * 'schema name' => bool where true means it should be included and false means it should be excluded
-     *
-     * @var bool[] $exactMatchFilters
-     */
-    private array $exactMatchFilters = [];
-
-    /**
-     * '/regex/' => bool where true means it should be included and false means it should be excluded
-     *
-     * @var bool[]
-     */
-    private array $regularExpressionFilters = [];
-
-    /**
-     * @param string $regularExpression
-     * @param bool $isIncluded
+     * @param string $matchExpression Treated as RegEx if $filter begins with '/^' and ends with '$/'
      *
      * @return $this
      */
-    public function setRegularExpressionFilter(string $regularExpression, bool $isIncluded) : self
-    {
-        /*
-         * Check for invalid regular expression
-         */
-        if (false === @preg_match($regularExpression, null)) {
-            throw new InvalidArgumentException("Invalid regular expression: $regularExpression");
+    public function addException(string $matchExpression) : static {
+        if (empty($matchExpression)) {
+            throw new InvalidArgumentException("MatchExpression cannot be empty.");
         }
-        $this->regularExpressionFilters[$regularExpression] = $isIncluded;
-        return $this;
-    }
 
-    /**
-     * @param string $valueToMatch
-     * @param bool $isIncluded
-     *
-     * @return $this
-     */
-    public function setMatchFilter(string $valueToMatch, bool $isIncluded) : self
-    {
-        if (empty($valueToMatch)) {
-            throw new InvalidArgumentException("Match filter cannot be empty.");
+        if (str_starts_with($matchExpression, '/^') && \str_ends_with($matchExpression, '$/')) {
+            $this->regularExpressionExceptions[] = $matchExpression;
+        } else {
+            $this->exactMatchExceptions[] = $matchExpression;
         }
-        $this->exactMatchFilters[$valueToMatch] = $isIncluded;
+
         return $this;
     }
 
@@ -85,27 +70,39 @@ class StringFilter
      */
     public function isIncluded(string $string) : bool
     {
-        /*
-         * Check for exact match
-         */
-        foreach ($this->exactMatchFilters as $valueToMatch => $isIncluded) {
-            if ($string === $valueToMatch) {
-                return $isIncluded;
-            }
+        if ($this->isException($string)) {
+            return !$this->defaultToIncluded;
         }
-
-        /*
-         * Check for regular expression match
-         */
-        foreach ($this->regularExpressionFilters as $regularExpression => $isIncluded) {
-            if (1 === \preg_match($regularExpression, $string)) {
-                return $isIncluded;
-            }
-        }
-
         /*
          * Otherwise, return the default outcome
          */
         return $this->defaultToIncluded;
     }
+
+    /**
+     * @param string $string
+     *
+     * @return bool
+     */
+    public function isException(string $string) : bool
+    {
+        if (!empty($this->exactMatchExceptions)) {
+            foreach ($this->exactMatchExceptions as $exactMatchException) {
+                if ($string === $exactMatchException) {
+                    return true;
+                }
+            }
+        }
+
+        if (!empty($this->regularExpressionExceptions)) {
+            foreach ($this->regularExpressionExceptions as $regularExpressionException) {
+                if (1 === \preg_match($regularExpressionException, $string)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

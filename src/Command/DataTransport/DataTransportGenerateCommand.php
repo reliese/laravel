@@ -5,25 +5,24 @@ namespace Reliese\Command\DataTransport;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
-use Reliese\Blueprint\BlueprintFactory;
-use Reliese\Blueprint\DatabaseBlueprint;
-use Reliese\Blueprint\SchemaBlueprint;
-use Reliese\Blueprint\TableBlueprint;
+use Reliese\Analyser\AnalyserFactory;
 use Reliese\Coders\Model\Factory;
-use Reliese\Configuration\DataTransportGenerationConfiguration;
+use Reliese\Command\ConfigurationProfileOptionTrait;
+use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
 /**
  * Class DataTransportGenerateCommand
  */
 class DataTransportGenerateCommand extends Command
 {
+    use ConfigurationProfileOptionTrait;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
     protected $signature = 'reliese:dto:generate
-                            {--p|path= : The folder where Data Transport Objects should be generated}
                             {--s|schema= : The name of the MySQL database}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
@@ -53,6 +52,7 @@ class DataTransportGenerateCommand extends Command
      */
     public function __construct(Factory $models, Repository $config)
     {
+        $this->signature .= self::$configurationProfileOptionDescription;
         parent::__construct();
 
         $this->models = $models;
@@ -62,32 +62,40 @@ class DataTransportGenerateCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param BlueprintFactory $blueprintFactory
+     * @param AnalyserFactory $analyserFactory
+     * @param RelieseConfigurationFactory $relieseConfigurationFactory
      */
-    public function handle(BlueprintFactory $blueprintFactory)
-    {
+    public function handle(
+        AnalyserFactory $analyserFactory,
+        RelieseConfigurationFactory $relieseConfigurationFactory,
+    ) {
+        $relieseConfiguration = $relieseConfigurationFactory->getRelieseConfiguration($this->getConfigurationProfileName());
         $connection = $this->getConnection();
         $schema = $this->getSchema($connection);
         $table = $this->getTable();
 
-        $this->output->writeln("");
+        /*
+         * TODO: allow command line options to modify state of the $relieseConfiguration graph
+         */
 
         /*
-         * Generate the raw blueprints
+         * Create the correct analyser for the configuration profile
          */
-        $databaseBlueprint = $blueprintFactory->database($connection);
+        $databaseAnalyser =  $analyserFactory->databaseAnalyser(
+            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
+            $relieseConfiguration->getDatabaseAnalyserConfiguration()
+        );
 
         /*
-         * TODO: Implement Blueprint Modification via Blueprint Configuration
-         * Apply configurations that modify the blueprints
+         * Allow the $databaseAnalyser to create the Database Blueprint
          */
-        //        $blueprintConfiguration = new BlueprintConfiguration();
-        //        $blueprintConfiguration->applyConfiguration($databaseBlueprint);
+        $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
-        $dataTransportGenerationConfiguration = new DataTransportGenerationConfiguration();
-
+        /*
+         * Generate class files
+         */
         $dataTransportGenerator = new DataTransportGenerator(
-            $dataTransportGenerationConfiguration
+            $relieseConfiguration->getDataTransportGeneratorConfiguration()
         );
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
@@ -95,7 +103,7 @@ class DataTransportGenerateCommand extends Command
         if (!empty($table)) {
             // Generate only for the specified table
             $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
-            $this->generate($dataTransportGenerator, $databaseBlueprint, $schemaBlueprint, $tableBlueprint);
+            $dataTransportGenerator->fromTableBlueprint($tableBlueprint);
             return;
         }
 
@@ -103,7 +111,7 @@ class DataTransportGenerateCommand extends Command
          * Display the data that would be used to perform code generation
          */
         foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-            $this->generate($dataTransportGenerator, $databaseBlueprint, $schemaBlueprint, $tableBlueprint);
+            $dataTransportGenerator->fromTableBlueprint($tableBlueprint);
         }
     }
 
@@ -131,14 +139,5 @@ class DataTransportGenerateCommand extends Command
     protected function getTable()
     {
         return $this->option('table');
-    }
-
-    private function generate(
-        DataTransportGenerator $dataTransportGenerator,
-        DatabaseBlueprint $databaseBlueprint,
-        SchemaBlueprint $schemaBlueprint,
-        TableBlueprint $tableBlueprint
-    ) {
-        $result = $dataTransportGenerator->fromTableBlueprint($tableBlueprint);
     }
 }

@@ -2,12 +2,6 @@
 
 namespace Reliese\Coders\Console;
 
-use Illuminate\Console\Command;
-use Reliese\Blueprint\BlueprintFactory;
-use Reliese\Coders\Model\Factory;
-use Illuminate\Contracts\Config\Repository;
-use Symfony\Component\Console\Output\ConsoleOutput;
-
 /**
  * Class CodeModelsCommand
  * @deprecated Use \Reliese\Command\Model\MakeModelsCommand instead, this only provides an alias

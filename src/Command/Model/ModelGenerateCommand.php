@@ -4,7 +4,6 @@ namespace Reliese\Command\Model;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
-use Reliese\Blueprint\BlueprintFactory;
 use Reliese\Coders\Model\Factory;
 
 /**
@@ -17,7 +16,7 @@ class ModelGenerateCommand extends Command
      * @see Keep in sync with \Reliese\Coders\Console\CodeModelsCommand::$signature
      * @var string
      */
-    protected $signature = 'reliese:model:generate
+    protected $signature = 'reliese:model:old-generate
                             {--s|schema= : The name of the MySQL database}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
@@ -55,10 +54,8 @@ class ModelGenerateCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @param BlueprintFactory $blueprintFactory
      */
-    public function handle(BlueprintFactory $blueprintFactory)
+    public function handle()
     {
         $connection = $this->getConnection();
         $schema = $this->getSchema($connection);

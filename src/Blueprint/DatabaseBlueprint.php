@@ -3,38 +3,37 @@
 namespace Reliese\Blueprint;
 
 use InvalidArgumentException;
+use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use RuntimeException;
+
 /**
  * Class DatabaseManager
  */
 class DatabaseBlueprint
 {
     /**
-     * @var DatabaseDescriptionDto
+     * @var DatabaseBlueprintConfiguration
      */
-    private $databaseDescriptionDto;
+    private DatabaseBlueprintConfiguration $databaseBlueprintConfiguration;
 
     /**
      * @var SchemaBlueprint[]
      */
-    private $schemaBlueprints = [];
+    private array $schemaBlueprints = [];
 
     /**
      * DatabaseBlueprint constructor.
      *
-     * @param DatabaseDescriptionDto $databaseDescriptionDto
+     * @param DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
      */
-    public function __construct(
-        DatabaseDescriptionDto $databaseDescriptionDto
-    ) {
-        $this->databaseDescriptionDto = $databaseDescriptionDto;
+    public function __construct(DatabaseBlueprintConfiguration $databaseBlueprintConfiguration)
+    {
+        $this->databaseBlueprintConfiguration = $databaseBlueprintConfiguration;
     }
 
-    /**
-     * @return DatabaseDescriptionDto
-     */
-    public function getDatabaseDescriptionDto(): DatabaseDescriptionDto
+    public function applyBlueprintFilters(\Reliese\Configuration\DatabaseBlueprintConfiguration $getDatabaseBlueprintConfiguration)
     {
-        return $this->databaseDescriptionDto;
+        throw new RuntimeException(__METHOD__.' is incomplete');
     }
 
     /**
