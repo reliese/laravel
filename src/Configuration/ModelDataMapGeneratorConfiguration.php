@@ -3,9 +3,9 @@
 namespace Reliese\Configuration;
 
 /**
- * Class DataMapGeneratorConfiguration
+ * Class ModelDataMapGeneratorConfiguration
  */
-class DataMapGeneratorConfiguration
+class ModelDataMapGeneratorConfiguration
 {
     /**
      * @var mixed

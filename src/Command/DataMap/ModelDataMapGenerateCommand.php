@@ -8,14 +8,13 @@ use Illuminate\Contracts\Config\Repository;
 use Reliese\Analyser\AnalyserFactory;
 use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
-use Reliese\Configuration\DataMapGeneratorConfiguration;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataMap\ModelDataMapGenerator;
 
 /**
- * Class DataMapGenerateCommand
+ * Class ModelDataMapGenerateCommand
  */
-class DataMapGenerateCommand extends Command
+class ModelDataMapGenerateCommand extends Command
 {
     use ConfigurationProfileOptionTrait;
 
@@ -24,7 +23,7 @@ class DataMapGenerateCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'reliese:map:generate
+    protected $signature = 'reliese:map:model:generate
                             {--s|schema= : The name of the MySQL database}
                             {--c|connection= : The name of the connection}
                             {--t|table= : The name of the table}';
@@ -79,9 +78,6 @@ class DataMapGenerateCommand extends Command
         /*
          * TODO: allow command line options to modify state of the $relieseConfiguration graph
          */
-        if (!empty($table)) {
-
-        }
 
         /*
          * Create the correct analyser for the configuration profile
@@ -96,7 +92,7 @@ class DataMapGenerateCommand extends Command
          */
         $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
-        $dataMapGenerator = new ModelDataMapGenerator($relieseConfiguration->getDataMapGeneratorConfiguration());
+        $dataMapGenerator = new ModelDataMapGenerator($relieseConfiguration->getModelDataMapGeneratorConfiguration());
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
 
@@ -113,11 +109,6 @@ class DataMapGenerateCommand extends Command
         foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
             $dataMapGenerator->fromTableBlueprint($tableBlueprint);
         }
-    }
-
-    protected function generateServiceProvider()
-    {
-
     }
 
     /**

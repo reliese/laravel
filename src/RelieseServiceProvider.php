@@ -9,7 +9,7 @@ use Reliese\Coders\Console\CodeModelsCommand;
 use Reliese\Coders\Model\Config;
 use Reliese\Coders\Model\Factory as ModelFactory;
 use Reliese\Command\Blueprint\ShowBlueprintCommand;
-use Reliese\Command\DataMap\DataMapGenerateCommand;
+use Reliese\Command\DataMap\ModelDataMapGenerateCommand;
 use Reliese\Command\DataTransport\DataTransportGenerateCommand;
 use Reliese\Command\Model\ModelGenerateCommand;
 use Reliese\Command\Model\NewModelGenerateCommand;
@@ -48,7 +48,7 @@ class RelieseServiceProvider extends ServiceProvider
                 ModelGenerateCommand::class,
                 NewModelGenerateCommand::class,
                 ShowBlueprintCommand::class,
-                DataMapGenerateCommand::class,
+                ModelDataMapGenerateCommand::class,
                 DataTransportGenerateCommand::class,
             ]);
         }

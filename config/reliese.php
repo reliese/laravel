@@ -520,7 +520,7 @@ return [
         ],
         // endregion Data Transport Generator Config
         // region Data Map Generator Config
-        'DataMapGeneratorConfiguration' => [
+        'ModelDataMapGeneratorConfiguration' => [
             'Path' => app_path().'/DataMaps/PrimaryDatabase',
             'Namespace' => 'App\DataMaps\PrimaryDatabase',
             'ClassSuffix' => 'Map',

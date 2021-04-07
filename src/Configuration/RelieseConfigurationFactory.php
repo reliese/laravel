@@ -54,13 +54,13 @@ class RelieseConfigurationFactory
             $this->getModelGeneratorConfiguration($configurationProfile));
     }
 
-    protected function getDataMapGeneratorConfiguration(array $configurationProfile): DataMapGeneratorConfiguration
+    protected function getDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
     {
-        if (!\array_key_exists('DataMapGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DataMapGeneratorConfiguration\"");
+        if (!\array_key_exists('ModelDataMapGeneratorConfiguration', $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelDataMapGeneratorConfiguration\"");
         }
 
-        return new DataMapGeneratorConfiguration($configurationProfile['DataMapGeneratorConfiguration']);
+        return new ModelDataMapGeneratorConfiguration($configurationProfile['ModelDataMapGeneratorConfiguration']);
     }
 
     protected function getDataTransportGeneratorConfiguration(array $configurationProfile): DataTransportGeneratorConfiguration
