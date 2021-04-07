@@ -61,7 +61,7 @@ class DataTransportGenerator
         $className = ClassNameTool::snakeCaseToClassName(
             null,
             $tableBlueprint->getName(),
-            $this->getDataTransportClassSuffix()
+            $this->dataTransportGeneratorConfiguration->getClassSuffix()
         );
 
         $abstractClassName = $this->dataTransportGeneratorConfiguration->getParentClassPrefix().$className;
