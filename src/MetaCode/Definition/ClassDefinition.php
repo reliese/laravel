@@ -152,17 +152,32 @@ class ClassDefinition implements ImportableInterface
     {
         // When it's the same class name
         if (strcmp($import->getImportableName(), $this->getImportableName()) === 0) {
-            // And it's same namespace as this one
-            if (strcmp($import->getFullyQualifiedImportableName(), $this->getFullyQualifiedImportableName()) === 0) {
-                // The import won't have a collision
-                return false;
-            }
-
-            // Will collide when different namespace
-            return true;
+            // Will collide when namespaces are different
+            return !$this->areSameImport($import, $this);
         }
 
-        return array_key_exists($import->getImportableName(), $this->imports);
+        // Won't collide when not previously imported
+        if (array_key_exists($import->getImportableName(), $this->imports) === false) {
+            return false;
+        }
+
+        $imported = $this->imports[$import->getImportableName()];
+
+        // Will collide when they are not the same class
+        return !$this->areSameImport($import, $imported);
+    }
+
+    /**
+     * @todo: Put this on a helper class
+     *
+     * @param ImportableInterface $importing
+     * @param ImportableInterface $imported
+     *
+     * @return bool
+     */
+    private function areSameImport(ImportableInterface $importing, ImportableInterface $imported): bool
+    {
+        return strcmp($importing->getFullyQualifiedImportableName(), $imported->getFullyQualifiedImportableName()) === 0;
     }
 
     /**

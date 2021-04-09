@@ -228,6 +228,120 @@ PHP;
     /**
      * @test
      */
+    public function it_formats_a_class_with_one_parameter_of_type_global_object()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+use DateTime;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private DateTime \$aProperty;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::objectOfType('\\'.\DateTime::class));
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_parameter_of_type_nullable_global_object()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+use DateTime;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private ?DateTime \$aProperty;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::nullableObjectOfType('\\'.\DateTime::class));
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_two_parameters_of_type_nullable_global_object()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+use DateTime;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private ?DateTime \$aProperty;
+    private ?DateTime \$anotherProperty;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::nullableObjectOfType('\\'.\DateTime::class));
+        $anotherProperty = new ClassPropertyDefinition('anotherProperty', PhpTypeEnum::nullableObjectOfType('\\'.\DateTime::class));
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+        $classDefinition->addProperty($anotherProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
     public function it_formats_a_class_with_one_nullable_parameter()
     {
         $expectedClassOutput =

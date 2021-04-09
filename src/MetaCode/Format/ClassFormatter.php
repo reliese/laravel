@@ -323,7 +323,11 @@ class ClassFormatter
     {
         $typeHint = $phpType->toDeclarationType();
 
-        if ($phpType->isObject()) {
+        if ($phpType->isObject() || $phpType->isNullableObject()) {
+            if ($phpType->isNullableObject()) {
+                $typeHint = ltrim($typeHint, '?');
+            }
+
             $type = new ObjectTypeDefinition($typeHint);
 
             $typeHint = $type->getFullyQualifiedName();
@@ -332,10 +336,10 @@ class ClassFormatter
                 $classDefinition->addImport($type);
                 $typeHint = $type->getImportableName();
             }
-        }
-        // TODO: fixes cases where '\\DateTime' was being rendered. This is not a good fix, but currenty need a quick fix
-        while (\str_starts_with($typeHint, '\\\\')) {
-            $typeHint = ltrim($typeHint, '\\');
+
+            if ($phpType->isNullableObject()) {
+                $typeHint = '?' . $typeHint;
+            }
         }
 
         return $typeHint;

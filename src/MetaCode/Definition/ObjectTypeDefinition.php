@@ -22,9 +22,9 @@ class ObjectTypeDefinition implements ImportableInterface
     public function __construct(string $fullyQualifiedName)
     {
         $type = trim($fullyQualifiedName, '\\');
-        $pieces = explode('\\', $fullyQualifiedName);
+        $pieces = explode('\\', $type);
 
-        if (count($pieces) < 1) {
+        if (empty($pieces)) {
             throw new \RuntimeException('A class name should not be empty');
         }
 
@@ -45,7 +45,7 @@ class ObjectTypeDefinition implements ImportableInterface
      */
     public function getFullyQualifiedImportableName(): string
     {
-        return $this->getNamespace() . '\\' . $this->getImportableName();
+        return implode('\\', array_filter([$this->getNamespace(), $this->getImportableName()]));
     }
 
     /**

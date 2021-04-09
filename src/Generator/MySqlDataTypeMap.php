@@ -29,6 +29,7 @@ class MySqlDataTypeMap
         switch ($dbTypeName) {
             case 'varchar':
             case 'text':
+            case 'json': // TODO: Provide parsing option
             case 'string':
             case 'char':
             case 'enum':
