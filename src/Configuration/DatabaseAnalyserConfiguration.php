@@ -32,7 +32,8 @@ class DatabaseAnalyserConfiguration
             throw new \InvalidArgumentException("DatabaseAnalyserConfiguration must define a key-value pair for \"ConnectionName\"");
         }
 
-        $this->analyserClass = $configuration['AnalyserClass'];
+        // TODO: Use and uncomment next line
+        // $this->analyserClass = $configuration['AnalyserClass'];
         $this->connectionName = $configuration['ConnectionName'];
     }
 
