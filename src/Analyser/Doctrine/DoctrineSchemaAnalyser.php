@@ -2,6 +2,7 @@
 
 namespace Reliese\Analyser\Doctrine;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Index;
@@ -17,7 +18,7 @@ use Reliese\Blueprint\SchemaBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 
 /**
- * Class MySqlSchemaAnalyser
+ * Class DoctrineSchemaAnalyser
  */
 class DoctrineSchemaAnalyser
 {
@@ -52,7 +53,7 @@ class DoctrineSchemaAnalyser
     private array $tableDefinitions = [];
 
     /**
-     * MySqlSchemaAnalyser constructor.
+     * DoctrineSchemaAnalyser constructor.
      *
      * @param string $schemaName
      * @param DatabaseBlueprint $databaseBlueprint
@@ -60,17 +61,19 @@ class DoctrineSchemaAnalyser
      * @param ConnectionInterface $connection
      * @param AbstractSchemaManager $doctrineSchemaManager
      */
-    public function __construct(string $schemaName,
+    public function __construct(
+        string $schemaName,
         DatabaseBlueprint $databaseBlueprint,
         DoctrineDatabaseAnalyser $doctrineDatabaseAnalyser,
         ConnectionInterface $connection,
-        AbstractSchemaManager $doctrineSchemaManager)
+        AbstractSchemaManager $doctrineSchemaManager
+    )
     {
+        $this->schemaName = $schemaName;
+        $this->databaseBlueprint = $databaseBlueprint;
         $this->doctrineDatabaseAnalyser = $doctrineDatabaseAnalyser;
         $this->schemaSpecificConnection = $connection;
-        $this->schemaName = $schemaName;
         $this->doctrineSchemaManager = $doctrineSchemaManager;
-        $this->databaseBlueprint = $databaseBlueprint;
     }
 
     /**
@@ -91,11 +94,10 @@ class DoctrineSchemaAnalyser
     }
 
     /**
-     * @param DatabaseBlueprint $databaseBlueprint
-     *
      * @return SchemaBlueprint
+     * @throws Exception
      */
-    public function analyseSchemaObjectStructures(DatabaseBlueprint $databaseBlueprint): SchemaBlueprint
+    public function analyseSchemaObjectStructures(): SchemaBlueprint
     {
         Log::info("Creating SchemaBlueprint for \"{$this->getSchemaName()}\"");
 
@@ -152,53 +154,6 @@ class DoctrineSchemaAnalyser
     }
 
     /**
-     * @param Column $columnDefinition
-     * @param TableBlueprint $tableBlueprint
-     */
-    private function analyseColumn(ColumnOwnerInterface $columnOwner,
-        Column $columnDefinition): ColumnBlueprint
-    {
-        $fullyQualifiedName = $columnDefinition->getFullQualifiedName('default');
-
-        $isNullable = !$columnDefinition->getNotnull();
-        $hasDefault = null === $columnDefinition->getDefault();
-
-        $columnBlueprint = new ColumnBlueprint($columnOwner,
-            $columnDefinition->getName(),
-            $columnDefinition->getType()->getName(),
-            $isNullable,
-            $columnDefinition->getLength() ?? -1,
-            $columnDefinition->getPrecision() ?? -1,
-            $columnDefinition->getScale() ?? -1,
-            $columnDefinition->getAutoincrement(),
-            $hasDefault);
-
-        return $columnBlueprint;
-    }
-
-    /**
-     * @param TableBlueprint $tableBlueprint
-     * @param Index $indexDefinition
-     *
-     * @return IndexBlueprint
-     */
-    private function analyseIndex(TableBlueprint $tableBlueprint, Index $indexDefinition): IndexBlueprint
-    {
-        $columnBlueprints = [];
-        foreach ($indexDefinition->getColumns() as $columnName) {
-            $columnBlueprints[] = $tableBlueprint->getColumnBlueprint($columnName);
-        }
-
-        return new IndexBlueprint(
-            $tableBlueprint,
-            $indexDefinition->getName(),
-            $columnBlueprints,
-            $indexDefinition->isPrimary(),
-            false
-        );
-    }
-
-    /**
      * @param SchemaBlueprint $schemaBlueprint
      * @param Table $tableDefinition
      *
@@ -238,6 +193,35 @@ class DoctrineSchemaAnalyser
     }
 
     /**
+     * @param ColumnOwnerInterface $columnOwner
+     * @param Column $columnDefinition
+     *
+     * @return ColumnBlueprint
+     */
+    private function analyseColumn(
+        ColumnOwnerInterface $columnOwner,
+        Column $columnDefinition
+    ): ColumnBlueprint
+    {
+        $isNullable = !$columnDefinition->getNotnull();
+        $hasDefault = null === $columnDefinition->getDefault();
+
+        $columnBlueprint = new ColumnBlueprint(
+            $columnOwner,
+            $columnDefinition->getName(),
+            $columnDefinition->getType()->getName(),
+            $isNullable,
+            $columnDefinition->getLength() ?? -1,
+            $columnDefinition->getPrecision() ?? -1,
+            $columnDefinition->getScale() ?? -1,
+            $columnDefinition->getAutoincrement(),
+            $hasDefault
+        );
+
+        return $columnBlueprint;
+    }
+
+    /**
      * @param Table $tableDefinition
      * @param TableBlueprint $tableBlueprint
      */
@@ -255,25 +239,24 @@ class DoctrineSchemaAnalyser
     }
 
     /**
-     * @param ColumnOwnerInterface $columnOwner
-     * @param UniqueConstraint $uniqueConstraint
+     * @param TableBlueprint $tableBlueprint
+     * @param Index $indexDefinition
      *
      * @return IndexBlueprint
      */
-    private function analyseTableUniqueConstraint(ColumnOwnerInterface $columnOwner,
-        UniqueConstraint $uniqueConstraint): IndexBlueprint
+    private function analyseIndex(TableBlueprint $tableBlueprint, Index $indexDefinition): IndexBlueprint
     {
         $columnBlueprints = [];
-        foreach ($uniqueConstraint->getColumns() as $columnName) {
-            $columnBlueprints[] = $columnOwner->getColumnBlueprint($columnName);
+        foreach ($indexDefinition->getColumns() as $columnName) {
+            $columnBlueprints[] = $tableBlueprint->getColumnBlueprint($columnName);
         }
 
         return new IndexBlueprint(
-            $columnOwner,
-            $uniqueConstraint->getName(),
+            $tableBlueprint,
+            $indexDefinition->getName(),
             $columnBlueprints,
-            false,
-            true
+            $indexDefinition->isPrimary(),
+            false
         );
     }
 
@@ -292,6 +275,31 @@ class DoctrineSchemaAnalyser
             $uniqueKeyBlueprint = $this->analyseTableUniqueConstraint($tableBlueprint, $uniqueKeyDefinition);
             $tableBlueprint->addUniqueConstraintBlueprint($uniqueKeyBlueprint);
         }
+    }
+
+    /**
+     * @param ColumnOwnerInterface $columnOwner
+     * @param UniqueConstraint $uniqueConstraint
+     *
+     * @return IndexBlueprint
+     */
+    private function analyseTableUniqueConstraint(
+        ColumnOwnerInterface $columnOwner,
+        UniqueConstraint $uniqueConstraint
+    ): IndexBlueprint
+    {
+        $columnBlueprints = [];
+        foreach ($uniqueConstraint->getColumns() as $columnName) {
+            $columnBlueprints[] = $columnOwner->getColumnBlueprint($columnName);
+        }
+
+        return new IndexBlueprint(
+            $columnOwner,
+            $uniqueConstraint->getName(),
+            $columnBlueprints,
+            false,
+            true
+        );
     }
 
     /**

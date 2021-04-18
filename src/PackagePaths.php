@@ -2,6 +2,7 @@
 
 namespace Reliese;
 
+use function realpath;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -11,7 +12,7 @@ abstract class PackagePaths
 {
     public static function getExampleConfigDirectoryPath():string
     {
-        return \realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config');
+        return realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config');
     }
 
     public static function getExampleModelConfigFilePath():string

@@ -20,6 +20,11 @@ class DatabaseAnalyserConfiguration
     private RelieseConfiguration $relieseConfiguration;
 
     /**
+     * @var string
+     */
+    private string $doctrineDatabaseAssistantClass;
+
+    /**
      * DatabaseAnalyserConfiguration constructor.
      *
      * @param array $configuration
@@ -32,8 +37,7 @@ class DatabaseAnalyserConfiguration
             throw new \InvalidArgumentException("DatabaseAnalyserConfiguration must define a key-value pair for \"ConnectionName\"");
         }
 
-        // TODO: Use and uncomment next line
-        // $this->analyserClass = $configuration['AnalyserClass'];
+        $this->doctrineDatabaseAssistantClass = $configuration['DoctrineDatabaseAssistantClass'];
         $this->connectionName = $configuration['ConnectionName'];
     }
 
@@ -51,5 +55,13 @@ class DatabaseAnalyserConfiguration
     public function getSchemaFilter(): SchemaFilter
     {
         return $this->relieseConfiguration->getDatabaseBlueprintConfiguration()->getSchemaFilter();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDoctrineDatabaseAssistantClass(): string
+    {
+        return $this->doctrineDatabaseAssistantClass;
     }
 }

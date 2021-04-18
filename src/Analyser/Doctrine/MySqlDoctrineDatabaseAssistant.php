@@ -5,9 +5,7 @@ namespace Reliese\Analyser\Doctrine;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Connectors\ConnectionFactory;
-use Illuminate\Database\DatabaseManager;
-use Reliese\Configuration\DatabaseAnalyserConfiguration;
-use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Reliese\Configuration\RelieseConfiguration;
 
 /**
  * Class MySqlDoctrineDatabaseAssistant
@@ -25,11 +23,6 @@ class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterfa
     private ConnectionFactory $connectionFactory;
 
     /**
-     * @var DatabaseManager
-     */
-    private DatabaseManager $databaseManager;
-
-    /**
      * @var AbstractSchemaManager[]
      */
     private array $doctrineSchemaManagers = [];
@@ -37,22 +30,13 @@ class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterfa
     /**
      * @var array
      */
-    private $schemaConnections = [];
+    private array $schemaConnections = [];
 
     public function __construct(
-        DatabaseBlueprintConfiguration $databaseBlueprintConfiguration,
-        DatabaseAnalyserConfiguration $databaseAnalyserConfiguration,
-        DatabaseManager $databaseManager,
+        RelieseConfiguration $relieseConfiguration,
         ConnectionFactory $connectionFactory,
         ConnectionInterface $configuredConnection
     ) {
-        $databaseBlueprintConfiguration->getSchemaFilter()
-            ->excludeSchema(['information_schema'])
-            ->excludeSchema(['mysql'])
-            ->excludeSchema(['performance_schema'])
-        ;
-
-        $this->databaseManager = $databaseManager;
         $this->connectionFactory = $connectionFactory;
         $this->configuredConnection = $configuredConnection;
         $this->schemaConnections[$configuredConnection->getConfig('database')] = $configuredConnection;
@@ -60,8 +44,7 @@ class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterfa
 
     public function getSchemaNames(): array
     {
-        // TODO: Implement getSchemaNames() method.
-        throw new \Exception(__METHOD__ . " has not been implemented.");
+        return $this->getDoctrineSchemaManager()->listDatabases();
     }
 
     /**

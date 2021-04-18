@@ -10,6 +10,7 @@ use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
+
 /**
  * Class DataTransportGenerateCommand
  */
@@ -37,12 +38,12 @@ class DataTransportGenerateCommand extends Command
     /**
      * @var \Reliese\Coders\Model\Factory
      */
-    protected $models;
+    protected Factory $models;
 
     /**
      * @var \Illuminate\Contracts\Config\Repository
      */
-    protected $config;
+    protected Repository $config;
 
     /**
      * Create a new command instance.
@@ -81,15 +82,14 @@ class DataTransportGenerateCommand extends Command
         /*
          * Create the correct analyser for the configuration profile
          */
-        $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
-            $relieseConfiguration->getDatabaseAnalyserConfiguration()
-        );
+        $databaseAnalyser =  $analyserFactory->databaseAnalyser($relieseConfiguration);
 
         /*
          * Allow the $databaseAnalyser to create the Database Blueprint
          */
-        $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
+        $databaseBlueprint = $databaseAnalyser->analyseDatabase(
+            $relieseConfiguration->getDatabaseBlueprintConfiguration()
+        );
 
         /*
          * Generate class files
@@ -118,7 +118,7 @@ class DataTransportGenerateCommand extends Command
     /**
      * @return string
      */
-    protected function getConnection()
+    protected function getConnection(): string
     {
         return $this->option('connection') ?: $this->config->get('database.default');
     }
@@ -128,15 +128,15 @@ class DataTransportGenerateCommand extends Command
      *
      * @return string
      */
-    protected function getSchema($connection)
+    protected function getSchema($connection): string
     {
         return $this->option('schema') ?: $this->config->get("database.connections.$connection.database");
     }
 
     /**
-     * @return string
+     * @return ?string
      */
-    protected function getTable()
+    protected function getTable(): ?string
     {
         return $this->option('table');
     }

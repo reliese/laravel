@@ -1,6 +1,11 @@
 <?php
-use Reliese\Analyser\Doctrine\DoctrineDatabaseAnalyser;
-use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAnalyser;
+
+use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAssistant;
+use Reliese\Configuration\DatabaseAnalyserConfiguration;
+use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Reliese\Configuration\DataTransportGeneratorConfiguration;
+use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
+use Reliese\Configuration\ModelGeneratorConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +33,7 @@ return [
         | section defines which database connection will be analysed.
         |
         */
-        'DatabaseAnalyserConfiguration' => [
+        DatabaseAnalyserConfiguration::class => [
             /*
             |--------------------------------------------------------------------------
             | Database Connection Name
@@ -38,13 +43,15 @@ return [
             | that should be used to populate schema and table blueprints
             |
             */
-            'ConnectionName' => env('DEFAULT_DB_CONNECTION'),
+            'ConnectionName' => env('DB_CONNECTION'),
+
+            'DoctrineDatabaseAssistantClass' => MySqlDoctrineDatabaseAssistant::class,
         ],
         // endregion Database Analyser Configuration
 
 
         // region Blueprint Configuration
-        'DatabaseBlueprintConfiguration' => [
+        DatabaseBlueprintConfiguration::class => [
             /*
             |--------------------------------------------------------------------------
             | Database Blueprint Filters
@@ -79,7 +86,7 @@ return [
                 'IncludeByDefault' => true,
                 'Except' => [
                     // except everything in schema
-                    ['schemas' => ['information_schema', 'performance_schema', 'mysql']],
+                    ['schemas' => ['information_schema', 'performance_schema', 'mysql', 'sys']],
                     // except audit.log_.* tables
                     ['schemas' => ['audit'], 'tables' => ['/^log_.*$/']],
                     // except any table that ends in migrations or matches 'phinx' on all schemas
@@ -107,7 +114,7 @@ return [
         // endregion Blueprint Configuration
 
         // region Model Generator Config
-        'ModelGeneratorConfiguration' => [
+        ModelGeneratorConfiguration::class => [
 
             /*
             |--------------------------------------------------------------------------
@@ -526,7 +533,7 @@ return [
         ],
         // endregion Model Generator Config
         // region Data Transport Generator Config
-        'DataTransportGeneratorConfiguration' => [
+        DataTransportGeneratorConfiguration::class => [
             'Path' => app_path().'/DataTransportObjects',
             'Namespace' => 'App\DataTransportObjects',
             'ClassSuffix' => 'Dto',
@@ -534,7 +541,7 @@ return [
         ],
         // endregion Data Transport Generator Config
         // region Data Map Generator Config
-        'ModelDataMapGeneratorConfiguration' => [
+        ModelDataMapGeneratorConfiguration::class => [
             'Path' => app_path().'/DataMaps/PrimaryDatabase',
             'Namespace' => 'App\DataMaps\PrimaryDatabase',
             'ClassSuffix' => 'Map',

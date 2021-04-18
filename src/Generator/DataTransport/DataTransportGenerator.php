@@ -2,8 +2,6 @@
 
 namespace Reliese\Generator\DataTransport;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\DataTransportGeneratorConfiguration;
@@ -12,6 +10,9 @@ use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
+use function file_exists;
+use function file_put_contents;
+use function mkdir;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -39,9 +40,8 @@ class DataTransportGenerator
      *
      * @param DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
      */
-    public function __construct(
-        DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
-    ) {
+    public function __construct(DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration)
+    {
         $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
@@ -52,10 +52,8 @@ class DataTransportGenerator
     /**
      * @param TableBlueprint $tableBlueprint
      */
-    public function fromTableBlueprint(
-        TableBlueprint $tableBlueprint
-    ) {
-
+    public function fromTableBlueprint(TableBlueprint $tableBlueprint)
+    {
         $className = $this->getClassName($tableBlueprint);
 
         $abstractClassName = $this->getAbstractClassName($tableBlueprint);
@@ -143,23 +141,23 @@ class DataTransportGenerator
 
         $dtoClassPhpCode = $classFormatter->format($classDefinition);
         $abstractDtoPhpCode = $classFormatter->format($abstractClassDefinition);
-        //        echo "\n---Class---\n$dtoClassPhpCode\n\n\n---Base Class---\n$abstractDtoPhpCode\n\n";
 
         $dtoClassFolder = $this->dataTransportGeneratorConfiguration->getPath();
         $abstractDtoClassFolder = $dtoClassFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($dtoClassFolder)) {
-            \mkdir($dtoClassFolder, 0777, true);
+            mkdir($dtoClassFolder, 0777, true);
         }
         if (!is_dir($abstractDtoClassFolder)) {
-            \mkdir($abstractDtoClassFolder, 0777, true);
+            mkdir($abstractDtoClassFolder, 0777, true);
         }
 
         $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
         $abstractDtoFilePath = $abstractDtoClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getName() . '.php';
 
-        if (!\file_exists($dtoFilePath)) {
-            \file_put_contents($dtoFilePath, $dtoClassPhpCode);
+        if (!file_exists($dtoFilePath)) {
+            file_put_contents($dtoFilePath, $dtoClassPhpCode);
         }
-        \file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
+
+        file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
     }
 }

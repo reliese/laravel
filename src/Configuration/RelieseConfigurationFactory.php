@@ -5,6 +5,7 @@ namespace Reliese\Configuration;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Reliese\PackagePaths;
+use function array_key_exists;
 
 /**
  * Class ConfigurationFactory
@@ -17,15 +18,32 @@ class RelieseConfigurationFactory
     private array $relieseConfigurationProfiles;
 
     /**
+     * @var string
+     */
+    private string $appDirectoryPath;
+
+    /**
+     * @var string
+     */
+    private string $configDirectoryPath;
+
+    /**
+     * @var string
+     */
+    private string $relieseConfigurationFilePath;
+
+    /**
      * RelieseConfiguration constructor.
      *
      * @param string $appDirectoryPath
      * @param string $configDirectoryPath
      * @param array|null $relieseConfigurationProfiles May not exist if the config has not yet been created
      */
-    public function __construct(string $appDirectoryPath,
+    public function __construct(
+        string $appDirectoryPath,
         string $configDirectoryPath,
-        ?array $relieseConfigurationProfiles)
+        ?array $relieseConfigurationProfiles
+    )
     {
         $this->appDirectoryPath = $appDirectoryPath;
         $this->configDirectoryPath = $configDirectoryPath;
@@ -40,62 +58,74 @@ class RelieseConfigurationFactory
     {
         Log::info("Creating RelieseConfiguration for Configuration Profile \"$configurationProfileName\"");
 
-        if (!\array_key_exists($configurationProfileName, $this->relieseConfigurationProfiles)) {
+        if (!array_key_exists($configurationProfileName, $this->relieseConfigurationProfiles)) {
             throw new InvalidArgumentException("Unable to locate a configuration profile named $configurationProfileName in {$this->relieseConfigurationFilePath}");
         }
 
         $configurationProfile = $this->relieseConfigurationProfiles[$configurationProfileName];
 
-        return new RelieseConfiguration($configurationProfileName,
+        return new RelieseConfiguration(
+            $configurationProfileName,
             $this->getDataMapGeneratorConfiguration($configurationProfile),
             $this->getDataTransportGeneratorConfiguration($configurationProfile),
             $this->getDatabaseAnalyserConfiguration($configurationProfile),
             $this->getDatabaseBlueprintConfiguration($configurationProfile),
-            $this->getModelGeneratorConfiguration($configurationProfile));
+            $this->getModelGeneratorConfiguration($configurationProfile)
+        );
     }
 
     protected function getDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
     {
-        if (!\array_key_exists('ModelDataMapGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelDataMapGeneratorConfiguration\"");
+        $key = ModelDataMapGeneratorConfiguration::class;
+
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new ModelDataMapGeneratorConfiguration($configurationProfile['ModelDataMapGeneratorConfiguration']);
+        return new ModelDataMapGeneratorConfiguration($configurationProfile[$key]);
     }
 
     protected function getDataTransportGeneratorConfiguration(array $configurationProfile): DataTransportGeneratorConfiguration
     {
-        if (!\array_key_exists('DataTransportGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DataTransportGeneratorConfiguration\"");
+        $key = DataTransportGeneratorConfiguration::class;
+
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new DataTransportGeneratorConfiguration($configurationProfile['DataTransportGeneratorConfiguration']);
+        return new DataTransportGeneratorConfiguration($configurationProfile[$key]);
     }
 
     protected function getDatabaseAnalyserConfiguration(array $configurationProfile): DatabaseAnalyserConfiguration
     {
-        if (!\array_key_exists('DatabaseAnalyserConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DatabaseAnalyserConfiguration\"");
+        $key = DatabaseAnalyserConfiguration::class;
+
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new DatabaseAnalyserConfiguration($configurationProfile['DatabaseAnalyserConfiguration']);
+        return new DatabaseAnalyserConfiguration($configurationProfile[$key]);
     }
 
     protected function getDatabaseBlueprintConfiguration(array $configurationProfile): DatabaseBlueprintConfiguration
     {
-        if (!\array_key_exists('DatabaseBlueprintConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DatabaseBlueprintConfiguration\"");
+        $key = DatabaseBlueprintConfiguration::class;
+
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new DatabaseBlueprintConfiguration($configurationProfile['DatabaseBlueprintConfiguration']);
+        return new DatabaseBlueprintConfiguration($configurationProfile[$key]);
     }
 
     protected function getModelGeneratorConfiguration(array $configurationProfile): ModelGeneratorConfiguration
     {
-        if (!\array_key_exists('ModelGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelGeneratorConfiguration\"");
+        $key = ModelGeneratorConfiguration::class;
+
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new ModelGeneratorConfiguration($configurationProfile['ModelGeneratorConfiguration']);
+        return new ModelGeneratorConfiguration($configurationProfile[$key]);
     }
 }

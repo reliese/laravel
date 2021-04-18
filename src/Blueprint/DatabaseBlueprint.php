@@ -75,4 +75,12 @@ class DatabaseBlueprint
     {
         return array_keys($this->getSchemaBlueprints());
     }
+
+    /**
+     * @return DatabaseBlueprintConfiguration
+     */
+    public function getDatabaseBlueprintConfiguration(): DatabaseBlueprintConfiguration
+    {
+        return $this->databaseBlueprintConfiguration;
+    }
 }

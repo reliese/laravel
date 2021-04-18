@@ -67,6 +67,7 @@ class NewModelGenerateCommand extends Command
      *
      * @param AnalyserFactory $analyserFactory
      * @param RelieseConfigurationFactory $relieseConfigurationFactory
+     * @todo clean this method
      */
     public function handle(
         AnalyserFactory $analyserFactory,
@@ -85,8 +86,7 @@ class NewModelGenerateCommand extends Command
          * Create the correct analyser for the configuration profile
          */
         $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
-            $relieseConfiguration->getDatabaseAnalyserConfiguration()
+            $relieseConfiguration
         );
 
         /*

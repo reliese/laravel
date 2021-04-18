@@ -7,12 +7,12 @@ namespace Reliese\Blueprint;
  */
 class ForeignKeyBlueprint
 {
-    private $name;
+    private string $name;
 
     /**
      * @var ColumnBlueprint[]
      */
-    private array $referencedColumns = [];
+    private array $referencedColumns;
 
     /**
      * @var ColumnOwnerInterface
@@ -22,7 +22,7 @@ class ForeignKeyBlueprint
     /**
      * @var ColumnBlueprint[]
      */
-    private array $referencingColumns = [];
+    private array $referencingColumns;
 
     /**
      * @var ColumnOwnerInterface
@@ -38,11 +38,13 @@ class ForeignKeyBlueprint
      * @param ColumnOwnerInterface $referencedTable
      * @param ColumnBlueprint[] $referencedColumns
      */
-    public function __construct(ColumnOwnerInterface $columnOwner,
+    public function __construct(
+        ColumnOwnerInterface $columnOwner,
         string $name,
         array $referencingColumns,
         ColumnOwnerInterface $referencedTable,
-        array $referencedColumns)
+        array $referencedColumns
+    )
     {
         $this->tableOrViewBlueprint = $columnOwner;
         $this->name = $name;

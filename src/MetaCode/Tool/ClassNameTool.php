@@ -8,10 +8,6 @@ use Illuminate\Support\Str;
  */
 abstract class ClassNameTool
 {
-    private function __construct()
-    {
-    }
-
     /**
      * @param string|null $prefix
      * @param string $identifier
@@ -46,11 +42,21 @@ abstract class ClassNameTool
         return Str::camel($columnName);
     }
 
+    /**
+     * @param string $columnName
+     *
+     * @return string
+     */
     public static function columnNameToGetterName(string $columnName): string
     {
         return 'get'.str::studly($columnName);
     }
 
+    /**
+     * @param string $columnName
+     *
+     * @return string
+     */
     public static function columnNameToSetterName(string $columnName): string
     {
         return 'set'.str::studly($columnName);

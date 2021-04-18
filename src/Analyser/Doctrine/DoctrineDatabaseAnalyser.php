@@ -2,29 +2,19 @@
 
 namespace Reliese\Analyser\Doctrine;
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Illuminate\Database\ConnectionInterface;
-use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Support\Facades\Log;
 use Reliese\Analyser\DatabaseAnalyserInterface;
 use Reliese\Blueprint\DatabaseBlueprint;
-use Reliese\Blueprint\DatabaseDescriptionDto;
 use Reliese\Blueprint\ForeignKeyBlueprint;
 use Reliese\Configuration\DatabaseBlueprintConfiguration;
-use Reliese\Filter\SchemaFilter;
-use Reliese\Filter\StringFilter;
-use Symfony\Component\Console\Output\OutputInterface;
+use function array_key_exists;
+use function json_encode;
 
 /**
  * Class MySqlDatabaseAnalyser
  */
 class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
 {
-    /**
-     * @var DatabaseBlueprint
-     */
-    private DatabaseBlueprint $databaseBlueprint;
-
     /**
      * @var DoctrineDatabaseAssistantInterface
      */
@@ -53,10 +43,11 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
     public function analyseDatabase(DatabaseBlueprintConfiguration $databaseBlueprintConfiguration): DatabaseBlueprint
     {
         $databaseBlueprint = new DatabaseBlueprint($databaseBlueprintConfiguration);
+        $schemaNames = $this->getSchemaNames();
+
         /*
          * Create a SchemaBlueprint for each schema
          */
-        $schemaNames = $this->getSchemaNames();
         foreach ($schemaNames as $schemaName) {
             /*
              * Check to see if the current schema should be analyzed
@@ -71,7 +62,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
             $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName);
             $databaseBlueprint->addSchemaBlueprint(
                 // TODO: Add support for Views
-                $schemaAnalyser->analyseSchemaObjectStructures($databaseBlueprint)
+                $schemaAnalyser->analyseSchemaObjectStructures()
             );
         }
 
@@ -93,7 +84,9 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
                  */
                 $tableBlueprint = $databaseBlueprint->getSchemaBlueprint($schemaName)->getTableBlueprint($tableName);
 
-                Log::info('Looking for FKeys in columns: '.\implode(', ', $tableBlueprint->getColumnNames()));
+                Log::info(sprintf("Looking for Foreign Keys in [%s] columns: \n%s",
+                    $tableBlueprint->getName(),
+                    json_encode($tableBlueprint->getColumnNames(), JSON_PRETTY_PRINT)));
 
                 foreach ($foreignKeys as $foreignKey) {
                     /*
@@ -121,7 +114,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
                          * TODO: Decide if we should apply a "best guess" methodology where table and column matching resolves the key
                          * TODO: Alternative, throw an exception that is handled by requiring the user to specify the schema and for this FK manually and store that in a config
                          */
-                        Log::notice(sprintf("Skipping FK \"%s\": Unable to resolve FK relationships across schemas", $foreignKey->getName()));
+                        Log::notice(sprintf("Skipping Foreign Key \"%s\": Unable to resolve relationships across schemas", $foreignKey->getName()));
                         continue;
                     }
 
@@ -155,19 +148,11 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
     }
 
     /**
-     * @inheritDoc
+     * @return string[]
      */
     protected function getSchemaNames(): array
     {
-        return $this->doctrineDatabaseAssistant->getDoctrineSchemaManager()->listDatabases();
-    }
-
-    /**
-     * @return DatabaseBlueprint
-     */
-    protected function getDatabaseBlueprint() : DatabaseBlueprint
-    {
-        return $this->databaseBlueprint;
+        return $this->doctrineDatabaseAssistant->getSchemaNames();
     }
 
     /**
@@ -178,17 +163,19 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
      */
     protected function getSchemaAnalyser(DatabaseBlueprint $databaseBlueprint, string $schemaName): DoctrineSchemaAnalyser
     {
-        if (\array_key_exists($schemaName, $this->schemaAnalysers)) {
+        if (array_key_exists($schemaName, $this->schemaAnalysers)) {
             return $this->schemaAnalysers[$schemaName];
         }
 
         $schemaSpecificConnection = $this->doctrineDatabaseAssistant->getConnection($schemaName);
-        return $this->schemaAnalysers[$schemaName] = $this->schemaAnalysers[$schemaName] =  new DoctrineSchemaAnalyser(
+        $schemaSpecificDoctrineSchemaManager = $this->doctrineDatabaseAssistant->getDoctrineSchemaManager($schemaName);
+
+        return $this->schemaAnalysers[$schemaName] = new DoctrineSchemaAnalyser(
             $schemaName,
             $databaseBlueprint,
             $this,
             $schemaSpecificConnection,
-            $schemaSpecificConnection->getDoctrineSchemaManager()
+            $schemaSpecificDoctrineSchemaManager
         );
     }
 }

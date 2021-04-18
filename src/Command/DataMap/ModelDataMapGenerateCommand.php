@@ -87,14 +87,15 @@ class ModelDataMapGenerateCommand extends Command
          * Create the correct analyser for the configuration profile
          */
         $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
-            $relieseConfiguration->getDatabaseAnalyserConfiguration()
+            $relieseConfiguration
         );
 
         /*
          * Allow the $databaseAnalyser to create the Database Blueprint
          */
-        $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
+        $databaseBlueprint = $databaseAnalyser->analyseDatabase(
+            $relieseConfiguration->getDatabaseBlueprintConfiguration()
+        );
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
 

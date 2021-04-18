@@ -81,8 +81,7 @@ class ShowBlueprintCommand extends Command
          * Create the correct analyser for the configuration profile
          */
         $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
-            $relieseConfiguration->getDatabaseAnalyserConfiguration()
+            $relieseConfiguration
         );
 
         /*

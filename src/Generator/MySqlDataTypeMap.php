@@ -2,19 +2,14 @@
 
 namespace Reliese\Generator;
 
+use DateTime;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
+
 /**
  * Class DataTypeMap
  */
 class MySqlDataTypeMap
 {
-    public function __construct()
-    {
-        $this->mappings = [
-
-        ];
-    }
-
     /**
      * @param string $dbTypeName
      * @param int $length
@@ -46,9 +41,9 @@ class MySqlDataTypeMap
             case 'time':
             case 'timestamp':
                 if ($isNullable) {
-                    return PhpTypeEnum::nullableObjectOfType('\\'.\DateTime::class);
+                    return PhpTypeEnum::nullableObjectOfType('\\'. DateTime::class);
                 }
-                return PhpTypeEnum::objectOfType('\\'.\DateTime::class);
+                return PhpTypeEnum::objectOfType('\\'. DateTime::class);
             case 'int':
             case 'integer':
             case 'smallint':

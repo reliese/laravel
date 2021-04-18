@@ -3,6 +3,7 @@
 namespace Reliese\Filter;
 
 use InvalidArgumentException;
+use function is_null;
 
 /**
  * Class SchemaFilter
@@ -20,15 +21,19 @@ class SchemaFilter
         $this->includeByDefault = $includeByDefault;
     }
 
-    public function excludeSchema(array $schemaMatchExpressions) : static
+    public function excludeSchema(array $schemaMatchExpressions): static
     {
         if ($this->includeByDefault) {
             $this->addException($schemaMatchExpressions);
         }
+
         return $this;
     }
 
-    public function isIncludeByDefault():bool{return $this->includeByDefault;}
+    public function isIncludeByDefault(): bool
+    {
+        return $this->includeByDefault;
+    }
 
     private array $exceptions = [];
 
@@ -36,7 +41,7 @@ class SchemaFilter
         array $schemaMatchExpressions,
         ?array $tableMatchExpressions = null,
         ?array $columnMatchExpressions = null,
-    ) : static
+    ): static
     {
         if (empty($schemaMatchExpressions)) {
             throw new InvalidArgumentException("An exception case must specify at least one schema condition.");
@@ -46,13 +51,13 @@ class SchemaFilter
         $schemaMatchFilter = new StringFilter(false);
         foreach ($schemaMatchExpressions as $schemaMatchExpression) {
             if (empty($schemaMatchExpression)) {
-                dd(\debug_backtrace());
+                throw new InvalidArgumentException("Include conditions require a schema filter. To apply the include condition to all schemas use the schema filter ['/^.*$/'] which will match on all possible schemas.");
             }
             $schemaMatchFilter->addException($schemaMatchExpression);
         }
 
         $tableMatchFilter = null;
-        if (!\is_null($tableMatchExpressions)) {
+        if (!is_null($tableMatchExpressions)) {
             // IsIncluded should be true when there is a match
             $tableMatchFilter = new StringFilter(false);
             foreach ($tableMatchExpressions as $tableMatchExpression) {
@@ -61,9 +66,9 @@ class SchemaFilter
         }
 
         $columnMatchFilter = null;
-        if (!\is_null($columnMatchExpressions)) {
-            if (\is_null($tableMatchExpressions)) {
-                throw new InvalidArgumentException("A column exception cannot be specified without a table exception. To apply the column exception to all tables use the table exception ['/^.*$/'].");
+        if (!is_null($columnMatchExpressions)) {
+            if (is_null($tableMatchExpressions)) {
+                throw new InvalidArgumentException("A column exception cannot be specified without a table filter. To apply the column exception to all tables use the table exception ['/^.*$/'].");
             }
             // IsIncluded should be true when there is a match
             $columnMatchFilter = new StringFilter(false);

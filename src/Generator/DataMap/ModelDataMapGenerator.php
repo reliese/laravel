@@ -5,20 +5,20 @@ namespace Reliese\Generator\DataMap;
 use Illuminate\Support\Str;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DataTransportGeneratorConfiguration;
 use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
-use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
 use Reliese\Generator\Model\ModelGenerator;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
-use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\FunctionParameterDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
+use function file_exists;
+use function file_put_contents;
+use function mkdir;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -75,8 +75,6 @@ class ModelDataMapGenerator
 
     /**
      * @param TableBlueprint $tableBlueprint
-     *
-     * @return ClassDefinition
      */
     public function fromTableBlueprint(TableBlueprint $tableBlueprint)
     {
@@ -250,23 +248,22 @@ class ModelDataMapGenerator
 
         $classPhpCode = $classFormatter->format($classDefinition);
         $abstractPhpCode = $classFormatter->format($abstractClassDefinition);
-                echo "\n---Class---\n$classPhpCode\n\n\n---Base Class---\n$abstractPhpCode\n\n";
 
         $classFolder = $this->modelDataMapGeneratorConfiguration->getPath();
         $abstractClassFolder = $classFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($classFolder)) {
-            \mkdir($classFolder, 0777, true);
+            mkdir($classFolder, 0777, true);
         }
         if (!is_dir($abstractClassFolder)) {
-            \mkdir($abstractClassFolder, 0777, true);
+            mkdir($abstractClassFolder, 0777, true);
         }
 
         $classFilePath = $classFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
         $abstractFilePath = $abstractClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getName() . '.php';
 
-        if (!\file_exists($classFilePath)) {
-            \file_put_contents($classFilePath, $classPhpCode);
+        if (!file_exists($classFilePath)) {
+            file_put_contents($classFilePath, $classPhpCode);
         }
-        \file_put_contents($abstractFilePath, $abstractPhpCode);
+        file_put_contents($abstractFilePath, $abstractPhpCode);
     }
 }

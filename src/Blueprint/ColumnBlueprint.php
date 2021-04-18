@@ -10,7 +10,7 @@ class ColumnBlueprint
     /**
      * @var string
      */
-    private $columnName;
+    private string $columnName;
 
     /**
      * @var ColumnOwnerInterface
@@ -20,12 +20,12 @@ class ColumnBlueprint
     /**
      * @var string
      */
-    private $dataType;
+    private string $dataType;
 
     /**
      * @var bool
      */
-    private $hasDefault;
+    private bool $hasDefault;
 
     /**
      * @var IndexBlueprint[]
@@ -35,27 +35,27 @@ class ColumnBlueprint
     /**
      * @var bool
      */
-    private $isAutoincrement;
+    private bool $isAutoincrement;
 
     /**
      * @var bool
      */
-    private $isNullable;
+    private bool $isNullable;
 
     /**
      * @var int
      */
-    private $maximumCharacters;
+    private int $maximumCharacters;
 
     /**
      * @var int
      */
-    private $numericPrecision;
+    private int $numericPrecision;
 
     /**
      * @var int
      */
-    private $numericScale;
+    private int $numericScale;
 
     /**
      * @var ForeignKeyBlueprint[]
@@ -87,7 +87,8 @@ class ColumnBlueprint
      * @param bool $isAutoincrement
      * @param bool $hasDefault
      */
-    public function __construct(ColumnOwnerInterface $columnOwner,
+    public function __construct(
+        ColumnOwnerInterface $columnOwner,
         string $columnName,
         string $dataType,
         bool $isNullable,
@@ -95,7 +96,8 @@ class ColumnBlueprint
         int $numericPrecision,
         int $numericScale,
         bool $isAutoincrement,
-        bool $hasDefault)
+        bool $hasDefault
+    )
     {
         $this->columnOwner = $columnOwner;
         $this->setColumnName($columnName);
@@ -373,7 +375,6 @@ class ColumnBlueprint
             return true;
         }
 
-        /** @var ForeignKeyBlueprint $referencedForeignKey */
         foreach ($this->referencedForeignKeys as $referencedForeignKey) {
             if ($optionalTableNameFilter === $referencedForeignKey->getReferencedTableName()) {
                 return true;
@@ -393,7 +394,6 @@ class ColumnBlueprint
             return true;
         }
 
-        /** @var ForeignKeyBlueprint $referencingForeignKey */
         foreach ($this->referencingForeignKeys as $referencingForeignKey) {
             if ($optionalTableNameFilter === $referencingForeignKey->getReferencingObjectName()) {
                 return true;
