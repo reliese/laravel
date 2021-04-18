@@ -7,7 +7,6 @@ use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseManager;
 use Reliese\Analyser\Doctrine\DoctrineDatabaseAnalyser;
 use Reliese\Configuration\RelieseConfiguration;
-use RuntimeException;
 
 /**
  * Class AnalyserFactory
@@ -49,6 +48,7 @@ class AnalyserFactory
 
     /**
      * @param RelieseConfiguration $relieseConfiguration
+     * @todo handle exceptions
      *
      * @return DatabaseAnalyserInterface
      */
@@ -72,61 +72,5 @@ class AnalyserFactory
         return $this->container->make(DoctrineDatabaseAnalyser::class, [
             'doctrineDatabaseAssistant' => $doctrineDatabaseAssistant,
         ]);
-
-
-//        $connectionClass = \get_class($connection);
-//        switch ($connectionClass) {
-//            case \Larapack\DoctrineSupport\Connections\MySqlConnection::class:
-//            case MySqlConnection::class:
-//                $doctrineDatabaseAssistantClass = new MySqlDoctrineDatabaseAssistant(
-//                    $databaseBlueprintConfiguration,
-//                    $databaseAnalyserConfiguration,
-//                    $this->databaseManager,
-//                    $this->connectionFactory,
-//                    $connection
-//                );
-//                return new DoctrineDatabaseAnalyser($doctrineDatabaseAssistantClass);
-//            case SQLiteConnection::class:
-//            case PostgresConnection::class:
-//            default:
-//                throw new \RuntimeException("Unable to locate a \"$connectionClass\" compatible implementation of " . DatabaseAnalyserInterface::class);
-//        }
     }
-//
-//    /**
-//     * @param ConnectionInterface $connection
-//     * @param OutputInterface $output
-//     *
-//     * @return DoctrineDatabaseAnalyser
-//     */
-//    protected function doctrineDatabaseAnalyserForMySql(
-//        ConnectionInterface $connection
-//    ) : DoctrineDatabaseAnalyser
-//    {
-//        $schemaFilter = $this->relieseConfiguration->getDatabaseAnalyserConfiguration()->getSchemaFilter();
-//        if ($schemaFilter->isIncludeByDefault()) {
-//            $schemaFilter->addException(['information_schema', 'mysql', 'performance_schema']);
-//        }
-//
-//        $typeMappings = ['enum' => 'string'];
-//
-//        $doctrineSchemaManagerConfigurationDelegate = function(AbstractSchemaManager $doctrineSchemaManager) use ($typeMappings) : AbstractSchemaManager {
-//            $platform = $doctrineSchemaManager->getDatabasePlatform();
-//
-//            foreach ($typeMappings as $databaseType => $phpType) {
-//                $platform->registerDoctrineTypeMapping($databaseType, $phpType);
-//            }
-//
-//            return $doctrineSchemaManager;
-//        };
-//
-//        $result = new DoctrineDatabaseAnalyser(
-//            $this->relieseConfiguration->getDatabaseAnalyserConfiguration(),
-//            $doctrineSchemaManagerConfigurationDelegate,
-//            $this->connectionFactory,
-//            $connection
-//        );
-//
-//        return $result;
-//    }
 }
