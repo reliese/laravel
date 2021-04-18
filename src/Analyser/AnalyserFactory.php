@@ -14,11 +14,6 @@ use Reliese\Configuration\RelieseConfiguration;
 class AnalyserFactory
 {
     /**
-     * @var ConnectionFactory
-     */
-    private ConnectionFactory $connectionFactory;
-
-    /**
      * @var DatabaseManager
      */
     private DatabaseManager $databaseManager;
@@ -32,17 +27,14 @@ class AnalyserFactory
      * AnalyserFactory constructor.
      *
      * @param DatabaseManager $databaseManager
-     * @param ConnectionFactory $connectionFactory
      * @param Container $container
      */
     public function __construct(
         DatabaseManager $databaseManager,
-        ConnectionFactory $connectionFactory,
         Container $container
     )
     {
         $this->databaseManager = $databaseManager;
-        $this->connectionFactory = $connectionFactory;
         $this->container = $container;
     }
 
