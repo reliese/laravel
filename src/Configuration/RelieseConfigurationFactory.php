@@ -97,11 +97,12 @@ class RelieseConfigurationFactory
      */
     protected function getDatabaseAnalyserConfiguration(array $configurationProfile): DatabaseAnalyserConfiguration
     {
-        if (!array_key_exists('DatabaseAnalyserConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DatabaseAnalyserConfiguration\"");
+        $key = DatabaseAnalyserConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
         }
 
-        return new DatabaseAnalyserConfiguration($configurationProfile['DatabaseAnalyserConfiguration']);
+        return new DatabaseAnalyserConfiguration($configurationProfile[$key]);
     }
 
     /**
@@ -111,11 +112,12 @@ class RelieseConfigurationFactory
      */
     protected function getDatabaseBlueprintConfiguration(array $configurationProfile): DatabaseBlueprintConfiguration
     {
-        if (!array_key_exists('DatabaseBlueprintConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DatabaseBlueprintConfiguration\"");
+        $key = DatabaseBlueprintConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
         }
 
-        return new DatabaseBlueprintConfiguration($configurationProfile['DatabaseBlueprintConfiguration']);
+        return new DatabaseBlueprintConfiguration($configurationProfile[$key]);
     }
 
     /**
@@ -125,11 +127,12 @@ class RelieseConfigurationFactory
      */
     protected function getModelDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
     {
-        if (!array_key_exists(ModelDataMapGeneratorConfiguration::class, $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelDataMapGeneratorConfiguration::class\"");
+        $key = ModelDataMapGeneratorConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
         }
 
-        return new ModelDataMapGeneratorConfiguration($configurationProfile[ModelDataMapGeneratorConfiguration::class]);
+        return new ModelDataMapGeneratorConfiguration($configurationProfile[$key]);
     }
 
     /**
@@ -139,11 +142,12 @@ class RelieseConfigurationFactory
      */
     protected function getModelGeneratorConfiguration(array $configurationProfile): ModelGeneratorConfiguration
     {
-        if (!array_key_exists('ModelGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelGeneratorConfiguration\"");
+        $key = ModelGeneratorConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
         }
 
-        return new ModelGeneratorConfiguration($configurationProfile['ModelGeneratorConfiguration']);
+        return new ModelGeneratorConfiguration($configurationProfile[$key]);
     }
 
     /**
@@ -153,10 +157,11 @@ class RelieseConfigurationFactory
      */
     private function getDataAccessGeneratorConfiguration(mixed $configurationProfile): DataAccessGeneratorConfiguration
     {
-        if (!array_key_exists(DataAccessGeneratorConfiguration::class, $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DataAccessGeneratorConfiguration\"");
+        $key = DataAccessGeneratorConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
         }
 
-        return new DataAccessGeneratorConfiguration($configurationProfile[DataAccessGeneratorConfiguration::class]);
+        return new DataAccessGeneratorConfiguration($configurationProfile[$key]);
     }
 }

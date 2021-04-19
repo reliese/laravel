@@ -2,9 +2,12 @@
 use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAnalyser;
 use Reliese\Configuration\DataAccessGeneratorConfiguration;
 use Reliese\Configuration\DataAttributeGeneratorConfiguration;
+use Reliese\Configuration\DatabaseAnalyserConfiguration;
+use Reliese\Configuration\DatabaseBlueprintConfiguration;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
 use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
 use Reliese\Configuration\DataTransportCollectionGeneratorConfiguration;
+use Reliese\Configuration\ModelGeneratorConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +35,7 @@ return [
         | section defines which database connection will be analysed.
         |
         */
-        'DatabaseAnalyserConfiguration' => [
+        DatabaseAnalyserConfiguration::class => [
             /*
             |--------------------------------------------------------------------------
             | Database Connection Name
@@ -48,7 +51,7 @@ return [
 
 
         // region Blueprint Configuration
-        'DatabaseBlueprintConfiguration' => [
+        DatabaseBlueprintConfiguration::class => [
             /*
             |--------------------------------------------------------------------------
             | Database Blueprint Filters
@@ -111,7 +114,7 @@ return [
         // endregion Blueprint Configuration
 
         // region Model Generator Config
-        'ModelGeneratorConfiguration' => [
+        ModelGeneratorConfiguration::class => [
 
             /*
             |--------------------------------------------------------------------------

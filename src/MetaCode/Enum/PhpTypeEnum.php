@@ -73,7 +73,7 @@ class PhpTypeEnum
      */
     private bool $isNullable = false;
 
-    private function __construct($phpTypeId, $isNullable = false)
+    private function __construct($phpTypeId, $isNullable)
     {
         $this->phpTypeId = $phpTypeId;
         $this->isNullable = $isNullable;
@@ -195,7 +195,7 @@ class PhpTypeEnum
         if (static::$stringTypeInstance) {
             return static::$stringTypeInstance;
         }
-        return static::$stringTypeInstance = new static(static::STRING_TYPE_ID);
+        return static::$stringTypeInstance = new static(static::STRING_TYPE_ID, false);
     }
 
     public static function nullableStringType(): PhpTypeEnum
@@ -211,7 +211,7 @@ class PhpTypeEnum
         if (static::$intTypeInstance) {
             return static::$intTypeInstance;
         }
-        return static::$intTypeInstance = new static(static::INT_TYPE_ID);
+        return static::$intTypeInstance = new static(static::INT_TYPE_ID, false);
     }
 
     public static function nullableIntType(): PhpTypeEnum
@@ -219,7 +219,7 @@ class PhpTypeEnum
         if (static::$nullableIntTypeInstance) {
             return static::$nullableIntTypeInstance;
         }
-        return static::$nullableIntTypeInstance = new static(static::NULLABLE_INT_TYPE_ID);
+        return static::$nullableIntTypeInstance = new static(static::NULLABLE_INT_TYPE_ID, true);
     }
 
     public static function floatType(): PhpTypeEnum
@@ -227,7 +227,7 @@ class PhpTypeEnum
         if (static::$floatTypeInstance) {
             return static::$floatTypeInstance;
         }
-        return static::$floatTypeInstance = new static(static::FLOAT_TYPE_ID);
+        return static::$floatTypeInstance = new static(static::FLOAT_TYPE_ID, false);
     }
 
     public static function nullableFloatType(): PhpTypeEnum
@@ -235,7 +235,7 @@ class PhpTypeEnum
         if (static::$nullableFloatTypeInstance) {
             return static::$nullableFloatTypeInstance;
         }
-        return static::$nullableFloatTypeInstance = new static(static::NULLABLE_FLOAT_TYPE_ID);
+        return static::$nullableFloatTypeInstance = new static(static::NULLABLE_FLOAT_TYPE_ID, true);
     }
 
     public static function boolType(): PhpTypeEnum
@@ -243,7 +243,7 @@ class PhpTypeEnum
         if (static::$boolTypeInstance) {
             return static::$boolTypeInstance;
         }
-        return static::$boolTypeInstance = new static(static::BOOL_TYPE_ID);
+        return static::$boolTypeInstance = new static(static::BOOL_TYPE_ID, false);
     }
 
     public static function nullableBoolType(): PhpTypeEnum
@@ -251,7 +251,7 @@ class PhpTypeEnum
         if (static::$nullableBoolTypeInstance) {
             return static::$nullableBoolTypeInstance;
         }
-        return static::$nullableBoolTypeInstance = new static(static::NULLABLE_BOOL_TYPE_ID);
+        return static::$nullableBoolTypeInstance = new static(static::NULLABLE_BOOL_TYPE_ID, true);
     }
 
     public static function arrayType(string $containedTypeName): PhpTypeEnum
@@ -259,7 +259,7 @@ class PhpTypeEnum
         if (\array_key_exists($containedTypeName, static::$arrayTypeInstances)) {
             return static::$arrayTypeInstances[$containedTypeName];
         }
-        return static::$arrayTypeInstances[$containedTypeName] = (new static(static::ARRAY_TYPE_ID))
+        return static::$arrayTypeInstances[$containedTypeName] = (new static(static::ARRAY_TYPE_ID, false))
             ->setContainedTypeName($containedTypeName);
     }
 
@@ -268,7 +268,7 @@ class PhpTypeEnum
         if (\array_key_exists($containedTypeName, static::$nullableArrayTypeInstances)) {
             return static::$nullableArrayTypeInstances[$containedTypeName];
         }
-        return static::$nullableArrayTypeInstances[$containedTypeName] = (new static(static::NULLABLE_ARRAY_TYPE_ID))
+        return static::$nullableArrayTypeInstances[$containedTypeName] = (new static(static::NULLABLE_ARRAY_TYPE_ID, true))
             ->setContainedTypeName($containedTypeName);
     }
 
@@ -278,7 +278,7 @@ class PhpTypeEnum
             return static::$objectTypeInstance[$fullyQualifiedClassNameOfObjectType];
         }
         return static::$objectTypeInstance[$fullyQualifiedClassNameOfObjectType]
-            = (new static(static::OBJECT_TYPE_ID))->setObjectClassType($fullyQualifiedClassNameOfObjectType);
+            = (new static(static::OBJECT_TYPE_ID, false))->setObjectClassType($fullyQualifiedClassNameOfObjectType);
     }
 
     public static function nullableObjectOfType(string $fullyQualifiedClassNameOfObjectType): PhpTypeEnum
@@ -287,7 +287,7 @@ class PhpTypeEnum
             return static::$nullableObjectTypeInstance[$fullyQualifiedClassNameOfObjectType];
         }
         return static::$nullableObjectTypeInstance[$fullyQualifiedClassNameOfObjectType]
-            = (new static(static::NULLABLE_OBJECT_TYPE_ID))->setObjectClassType($fullyQualifiedClassNameOfObjectType);
+            = (new static(static::NULLABLE_OBJECT_TYPE_ID, true))->setObjectClassType($fullyQualifiedClassNameOfObjectType);
     }
 
     public static function staticTypeEnum(): PhpTypeEnum
@@ -295,7 +295,7 @@ class PhpTypeEnum
         if (static::$staticTypeInstance) {
             return static::$staticTypeInstance;
         }
-        return static::$staticTypeInstance = new static(static::STATIC_TYPE_ID);
+        return static::$staticTypeInstance = new static(static::STATIC_TYPE_ID, false);
     }
 
     public static function nullableStaticTypeEnum(): PhpTypeEnum
@@ -303,7 +303,7 @@ class PhpTypeEnum
         if (static::$nullableStaticTypeInstance) {
             return static::$nullableStaticTypeInstance;
         }
-        return static::$nullableStaticTypeInstance = new static(static::NULLABLE_STATIC_TYPE_ID);
+        return static::$nullableStaticTypeInstance = new static(static::NULLABLE_STATIC_TYPE_ID, true);
     }
 
     public function toDeclarationType() : string

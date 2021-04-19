@@ -37,8 +37,8 @@ class ModelDataMapGeneratorConfiguration
 
         $this->path = $configuration['Path'];
         $this->namespace = $configuration['Namespace'];
-        $this->classSuffix = $configuration['ClassSuffix'];
-        $this->parentClassPrefix = $configuration['ParentClassPrefix'];
+        $this->classSuffix = $configuration['ClassSuffix'] ?? '';
+        $this->parentClassPrefix = $configuration['ParentClassPrefix'] ?? '';
     }
 
     /**

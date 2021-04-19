@@ -86,7 +86,9 @@ class DataTransportGenerator
                 $columnBlueprint->getMaximumCharacters(),
                 $columnBlueprint->getNumericPrecision(),
                 $columnBlueprint->getNumericScale(),
-                $columnBlueprint->getIsNullable()
+                // This value must always be true in order to allow for partial DTOs.
+                // Otherwise and error is raised when attempting to read a property that has not been assigned a value
+                true //$columnBlueprint->getIsNullable()
             );
 
             $traitFullyQualifiedName = $this->dataAttributeGenerator->getFullyQualifiedTraitName($tableBlueprint,

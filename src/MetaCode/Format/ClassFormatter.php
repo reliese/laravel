@@ -205,6 +205,7 @@ class ClassFormatter
                 . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
                 . ' $'
                 . $property->getVariableName()
+                . ($property->getPhpTypeEnum()->isNullable() ? ' = null' : '')
                 . ';';
     }
 
