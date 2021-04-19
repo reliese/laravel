@@ -41,7 +41,7 @@ class DatabaseBlueprintConfiguration
 
     private function parseAdditionalRelationships(array &$configurationValues): void
     {
-        Log::warning('AdditionalRelationships parsing is incomplete');
+        // TODO: AdditionalRelationships parsing is incomplete
     }
 
     private function parseFilters(array &$configurationValues) : SchemaFilter

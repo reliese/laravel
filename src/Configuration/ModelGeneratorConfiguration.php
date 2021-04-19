@@ -28,7 +28,12 @@ class ModelGeneratorConfiguration
     private string $path;
 
     /**
-     * DataTransportGeneratorConfiguration constructor.
+     * @var string
+     */
+    private string $parent;
+
+    /**
+     * ModelGeneratorConfiguration constructor.
      *
      * @param array $configuration
      */
@@ -38,12 +43,13 @@ class ModelGeneratorConfiguration
         $this->namespace = $configuration['Namespace'];
         $this->classSuffix = $configuration['ClassSuffix'];
         $this->parentClassPrefix = $configuration['ParentClassPrefix'];
+        $this->parent = $configuration['Parent'];
     }
 
     /**
      * @return mixed
      */
-    public function getClassSuffix(): mixed
+    public function getClassSuffix(): string
     {
         return $this->classSuffix;
     }
@@ -70,5 +76,13 @@ class ModelGeneratorConfiguration
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParent(): string
+    {
+        return $this->parent;
     }
 }
