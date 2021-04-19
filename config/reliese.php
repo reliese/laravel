@@ -1,5 +1,6 @@
 <?php
 use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAnalyser;
+use Reliese\Configuration\DataAccessGeneratorConfiguration;
 use Reliese\Configuration\DataAttributeGeneratorConfiguration;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
 use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
@@ -81,14 +82,14 @@ return [
             'Filters' => [
                 'IncludeByDefault' => true,
                 'Except' => [
-                    // except everything in schema
+                    // except everything in schemas named...
                     ['schemas' => ['information_schema', 'performance_schema', 'mysql']],
                     // except audit.log_.* tables
-                    ['schemas' => ['audit'], 'tables' => ['/^log_.*$/']],
+                    //['schemas' => ['audit'], 'tables' => ['/^log_.*$/']],
                     // except any table that ends in migrations or matches 'phinx' on all schemas
                     ['schemas' => [$all], 'tables' => ['/^.*migrations$/', 'phinx']],
                     // except soft delete columns on all tables for all schemas
-                    ['schemas' => [$all], 'tables' => [$all], 'columns' => ['deleted_on']]
+                    //['schemas' => [$all], 'tables' => [$all], 'columns' => ['deleted_on']]
                 ],
             ],
             /*
@@ -529,6 +530,16 @@ return [
         ],
         // endregion Model Generator Config
 
+        // region Data Access Generator Config
+        DataAccessGeneratorConfiguration::class => [
+            'Path' => app_path().'/DataAccess/PrimaryDatabase',
+            'Namespace' => 'app\DataAccess\PrimaryDatabase',
+            //'ClassPrefix' => '',
+            'ClassSuffix' => 'DataAccess',
+            'ParentClassPrefix' => 'Abstract',
+        ],
+        // endregion Data Access Generator Config
+
         // region Data Attribute Generator Config
         DataAttributeGeneratorConfiguration::class => [
             'Path' => app_path().'/DataAttribute/PrimaryDatabase',
@@ -538,6 +549,7 @@ return [
             'ParentClassPrefix' => 'Abstract',
         ],
         // endregion Data Attribute Generator Config
+
         // region Data Transport Generator Config
         DataTransportObjectGeneratorConfiguration::class => [
             'Path' => app_path().'/DataTransport/Objects',
@@ -546,6 +558,7 @@ return [
             'ParentClassPrefix' => 'Abstract',
         ],
         // endregion Data Transport Generator Config
+
         // region Data Transport Collection Generator Config
         DataTransportCollectionGeneratorConfiguration::class => [
             'Path' => app_path().'/DataTransport/Collections',
@@ -554,6 +567,7 @@ return [
             'ParentClassPrefix' => 'Abstract',
         ],
         // endregion Data Transport Collection Generator Config
+
         // region Data Map Generator Config
         ModelDataMapGeneratorConfiguration::class => [
             'Path' => app_path().'/DataMaps/PrimaryDatabase',

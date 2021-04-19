@@ -38,6 +38,11 @@ class RelieseConfiguration
     private string $configurationProfileName;
 
     /**
+     * @var DataAccessGeneratorConfiguration
+     */
+    private DataAccessGeneratorConfiguration $dataAccessGeneratorConfiguration;
+
+    /**
      * @var DataAttributeGeneratorConfiguration
      */
     private DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration;
@@ -47,6 +52,7 @@ class RelieseConfiguration
      *
      * @param string $configurationProfileName
      * @param ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration
+     * @param DataAccessGeneratorConfiguration $dataAccessGeneratorConfiguration
      * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
      * @param DatabaseAnalyserConfiguration $databaseAnalyserConfiguration
      * @param DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration
@@ -55,6 +61,7 @@ class RelieseConfiguration
      */
     public function __construct(string $configurationProfileName,
         ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration,
+        DataAccessGeneratorConfiguration $dataAccessGeneratorConfiguration,
         DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration,
         DatabaseAnalyserConfiguration $databaseAnalyserConfiguration,
         DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration,
@@ -63,6 +70,7 @@ class RelieseConfiguration
     {
         $this->configurationProfileName = $configurationProfileName;
         $this->modelDataMapGeneratorConfiguration = $modelDataMapGeneratorConfiguration;
+        $this->dataAccessGeneratorConfiguration = $dataAccessGeneratorConfiguration;
         $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
         $this->databaseAnalyserConfiguration = $databaseAnalyserConfiguration;
         $this->databaseBlueprintConfiguration = $databaseBlueprintConfiguration;
@@ -76,6 +84,11 @@ class RelieseConfiguration
     public function getConfigurationProfileName(): string
     {
         return $this->configurationProfileName;
+    }
+
+    public function getDataAccessGeneratorConfiguration()
+    {
+        return $this->dataAccessGeneratorConfiguration;
     }
 
     /**
