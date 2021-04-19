@@ -9,6 +9,7 @@ use Reliese\Analyser\AnalyserFactory;
 use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
+use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
 /**
  * Class DataTransportGenerateCommand
@@ -95,7 +96,8 @@ class DataTransportGenerateCommand extends Command
          * Generate class files
          */
         $dataTransportGenerator = new DataTransportGenerator(
-            $relieseConfiguration->getDataTransportGeneratorConfiguration()
+            $relieseConfiguration->getDataTransportGeneratorConfiguration(),
+            new DataAttributeGenerator($relieseConfiguration->getDataAttributeGeneratorConfiguration())
         );
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);

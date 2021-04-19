@@ -5,9 +5,11 @@ namespace Reliese\Generator\DataTransport;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
+use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
+use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use const DIRECTORY_SEPARATOR;
@@ -17,6 +19,11 @@ use const DIRECTORY_SEPARATOR;
  */
 class DataTransportGenerator
 {
+    /**
+     * @var DataAttributeGenerator
+     */
+    private DataAttributeGenerator $dataAttributeGenerator;
+
     /**
      * @var DataTransportObjectGeneratorConfiguration
      */
@@ -36,15 +43,18 @@ class DataTransportGenerator
      * DataTransportGenerator constructor.
      *
      * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
+     * @param DataAttributeGenerator $dataAttributeGenerator
      */
     public function __construct(
-        DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
+        DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration,
+        DataAttributeGenerator $dataAttributeGenerator
     ) {
         $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */
         $this->dataTypeMap = new MySqlDataTypeMap();
+        $this->dataAttributeGenerator = $dataAttributeGenerator;
     }
 
     /**
@@ -79,12 +89,31 @@ class DataTransportGenerator
                 $columnBlueprint->getIsNullable()
             );
 
-            $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
-                ->withSetter()
-                ->withGetter()
-            ;
+            $traitFullyQualifiedName = $this->dataAttributeGenerator->getFullyQualifiedTraitName($tableBlueprint,
+                $columnBlueprint
+            );
 
-            $dtoAbstractClassDefinition->addProperty($columnClassProperty);
+            echo "looking for: $traitFullyQualifiedName\n";
+
+            if (\class_exists($traitFullyQualifiedName)) {
+                /*
+                 * If a DataAttribute trait has been defined for this table and column, then use it here
+                 */
+                $classTraitDefinition =  new ClassTraitDefinition(
+                    $this->dataAttributeGenerator->getTraitName($tableBlueprint, $columnBlueprint),
+                    $this->dataAttributeGenerator->getTraitNamespace($tableBlueprint, $columnBlueprint))
+                ;
+                $dtoAbstractClassDefinition->addTrait($classTraitDefinition);
+            } else {
+                /*
+                 * Use a property defined directly on the class
+                 */
+                $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))->withSetter()
+                                                                                                 ->withGetter()
+                ;
+
+                $dtoAbstractClassDefinition->addProperty($columnClassProperty);
+            }
         }
 
         /*

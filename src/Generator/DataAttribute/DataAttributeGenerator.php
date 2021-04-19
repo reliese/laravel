@@ -57,11 +57,6 @@ class DataAttributeGenerator
     {
         foreach ($tableBlueprint->getColumnBlueprints() as $columnBlueprint) {
 
-            if ($this->isExcluded($tableBlueprint, $columnBlueprint)) {
-                Log::warning("Skipping column: " . $tableBlueprint->getName() . '.' . $columnBlueprint->getColumnName());
-                continue;
-            }
-
             $traitName = $this->getTraitName($tableBlueprint, $columnBlueprint);
 
             $namespace = $this->getTraitNamespace($tableBlueprint, $columnBlueprint);
@@ -129,20 +124,6 @@ class DataAttributeGenerator
     }
 
     /**
-     * @param TableBlueprint $tableBlueprint
-     * @param ColumnBlueprint $columnBlueprint
-     *
-     * @return bool
-     */
-    private function isExcluded(TableBlueprint $tableBlueprint, ColumnBlueprint $columnBlueprint)
-    {
-        if ('id' === $columnBlueprint->getColumnName()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * @param TraitDefinition $traitDefinition
      */
     private function writeTraitFile(
@@ -155,7 +136,9 @@ class DataAttributeGenerator
 //        echo "\n---Trait---\n$traitPhpCode\n\n";
 
         $traitDirectory = $this->dataAttributeGeneratorConfiguration->getPath();
-//        echo "\n---Trait Path---\n$traitDirectory\n\n";
+        $namespaceParts = \explode('\\', $traitDefinition->getNamespace());
+        $traitDirectory .= '/'.\array_pop($namespaceParts);
+        echo "\n---Trait Path---\n$traitDirectory\n\n";
 
         if (!is_dir($traitDirectory)) {
             \mkdir($traitDirectory, 0755, true);
