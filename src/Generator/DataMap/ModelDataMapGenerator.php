@@ -5,15 +5,12 @@ namespace Reliese\Generator\DataMap;
 use Illuminate\Support\Str;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DataTransportGeneratorConfiguration;
 use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
-use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
 use Reliese\Generator\Model\ModelGenerator;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
-use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\FunctionParameterDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
@@ -255,10 +252,10 @@ class ModelDataMapGenerator
         $classFolder = $this->modelDataMapGeneratorConfiguration->getPath();
         $abstractClassFolder = $classFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($classFolder)) {
-            \mkdir($classFolder, 0777, true);
+            \mkdir($classFolder, 0755, true);
         }
         if (!is_dir($abstractClassFolder)) {
-            \mkdir($abstractClassFolder, 0777, true);
+            \mkdir($abstractClassFolder, 0755, true);
         }
 
         $classFilePath = $classFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';

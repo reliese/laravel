@@ -3,9 +3,9 @@
 namespace Reliese\Configuration;
 
 /**
- * Class DataTransportGeneratorConfiguration
+ * Class DataTransportCollectionGeneratorConfiguration
  */
-class DataTransportGeneratorConfiguration
+class DataTransportCollectionGeneratorConfiguration
 {
     /**
      * @var string
@@ -28,7 +28,7 @@ class DataTransportGeneratorConfiguration
     private string $path;
 
     /**
-     * DataTransportGeneratorConfiguration constructor.
+     * DataTransportObjectGeneratorConfiguration constructor.
      *
      * @param array $configuration
      */

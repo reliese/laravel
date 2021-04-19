@@ -3,24 +3,24 @@
 namespace Reliese\Configuration;
 
 /**
- * Class ModelGeneratorConfiguration
+ * Class DataAttributeGeneratorConfiguration
  */
-class ModelGeneratorConfiguration
+class DataAttributeGeneratorConfiguration
 {
+    /**
+     * @var mixed
+     */
+    private $traitPrefix;
+
     /**
      * @var string
      */
-    private string $classSuffix;
+    private string $traitSuffix;
 
     /**
      * @var string
      */
     private string $namespace;
-
-    /**
-     * @var string
-     */
-    private string $parentClassPrefix;
 
     /**
      * @var string
@@ -36,16 +36,24 @@ class ModelGeneratorConfiguration
     {
         $this->path = $configuration['Path'];
         $this->namespace = $configuration['Namespace'];
-        $this->classSuffix = $configuration['ClassSuffix'];
-        $this->parentClassPrefix = $configuration['ParentClassPrefix'];
+        $this->traitPrefix = $configuration['TraitPrefix'] ?? "";
+        $this->traitSuffix = $configuration['TraitSuffix'] ?? "";
     }
 
     /**
      * @return mixed
      */
-    public function getClassSuffix(): mixed
+    public function getTraitPrefix(): mixed
     {
-        return $this->classSuffix;
+        return $this->traitPrefix;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTraitSuffix(): mixed
+    {
+        return $this->traitSuffix;
     }
 
     /**
@@ -54,14 +62,6 @@ class ModelGeneratorConfiguration
     public function getNamespace(): string
     {
         return $this->namespace;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getParentClassPrefix(): mixed
-    {
-        return $this->parentClassPrefix;
     }
 
     /**

@@ -2,11 +2,9 @@
 
 namespace Reliese\Generator\DataTransport;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DataTransportGeneratorConfiguration;
+use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
@@ -20,9 +18,9 @@ use const DIRECTORY_SEPARATOR;
 class DataTransportGenerator
 {
     /**
-     * @var DataTransportGeneratorConfiguration
+     * @var DataTransportObjectGeneratorConfiguration
      */
-    private DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration;
+    private DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration;
 
     /**
      * @var MySqlDataTypeMap
@@ -37,10 +35,10 @@ class DataTransportGenerator
     /**
      * DataTransportGenerator constructor.
      *
-     * @param DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
+     * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
      */
     public function __construct(
-        DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
+        DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
     ) {
         $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
         /*
@@ -148,10 +146,10 @@ class DataTransportGenerator
         $dtoClassFolder = $this->dataTransportGeneratorConfiguration->getPath();
         $abstractDtoClassFolder = $dtoClassFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($dtoClassFolder)) {
-            \mkdir($dtoClassFolder, 0777, true);
+            \mkdir($dtoClassFolder, 0755, true);
         }
         if (!is_dir($abstractDtoClassFolder)) {
-            \mkdir($abstractDtoClassFolder, 0777, true);
+            \mkdir($abstractDtoClassFolder, 0755, true);
         }
 
         $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';

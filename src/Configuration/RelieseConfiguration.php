@@ -13,9 +13,9 @@ class RelieseConfiguration
     protected ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration;
 
     /**
-     * @var DataTransportGeneratorConfiguration
+     * @var DataTransportObjectGeneratorConfiguration
      */
-    protected DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration;
+    protected DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration;
 
     /**
      * @var DatabaseAnalyserConfiguration
@@ -38,19 +38,26 @@ class RelieseConfiguration
     private string $configurationProfileName;
 
     /**
+     * @var DataAttributeGeneratorConfiguration
+     */
+    private DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration;
+
+    /**
      * RelieseConfiguration constructor.
      *
      * @param string $configurationProfileName
      * @param ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration
-     * @param DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
+     * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
      * @param DatabaseAnalyserConfiguration $databaseAnalyserConfiguration
+     * @param DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration
      * @param DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
      * @param ModelGeneratorConfiguration $modelGeneratorConfiguration
      */
     public function __construct(string $configurationProfileName,
         ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration,
-        DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration,
+        DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration,
         DatabaseAnalyserConfiguration $databaseAnalyserConfiguration,
+        DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration,
         DatabaseBlueprintConfiguration $databaseBlueprintConfiguration,
         ModelGeneratorConfiguration $modelGeneratorConfiguration,)
     {
@@ -60,6 +67,7 @@ class RelieseConfiguration
         $this->databaseAnalyserConfiguration = $databaseAnalyserConfiguration;
         $this->databaseBlueprintConfiguration = $databaseBlueprintConfiguration;
         $this->modelGeneratorConfiguration = $modelGeneratorConfiguration;
+        $this->dataAttributeGeneratorConfiguration = $dataAttributeGeneratorConfiguration;
     }
 
     /**
@@ -71,6 +79,14 @@ class RelieseConfiguration
     }
 
     /**
+     * @return DataAttributeGeneratorConfiguration
+     */
+    public function getDataAttributeGeneratorConfiguration(): DataAttributeGeneratorConfiguration
+    {
+        return $this->dataAttributeGeneratorConfiguration;
+    }
+
+    /**
      * @return ModelDataMapGeneratorConfiguration
      */
     public function getModelDataMapGeneratorConfiguration(): ModelDataMapGeneratorConfiguration
@@ -79,9 +95,9 @@ class RelieseConfiguration
     }
 
     /**
-     * @return DataTransportGeneratorConfiguration
+     * @return DataTransportObjectGeneratorConfiguration
      */
-    public function getDataTransportGeneratorConfiguration(): DataTransportGeneratorConfiguration
+    public function getDataTransportGeneratorConfiguration(): DataTransportObjectGeneratorConfiguration
     {
         return $this->dataTransportGeneratorConfiguration;
     }

@@ -3,9 +3,9 @@
 namespace Reliese\Configuration;
 
 /**
- * Class ModelGeneratorConfiguration
+ * Class DataTransportObjectGeneratorConfiguration
  */
-class ModelGeneratorConfiguration
+class DataTransportObjectGeneratorConfiguration
 {
     /**
      * @var string

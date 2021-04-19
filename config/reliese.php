@@ -1,6 +1,9 @@
 <?php
-use Reliese\Analyser\Doctrine\DoctrineDatabaseAnalyser;
 use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAnalyser;
+use Reliese\Configuration\DataAttributeGeneratorConfiguration;
+use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
+use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
+use Reliese\Configuration\DataTransportCollectionGeneratorConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -525,16 +528,34 @@ return [
             ],
         ],
         // endregion Model Generator Config
+
+        // region Data Attribute Generator Config
+        DataAttributeGeneratorConfiguration::class => [
+            'Path' => app_path().'/DataAttribute/PrimaryDatabase',
+            'Namespace' => 'App\DataAttribute\Objects',
+            'ClassPrefix' => 'With',
+            'ClassSuffix' => 'Trait',
+            'ParentClassPrefix' => 'Abstract',
+        ],
+        // endregion Data Attribute Generator Config
         // region Data Transport Generator Config
-        'DataTransportGeneratorConfiguration' => [
-            'Path' => app_path().'/DataTransportObjects',
-            'Namespace' => 'App\DataTransportObjects',
+        DataTransportObjectGeneratorConfiguration::class => [
+            'Path' => app_path().'/DataTransport/Objects',
+            'Namespace' => 'App\DataTransport\Objects',
             'ClassSuffix' => 'Dto',
             'ParentClassPrefix' => 'Abstract',
         ],
         // endregion Data Transport Generator Config
+        // region Data Transport Collection Generator Config
+        DataTransportCollectionGeneratorConfiguration::class => [
+            'Path' => app_path().'/DataTransport/Collections',
+            'Namespace' => 'App\DataTransport\Collections',
+            'ClassSuffix' => 'Dto',
+            'ParentClassPrefix' => 'Abstract',
+        ],
+        // endregion Data Transport Collection Generator Config
         // region Data Map Generator Config
-        'ModelDataMapGeneratorConfiguration' => [
+        ModelDataMapGeneratorConfiguration::class => [
             'Path' => app_path().'/DataMaps/PrimaryDatabase',
             'Namespace' => 'App\DataMaps\PrimaryDatabase',
             'ClassSuffix' => 'Map',

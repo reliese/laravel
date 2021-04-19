@@ -28,7 +28,7 @@ class ModelDataMapGeneratorConfiguration
     private string $path;
 
     /**
-     * DataTransportGeneratorConfiguration constructor.
+     * DataTransportObjectGeneratorConfiguration constructor.
      *
      * @param array $configuration
      */

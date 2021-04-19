@@ -47,29 +47,41 @@ class RelieseConfigurationFactory
         $configurationProfile = $this->relieseConfigurationProfiles[$configurationProfileName];
 
         return new RelieseConfiguration($configurationProfileName,
-            $this->getDataMapGeneratorConfiguration($configurationProfile),
-            $this->getDataTransportGeneratorConfiguration($configurationProfile),
+            $this->getModelDataMapGeneratorConfiguration($configurationProfile),
+            $this->getDataTransportObjectGeneratorConfiguration($configurationProfile),
             $this->getDatabaseAnalyserConfiguration($configurationProfile),
+            $this->getDataAttributeGeneratorConfiguration($configurationProfile),
             $this->getDatabaseBlueprintConfiguration($configurationProfile),
-            $this->getModelGeneratorConfiguration($configurationProfile));
+            $this->getModelGeneratorConfiguration($configurationProfile)
+        );
     }
 
-    protected function getDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
+    protected function getModelDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
     {
-        if (!\array_key_exists('ModelDataMapGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelDataMapGeneratorConfiguration\"");
+        if (!\array_key_exists(ModelDataMapGeneratorConfiguration::class, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"ModelDataMapGeneratorConfiguration::class\"");
         }
 
-        return new ModelDataMapGeneratorConfiguration($configurationProfile['ModelDataMapGeneratorConfiguration']);
+        return new ModelDataMapGeneratorConfiguration($configurationProfile[ModelDataMapGeneratorConfiguration::class]);
     }
 
-    protected function getDataTransportGeneratorConfiguration(array $configurationProfile): DataTransportGeneratorConfiguration
+    protected function getDataAttributeGeneratorConfiguration(array $configurationProfile): DataAttributeGeneratorConfiguration
     {
-        if (!\array_key_exists('DataTransportGeneratorConfiguration', $configurationProfile)) {
-            throw new InvalidArgumentException("Unable to locate configuration block for \"DataTransportGeneratorConfiguration\"");
+        if (!\array_key_exists(DataAttributeGeneratorConfiguration::class, $configurationProfile)) {
+            dd(\array_keys($configurationProfile));
+            throw new InvalidArgumentException("Unable to locate configuration block for \"DataAttributeGeneratorConfiguration::class\"");
         }
 
-        return new DataTransportGeneratorConfiguration($configurationProfile['DataTransportGeneratorConfiguration']);
+        return new DataAttributeGeneratorConfiguration($configurationProfile[DataAttributeGeneratorConfiguration::class]);
+    }
+
+    protected function getDataTransportObjectGeneratorConfiguration(array $configurationProfile): DataTransportObjectGeneratorConfiguration
+    {
+        if (!\array_key_exists(DataTransportObjectGeneratorConfiguration::class, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"DataTransportObjectGeneratorConfiguration::class\"");
+        }
+
+        return new DataTransportObjectGeneratorConfiguration($configurationProfile[DataTransportObjectGeneratorConfiguration::class]);
     }
 
     protected function getDatabaseAnalyserConfiguration(array $configurationProfile): DatabaseAnalyserConfiguration

@@ -18,6 +18,11 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
  */
 class ClassFormatter
 {
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return string
+     */
     public function format(ClassDefinition $classDefinition): string
     {
         $depth = 0;
@@ -44,11 +49,14 @@ class ClassFormatter
         }
 
         $lines[] = "/**\n";
-        $lines[] = ' * Class ' . $classDefinition->getName() . "\n";
+        $lines[] = ' * ' . Str::studly($classDefinition->getStructureType()) . ' ' . $classDefinition->getName() . "\n";
         $lines[] = " * \n";
         $lines[] = " * Created by Reliese\n";
+        foreach ($classDefinition->getClassComments() as $line) {
+            $lines[] = " * \n * ".$line."\n";
+        }
         $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getName();
+        $lines[] = Str::lower($classDefinition->getStructureType()) . ' ' . $classDefinition->getName();
 
         if (!empty($parent)) {
             $lines[] = ' extends ' . $parent;
