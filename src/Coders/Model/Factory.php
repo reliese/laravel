@@ -567,7 +567,7 @@ class Factory
             $body .= $this->class->field('hidden', $model->getHidden());
         }
 
-        if ($model->hasFillable()&& !$model->fillableInBaseFiles()) {
+        if ($model->hasFillable() && !$model->fillableInBaseFiles()) {
             $body .= $this->class->field('fillable', $model->getFillable(), ['before' => "\n"]);
         }
 
