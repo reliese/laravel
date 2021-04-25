@@ -7,7 +7,6 @@ use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
-use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
 
 /**
@@ -15,15 +14,12 @@ use Reliese\MetaCode\Tool\ClassNameTool;
  */
 class ModelGenerator
 {
+    private MySqlDataTypeMap $dataTypeMap;
+
     /**
      * @var ModelGeneratorConfiguration
      */
     private ModelGeneratorConfiguration $modelGeneratorConfiguration;
-
-    /**
-     * @var MySqlDataTypeMap
-     */
-    private MySqlDataTypeMap $dataTypeMap;
 
     /**
      * ModelGenerator constructor.
@@ -37,6 +33,41 @@ class ModelGenerator
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */
         $this->dataTypeMap = new MySqlDataTypeMap();
+    }
+
+    public function generateModelClass(TableBlueprint $tableBlueprint): ClassDefinition
+    {
+        $className = $this->getClassName($tableBlueprint);
+
+        $namespace = $this->getClassNamespace($tableBlueprint);
+
+        $modelClassDefinition = new ClassDefinition($className, $namespace);
+
+        $modelClassDefinition
+            ->setParentClass($this->getFullyQualifiedAbstractClass())
+            ->setDirectory($this->getClassDirectory())
+            ->setFilePath($this->getClassFilePath($tableBlueprint))
+        ;
+
+        return $modelClassDefinition;
+    }
+
+    public function generateModelAbstractClass(TableBlueprint $tableBlueprint): ClassDefinition
+    {
+        $abstractClassName = $this->getAbstractClassName($tableBlueprint);
+
+        $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
+
+        $modelAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
+
+        $modelAbstractClassDefinition
+            ->setParentClass($this->getFullyQualifiedAbstractClass())
+            ->setDirectory($this->getAbstractClassDirectory())
+            ->setFilePath($this->getAbstractClassFilePath($tableBlueprint))
+            ->addConstants($this->generateColumnConstants($tableBlueprint))
+        ;
+
+        return $modelAbstractClassDefinition;
     }
 
     /**
@@ -94,26 +125,22 @@ class ModelGenerator
         return $this->getClassNamespace($tableBlueprint) .'\\Generated';
     }
 
-    public function fromTableBlueprint(TableBlueprint $tableBlueprint)
+    /**
+     * @return string
+     */
+    private function getFullyQualifiedAbstractClass(): string
     {
+        return '\\' . $this->modelGeneratorConfiguration->getParent();
+    }
 
-        $className = $this->getClassName($tableBlueprint);
-
-        $abstractClassName = $this->getAbstractClassName($tableBlueprint);
-
-        $namespace = $this->getClassNamespace($tableBlueprint);
-
-        $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
-
-        $modelAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
-        $modelAbstractClassDefinition->setParentClass(
-            $this->getFullyQualifiedParentClass()
-        );
-
-        $modelClassDefinition = new ClassDefinition($className, $namespace);
-        $modelClassDefinition->setParentClass(
-            $modelAbstractClassDefinition->getFullyQualifiedName()
-        );
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return ClassConstantDefinition[]
+     */
+    private function generateColumnConstants(TableBlueprint $tableBlueprint): array
+    {
+        $constants = [];
 
         foreach ($tableBlueprint->getColumnBlueprints() as $columnBlueprint) {
             $phpTypeEnum = $this->dataTypeMap->getPhpTypeEnumFromDatabaseType(
@@ -133,53 +160,42 @@ class ModelGenerator
                 $propertyName
             );
 
-            $modelAbstractClassDefinition->addConstant($propertyAsConstant);
+            $constants[] = $propertyAsConstant;
         }
 
-        /*
-         * Write the Class Files
-         */
-        $this->writeClassFiles($modelClassDefinition, $modelAbstractClassDefinition);
+        return $constants;
     }
 
-    /**
-     * @param ClassDefinition $classDefinition
-     * @param ClassDefinition $abstractClassDefinition
-     */
-    private function writeClassFiles(
-        ClassDefinition $classDefinition,
-        ClassDefinition $abstractClassDefinition,
-    ): void
+    public function getClassDirectory(): string
     {
-        $classFormatter = new ClassFormatter();
-
-        $dtoClassPhpCode = $classFormatter->format($classDefinition);
-        $abstractDtoPhpCode = $classFormatter->format($abstractClassDefinition);
-
-        $modelClassFolder = $this->modelGeneratorConfiguration->getPath();
-        $abstractModelClassFolder = $modelClassFolder . DIRECTORY_SEPARATOR . 'Generated';
-        if (!is_dir($modelClassFolder)) {
-            mkdir($modelClassFolder, 0777, true);
-        }
-        if (!is_dir($abstractModelClassFolder)) {
-            mkdir($abstractModelClassFolder, 0777, true);
-        }
-
-        $dtoFilePath = $modelClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
-        $abstractDtoFilePath = $abstractModelClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getName() . '.php';
-
-        if (!file_exists($dtoFilePath)) {
-            file_put_contents($dtoFilePath, $dtoClassPhpCode);
-        }
-
-        file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
+        return $this->modelGeneratorConfiguration->getPath();
     }
 
     /**
      * @return string
      */
-    private function getFullyQualifiedParentClass(): string
+    private function getAbstractClassDirectory(): string
     {
-        return '\\' . $this->modelGeneratorConfiguration->getParent();
+        return $this->getClassDirectory() . DIRECTORY_SEPARATOR . 'Generated';
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return string
+     */
+    private function getClassFilePath(TableBlueprint $tableBlueprint): string
+    {
+        return $this->getClassDirectory() . DIRECTORY_SEPARATOR . $this->getClassName($tableBlueprint) . '.php';
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return string
+     */
+    private function getAbstractClassFilePath(TableBlueprint $tableBlueprint): string
+    {
+        return $this->getAbstractClassDirectory() . DIRECTORY_SEPARATOR . $this->getAbstractClassName($tableBlueprint) . '.php';
     }
 }

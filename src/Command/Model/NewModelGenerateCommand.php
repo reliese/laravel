@@ -102,7 +102,7 @@ class NewModelGenerateCommand extends Command
         if (!empty($table)) {
             // Generate only for the specified table
             $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
-            $modelGenerator->fromTableBlueprint($tableBlueprint);
+            $modelGenerator->generateModelClass($tableBlueprint);
             return;
         }
 
@@ -110,7 +110,7 @@ class NewModelGenerateCommand extends Command
          * Display the data that would be used to perform code generation
          */
         foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-            $modelGenerator->fromTableBlueprint($tableBlueprint);
+            $modelGenerator->generateModelClass($tableBlueprint);
         }
     }
 

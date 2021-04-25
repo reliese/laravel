@@ -2,10 +2,11 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Definition\CodeDefinitionInterface;
 /**
  * Class ClassDefinition
  */
-class ClassDefinition implements ImportableInterface
+class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 {
     private string $name;
 
@@ -18,6 +19,21 @@ class ClassDefinition implements ImportableInterface
      * @var string|null
      */
     private ?string $parentClassName = null;
+
+    private string $directory;
+
+    private string $filePath;
+
+    /**
+     * @param string $filePath
+     *
+     * @return ClassDefinition
+     */
+    public function setFilePath(string $filePath): ClassDefinition
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
 
     /**
      * @var ImportableInterface[]
@@ -73,14 +89,14 @@ class ClassDefinition implements ImportableInterface
         return $this->parentClassName;
     }
 
-    public function getName(): string
+    public function getClassName(): string
     {
         return $this->name;
     }
 
     public function getFullyQualifiedName(): string
     {
-        return '\\'.$this->getNamespace().'\\'.$this->getName();
+        return '\\'.$this->getNamespace().'\\'.$this->getClassName();
     }
 
     public function getNamespace(): string
@@ -168,6 +184,20 @@ class ClassDefinition implements ImportableInterface
     }
 
     /**
+     * @param ClassConstantDefinition[] $constants
+     *
+     * @return $this
+     */
+    public function addConstants(array $constants): static
+    {
+        foreach ($constants as $constant) {
+            $this->addConstant($constant);
+        }
+
+        return $this;
+    }
+
+    /**
      * @todo: Put this on a helper class
      *
      * @param ImportableInterface $importing
@@ -195,6 +225,33 @@ class ClassDefinition implements ImportableInterface
 
     public function getImportableName(): string
     {
-        return $this->getName();
+        return $this->getClassName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirectory(): string
+    {
+        return $this->directory;
+    }
+
+    /**
+     * @param string $directory
+     *
+     * @return ClassDefinition
+     */
+    public function setDirectory(string $directory): ClassDefinition
+    {
+        $this->directory = $directory;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        return $this->filePath;
     }
 }

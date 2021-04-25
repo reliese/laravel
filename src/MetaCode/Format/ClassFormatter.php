@@ -44,11 +44,11 @@ class ClassFormatter
         }
 
         $lines[] = "/**\n";
-        $lines[] = ' * Class ' . $classDefinition->getName() . "\n";
+        $lines[] = ' * Class ' . $classDefinition->getClassName() . "\n";
         $lines[] = " * \n";
         $lines[] = " * Created by Reliese\n";
         $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getName();
+        $lines[] = 'class ' . $classDefinition->getClassName();
 
         if (!empty($parent)) {
             $lines[] = ' extends ' . $parent;
