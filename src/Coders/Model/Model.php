@@ -13,6 +13,7 @@ use Illuminate\Support\Fluent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Reliese\Coders\Model\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Facades\Config;
 use Reliese\Coders\Model\Relations\ReferenceFactory;
 
 class Model
@@ -245,12 +246,31 @@ class Model
     }
 
     /**
+     * convert cast for postgress
+     */
+    protected function castConvertForPostgress($cast){
+        $convertedCast = $cast;
+        if(Config::get('database.default') === 'pgsql'){
+            $castMap = [
+                'character varying' => 'string',
+                'timestamp without time zone' => 'date'
+            ];
+            if(array_key_exists($cast,$castMap)){
+                $convertedCast = $castMap[$convertedCast];
+            }
+        }
+        return $convertedCast;
+    }
+
+    /**
      * @param \Illuminate\Support\Fluent $column
      */
     protected function parseColumn(Fluent $column)
     {
         // TODO: Check type cast is OK
         $cast = $column->type;
+
+        $cast = $this->castConvertForPostgress($cast);
 
         $propertyName = $this->usesPropertyConstants() ? 'self::'.strtoupper($column->name) : $column->name;
 
