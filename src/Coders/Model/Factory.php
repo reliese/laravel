@@ -324,7 +324,7 @@ class Factory
                  *
                  * @see https://github.com/reliese/laravel/issues/209
                  */
-                if ($usedClass === $model->getQualifiedUserClassName()) {
+                if ($model->usesBaseFiles() && $usedClass === $model->getQualifiedUserClassName()) {
                     continue;
                 }
 
