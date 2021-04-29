@@ -319,6 +319,15 @@ class Factory
                 $namespacePieces = explode('\\', $usedClass);
                 $className = array_pop($namespacePieces);
 
+                /**
+                 * Avoid breaking same-model relationships when using base classes
+                 *
+                 * @see https://github.com/reliese/laravel/issues/209
+                 */
+                if ($usedClass === $model->getQualifiedUserClassName()) {
+                    continue;
+                }
+
                 //When same class name but different namespace, skip it.
                 if (
                     $className == $model->getClassName() &&
