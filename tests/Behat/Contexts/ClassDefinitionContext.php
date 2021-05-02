@@ -7,31 +7,59 @@ use Tests\Test;
 
 class ClassDefinitionContext extends FeatureContext
 {
-    private ?ClassDefinition $classDefinition;
+    const ELOQUENT_PROPERTY_TABLE_NAME = 'table';
+    const ELOQUENT_PROPERTY_TABLE_VISIBILITY = 'protected';
+
+    private ?ClassDefinition $lastClassDefinition;
+    private ?ClassDefinition $lastAbstractClassDefinition;
 
     /**
      * @return ClassDefinition
      */
-    public function getClassDefinition(): ClassDefinition
+    public function getLastClassDefinition(): ClassDefinition
     {
         Test::assertInstanceOf(
             ClassDefinition::class,
-            $this->classDefinition,
+            $this->lastClassDefinition,
             // TODO: add message
         );
 
-        return $this->classDefinition;
+        return $this->lastClassDefinition;
     }
 
     /**
-     * @param ClassDefinition $classDefinition
+     * @return ClassDefinition
+     */
+    public function getLastAbstractClassDefinition(): ClassDefinition
+    {
+        Test::assertInstanceOf(
+            ClassDefinition::class,
+            $this->lastAbstractClassDefinition,
+            // TODO: add message
+        );
+
+        return $this->lastAbstractClassDefinition;
+    }
+
+    /**
+     * @param ClassDefinition $lastClassDefinition
      *
      * @return ClassDefinitionContext
      */
-    public function setClassDefinition(ClassDefinition $classDefinition): ClassDefinitionContext
+    public function setLastClassDefinition(ClassDefinition $lastClassDefinition): ClassDefinitionContext
     {
-        $this->classDefinition = $classDefinition;
+        $this->lastClassDefinition = $lastClassDefinition;
+        return $this;
+    }
 
+    /**
+     * @param ClassDefinition $lastAbstractClassDefinition
+     *
+     * @return ClassDefinitionContext
+     */
+    public function setLastAbstractClassDefinition(ClassDefinition $lastAbstractClassDefinition): ClassDefinitionContext
+    {
+        $this->lastAbstractClassDefinition = $lastAbstractClassDefinition;
         return $this;
     }
 
@@ -42,7 +70,65 @@ class ClassDefinitionContext extends FeatureContext
     {
         Test::assertEquals(
             $className,
-            $this->getClassDefinition()->getClassName()
+            $this->getLastClassDefinition()->getClassName()
+        );
+    }
+
+    /**
+     * @Then /^last AbstractClassDefinition has Eloquent table property with value "([^"]*)"$/
+     */
+    public function lastAbstractClassDefinitionHasEloquentTablePropertyWithValue($tableName)
+    {
+        $classDefinition = $this->getLastAbstractClassDefinition();
+
+        $hasProperty = $classDefinition->hasProperty(static::ELOQUENT_PROPERTY_TABLE_NAME);
+
+        Test::assertTrue(
+            $hasProperty,
+            'Eloquent Model property $table must be present'
+        );
+
+        $propertyDefinition = $classDefinition->getProperty(static::ELOQUENT_PROPERTY_TABLE_NAME);
+
+        Test::assertEquals(
+            static::ELOQUENT_PROPERTY_TABLE_NAME,
+            $propertyDefinition->getVariableName(),
+            'Eloquent Model property $table must have table as name'
+        );
+
+        Test::assertEquals(
+            $tableName,
+            $propertyDefinition->getValue(),
+            "Eloquent Model property \$table must have value equals to [$tableName]"
+        );
+    }
+
+    /**
+     * @Then /^last AbstractClassDefinition must not have Eloquent table property$/
+     */
+    public function lastAbstractClassDefinitionMustNotHaveEloquentTableProperty()
+    {
+        $classDefinition = $this->getLastAbstractClassDefinition();
+
+        $hasProperty = $classDefinition->hasProperty(static::ELOQUENT_PROPERTY_TABLE_NAME);
+
+        Test::assertFalse(
+            $hasProperty,
+            'Eloquent Model property $table must not be present'
+        );
+    }
+
+    /**
+     * @Then /^last AbstractClassDefinition extends from "([^"]*)"$/
+     */
+    public function lastAbstractClassDefinitionExtendsFrom($parentClassName)
+    {
+        $classDefinition = $this->getLastAbstractClassDefinition();
+
+        Test::assertEquals(
+            $parentClassName,
+            $classDefinition->getParentClassName(),
+            "Abstract Model should extend from [$parentClassName]"
         );
     }
 }

@@ -21,8 +21,9 @@ class SchemaBlueprintContext extends FeatureContext
     {
         Test::assertArrayHasKey(
             $schemaName,
-            $this->schemaBlueprints
-            // TODO: Add meaningful message
+            $this->schemaBlueprints,
+            "You tried to use a SchemaBlueprint [{$schemaName}] before registering it.".
+            "\nTry adding 'the DatabaseBlueprint has SchemaBlueprint \"{$schemaName}\"' before this statement."
         );
 
         return $this->schemaBlueprints[$schemaName];

@@ -24,7 +24,7 @@ class TableBlueprintContext extends FeatureContext
         Test::assertArrayHasKey(
             $tableName,
             $schemaBlueprint->getTableBlueprints()
-        // TODO: Add meaningful message
+            // TODO: Add meaningful message
         );
 
         return $schemaBlueprint->getTableBlueprint($tableName);
@@ -59,13 +59,14 @@ class TableBlueprintContext extends FeatureContext
     }
 
     /**
-     * @Given /^last table has identity ColumnBlueprint "([^"]*)"$/
+     * @Given /^last TableBlueprint has identity ColumnBlueprint "([^"]*)"$/
      */
     public function lastTableHasIdentityColumnBlueprint($columnName)
     {
+        $columnOwner = $this->getLastTableBlueprint();
 
         $idColumn = new ColumnBlueprint(
-            $this->getLastTableBlueprint(),
+            $columnOwner,
             $columnName,
             'int',
             false,
@@ -78,25 +79,26 @@ class TableBlueprintContext extends FeatureContext
 
 
         $primaryKey = new IndexBlueprint(
-            $this->getLastTableBlueprint(),
+            $columnOwner,
             'primary_key',
             [$idColumn],
             true,
             false
         );
 
-        $this->getLastTableBlueprint()->addColumnBlueprint($idColumn);
-        $this->getLastTableBlueprint()->addIndexBlueprint($primaryKey);
+        $columnOwner->addColumnBlueprint($idColumn);
+        $columnOwner->addIndexBlueprint($primaryKey);
     }
 
     /**
-     * @Given /^last table has string ColumnBlueprint "([^"]*)" of length "([^"]*)"$/
+     * @Given /^last TableBlueprint has string ColumnBlueprint "([^"]*)" of length "([^"]*)"$/
      */
     public function lastTableHasStringColumnBlueprintOfLength($columnName, $length)
     {
+        $columnOwner = $this->getLastTableBlueprint();
 
         $titleColumn = new ColumnBlueprint(
-            $this->getLastTableBlueprint(),
+            $columnOwner,
             $columnName,
             'string',
             false,
@@ -107,6 +109,6 @@ class TableBlueprintContext extends FeatureContext
             false
         );
 
-        $this->getLastTableBlueprint()->addColumnBlueprint($titleColumn);
+        $columnOwner->addColumnBlueprint($titleColumn);
     }
 }

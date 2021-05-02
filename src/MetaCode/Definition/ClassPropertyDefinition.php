@@ -18,11 +18,11 @@ class ClassPropertyDefinition
     {
         return $this->phpTypeEnum;
     }
+
     /**
      * @var VisibilityEnum|null
      */
     private ?VisibilityEnum $getterVisibilityEnum = null;
-
     /**
      * @var InstanceEnum|null
      */
@@ -47,6 +47,11 @@ class ClassPropertyDefinition
      * @var VisibilityEnum|null
      */
     private ?VisibilityEnum $visibilityEnum;
+
+    /**
+     * @var mixed|null
+     */
+    private mixed $value = null;
 
     /**
      * @var InstanceEnum|null
@@ -156,13 +161,46 @@ class ClassPropertyDefinition
         return $this->visibilityEnum;
     }
 
+    /**
+     * @return bool
+     */
     public function hasGetter(): bool
     {
         return !is_null($this->getterVisibilityEnum);
     }
 
+    /**
+     * @return bool
+     */
     public function hasSetter(): bool
     {
         return !is_null($this->setterVisibilityEnum);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasValue(): bool
+    {
+        return !empty($this->getValue());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue(): mixed
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function setValue(mixed $value): static
+    {
+        $this->value = $value;
+        return $this;
     }
 }

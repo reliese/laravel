@@ -43,19 +43,27 @@ class ModelGeneratorConfiguration
             return ;
         }
 
-        $this->path = $configuration['Path'];
-        $this->namespace = $configuration['Namespace'];
-        $this->classSuffix = $configuration['ClassSuffix'];
-        $this->parentClassPrefix = $configuration['ParentClassPrefix'];
-        $this->parent = $configuration['Parent'];
+        $this->setPath($configuration['Path']);
+        $this->setNamespace($configuration['Namespace']);
+        $this->setClassSuffix($configuration['ClassSuffix'] ?? '');
+        $this->setParentClassPrefix($configuration['ParentClassPrefix'] ?? '');
+        $this->setParent($configuration['Parent']);
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getClassSuffix(): string
     {
         return $this->classSuffix;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasClassSuffix(): bool
+    {
+        return !empty($this->getClassSuffix());
     }
 
     /**
@@ -67,9 +75,9 @@ class ModelGeneratorConfiguration
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getParentClassPrefix(): mixed
+    public function getParentClassPrefix(): string
     {
         return $this->parentClassPrefix;
     }
@@ -83,11 +91,33 @@ class ModelGeneratorConfiguration
     }
 
     /**
+     * @param string $path
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setPath(string $path): ModelGeneratorConfiguration
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getParent(): string
     {
         return $this->parent;
+    }
+
+    /**
+     * @param string $parent
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setParent(string $parent): ModelGeneratorConfiguration
+    {
+        $this->parent = trim($parent, '\\');
+        return $this;
     }
 
     /**
@@ -106,7 +136,7 @@ class ModelGeneratorConfiguration
      *
      * @return ModelGeneratorConfiguration
      */
-    public function setNamespace(mixed $namespace): ModelGeneratorConfiguration
+    public function setNamespace(string $namespace): ModelGeneratorConfiguration
     {
         $this->namespace = $namespace;
         return $this;
@@ -117,31 +147,9 @@ class ModelGeneratorConfiguration
      *
      * @return ModelGeneratorConfiguration
      */
-    public function setParentClassPrefix(mixed $parentClassPrefix): ModelGeneratorConfiguration
+    public function setParentClassPrefix(string $parentClassPrefix): ModelGeneratorConfiguration
     {
         $this->parentClassPrefix = $parentClassPrefix;
-        return $this;
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return ModelGeneratorConfiguration
-     */
-    public function setPath(mixed $path): ModelGeneratorConfiguration
-    {
-        $this->path = $path;
-        return $this;
-    }
-
-    /**
-     * @param string $parent
-     *
-     * @return ModelGeneratorConfiguration
-     */
-    public function setParent(mixed $parent): ModelGeneratorConfiguration
-    {
-        $this->parent = $parent;
         return $this;
     }
 }

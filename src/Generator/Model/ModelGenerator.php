@@ -7,6 +7,9 @@ use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
+use Reliese\MetaCode\Definition\ClassPropertyDefinition;
+use Reliese\MetaCode\Enum\PhpTypeEnum;
+use Reliese\MetaCode\Enum\VisibilityEnum;
 use Reliese\MetaCode\Tool\ClassNameTool;
 
 /**
@@ -65,6 +68,7 @@ class ModelGenerator
             ->setDirectory($this->getAbstractClassDirectory())
             ->setFilePath($this->getAbstractClassFilePath($tableBlueprint))
             ->addConstants($this->generateColumnConstants($tableBlueprint))
+            ->addProperties($this->generateProperties($tableBlueprint))
         ;
 
         return $modelAbstractClassDefinition;
@@ -197,5 +201,42 @@ class ModelGenerator
     private function getAbstractClassFilePath(TableBlueprint $tableBlueprint): string
     {
         return $this->getAbstractClassDirectory() . DIRECTORY_SEPARATOR . $this->getAbstractClassName($tableBlueprint) . '.php';
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return ClassPropertyDefinition[]
+     */
+    private function generateProperties(TableBlueprint $tableBlueprint): array
+    {
+        $properties = [];
+
+        if ($this->shouldAddTableProperty()) {
+            $properties[] = $this->generateTableProperty($tableBlueprint);
+        }
+
+        return $properties;
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldAddTableProperty(): bool
+    {
+        return $this->modelGeneratorConfiguration->hasClassSuffix();
+    }
+
+    private function generateTableProperty(TableBlueprint $tableBlueprint): ClassPropertyDefinition
+    {
+        $property = new ClassPropertyDefinition(
+            'table',
+            PhpTypeEnum::stringType(),
+            VisibilityEnum::protectedEnum()
+        );
+
+        $property->setValue($tableBlueprint->getName());
+
+        return $property;
     }
 }

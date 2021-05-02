@@ -36,8 +36,24 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     /**
      * @Given /^ModelGeneratorConfiguration directory is "([^"]*)"$/
      */
-    public function modelgeneratorconfigurationDirectoryIs($modelPath)
+    public function givenModelGeneratorConfigurationDirectoryIs($path)
     {
-        $this->getModelGeneratorConfiguration()->setPath($modelPath);
+        $this->getModelGeneratorConfiguration()->setPath($path);
+    }
+
+    /**
+     * @Given /^ModelGeneratorConfiguration class suffix is "([^"]*)"$/
+     */
+    public function givenModelGeneratorConfigurationClassSuffixIs($classSuffix)
+    {
+        $this->getModelGeneratorConfiguration()->setClassSuffix($classSuffix);
+    }
+
+    /**
+     * @Given /^ModelGeneratorConfiguration parent is "([^"]*)"$/
+     */
+    public function givenModelGeneratorConfigurationParentIs($parent)
+    {
+        $this->getModelGeneratorConfiguration()->setParent($parent);
     }
 }

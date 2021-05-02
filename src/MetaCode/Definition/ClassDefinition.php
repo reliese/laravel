@@ -2,13 +2,17 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Reliese\MetaCode\Definition\CodeDefinitionInterface;
+use RuntimeException;
+
 /**
  * Class ClassDefinition
  */
 class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 {
-    private string $name;
+    /**
+     * @var string
+     */
+    private string $className;
 
     /**
      * @var string
@@ -20,20 +24,15 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     private ?string $parentClassName = null;
 
+    /**
+     * @var string
+     */
     private string $directory;
 
-    private string $filePath;
-
     /**
-     * @param string $filePath
-     *
-     * @return ClassDefinition
+     * @var string
      */
-    public function setFilePath(string $filePath): ClassDefinition
-    {
-        $this->filePath = $filePath;
-        return $this;
-    }
+    private string $filePath;
 
     /**
      * @var ImportableInterface[]
@@ -60,52 +59,112 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     private array $methods = [];
 
+    /**
+     * ClassDefinition constructor.
+     *
+     * @param string $name
+     * @param string $namespace
+     */
     public function __construct(
         string $name,
         string $namespace
     ) {
-        $this->name = $name;
+        $this->className = $name;
         $this->namespace = trim($namespace, '\\');
     }
 
+    /**
+     * @param string $filePath
+     *
+     * @return ClassDefinition
+     */
+    public function setFilePath(string $filePath): ClassDefinition
+    {
+        $this->filePath = $filePath;
+        return $this;
+    }
+
+    /**
+     * @param ClassMethodDefinition $classMethodDefinition
+     */
     public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition)
     {
         $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
     }
 
+    /**
+     * @param string $fullyQualifiedClassName
+     *
+     * @return $this
+     */
     public function setParentClass(string $fullyQualifiedClassName): ClassDefinition
     {
         $this->parentClassName = $fullyQualifiedClassName;
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function hasParentClass(): bool
     {
         return !is_null($this->parentClassName);
     }
 
+    /**
+     * @return string
+     */
     public function getParentClassName() : string
     {
         return $this->parentClassName;
     }
 
+    /**
+     * @return string
+     */
     public function getClassName(): string
     {
-        return $this->name;
+        return $this->className;
     }
 
+    /**
+     * @return string
+     */
     public function getFullyQualifiedName(): string
     {
         return '\\'.$this->getNamespace().'\\'.$this->getClassName();
     }
 
+    /**
+     * @return string
+     */
     public function getNamespace(): string
     {
         return $this->namespace;
     }
 
-    public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition {
+    /**
+     * @param ClassPropertyDefinition $classPropertyDefinition
+     *
+     * @return $this
+     */
+    public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition
+    {
         $this->properties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
+        return $this;
+    }
+
+    /**
+     * @param ClassPropertyDefinition[] $classPropertyDefinitions
+     *
+     * @return $this
+     */
+    public function addProperties(array $classPropertyDefinitions): ClassDefinition
+    {
+        foreach ($classPropertyDefinitions as $classPropertyDefinition) {
+            $this->addProperty($classPropertyDefinition);
+        }
+
         return $this;
     }
 
@@ -115,6 +174,30 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function getProperties(): array
     {
         return $this->properties;
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return bool
+     */
+    public function hasProperty(string $propertyName): bool
+    {
+        return array_key_exists($propertyName, $this->getProperties());
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return ClassPropertyDefinition
+     */
+    public function getProperty(string $propertyName): ClassPropertyDefinition
+    {
+        if (!$this->hasProperty($propertyName)) {
+            throw new RuntimeException("Calling unregistered property [$propertyName] from [{$this->getClassName()}]");
+        }
+
+        return $this->getProperties()[$propertyName];
     }
 
     /**
@@ -139,6 +222,11 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this->constants;
     }
 
+    /**
+     * @param ClassTraitDefinition $trait
+     *
+     * @return $this
+     */
     public function addTrait(ClassTraitDefinition $trait): static
     {
         $this->traits[$trait->getName()] = $trait;
@@ -153,6 +241,11 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this->traits;
     }
 
+    /**
+     * @param ImportableInterface $import
+     *
+     * @return $this
+     */
     public function addImport(ImportableInterface $import): static
     {
         // We'll assume this class is already imported to shorten references to itself
@@ -164,6 +257,11 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this;
     }
 
+    /**
+     * @param ImportableInterface $import
+     *
+     * @return bool
+     */
     public function willCollideImport(ImportableInterface $import): bool
     {
         // When it's the same class name
@@ -218,11 +316,17 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this->imports;
     }
 
+    /**
+     * @return string
+     */
     public function getFullyQualifiedImportableName(): string
     {
         return trim($this->getFullyQualifiedName(), '\\');
     }
 
+    /**
+     * @return string
+     */
     public function getImportableName(): string
     {
         return $this->getClassName();

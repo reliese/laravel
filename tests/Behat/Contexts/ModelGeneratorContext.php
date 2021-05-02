@@ -32,7 +32,7 @@ class ModelGeneratorContext extends FeatureContext
     /**
      * @Then /^ModelGenerator class directory is "([^"]*)"$/
      */
-    public function modelgeneratorClassDirectoryIs($path)
+    public function thenModelGeneratorClassDirectoryIs($path)
     {
         Test::assertEquals($path, $this->getModelGenerator()->getClassDirectory());
     }
@@ -46,6 +46,12 @@ class ModelGeneratorContext extends FeatureContext
             $this->tableBlueprintContext->getLastTableBlueprint()
         );
 
-        $this->classDefinitionContext->setClassDefinition($modelClassDefinition);
+        $this->classDefinitionContext->setLastClassDefinition($modelClassDefinition);
+
+        $modelAbstractClassDefinition = $this->getModelGenerator()->generateModelAbstractClass(
+            $this->tableBlueprintContext->getLastTableBlueprint()
+        );
+
+        $this->classDefinitionContext->setLastAbstractClassDefinition($modelAbstractClassDefinition);
     }
 }

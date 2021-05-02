@@ -4,7 +4,7 @@ Feature: Check public methods from ModelGenerator
     Given a default ModelGeneratorConfiguration
     And a default DatabaseBlueprintConfiguration
     And a new DatabaseBlueprint
-    And the DatabaseBlueprint has SchemaBlueprint "a_schema"
+    And the DatabaseBlueprint has SchemaBlueprint "sample"
 
   Scenario: Test model generator class directory matches configuration
     Given ModelGeneratorConfiguration directory is "x"

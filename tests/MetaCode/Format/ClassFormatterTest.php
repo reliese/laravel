@@ -193,7 +193,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_one_parameter()
+    public function it_formats_a_class_with_one_property()
     {
         $expectedClassOutput =
 <<<PHP
@@ -228,7 +228,81 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_one_parameter_of_type_global_object()
+    public function it_formats_a_class_with_one_property_with_a_string_value()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private string \$aProperty = 'some value';
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::stringType());
+
+        $aProperty->setValue('some value');
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_property_with_a_integer_value()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private string \$aProperty = 56;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::stringType());
+
+        $aProperty->setValue(56);
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
+    public function it_formats_a_class_with_one_property_of_type_global_object()
     {
         $expectedClassOutput =
 <<<PHP
@@ -265,7 +339,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_one_parameter_of_type_nullable_global_object()
+    public function it_formats_a_class_with_one_property_of_type_nullable_global_object()
     {
         $expectedClassOutput =
 <<<PHP
@@ -302,7 +376,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_two_parameters_of_type_nullable_global_object()
+    public function it_formats_a_class_with_two_properties_of_type_nullable_global_object()
     {
         $expectedClassOutput =
 <<<PHP
@@ -342,7 +416,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_one_nullable_parameter()
+    public function it_formats_a_class_with_one_nullable_property()
     {
         $expectedClassOutput =
 <<<PHP
@@ -377,7 +451,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_one_parameter_and_import()
+    public function it_formats_a_class_with_one_property_and_import()
     {
         $expectedClassOutput =
 <<<PHP
@@ -414,7 +488,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_one_parameter_and_does_not_import_when_same_class()
+    public function it_formats_a_class_with_one_property_and_does_not_import_when_same_class()
     {
         $expectedClassOutput =
 <<<PHP
@@ -449,7 +523,7 @@ PHP;
     /**
      * @test
      */
-    public function it_formats_a_class_with_two_parameters()
+    public function it_formats_a_class_with_two_properties()
     {
         $expectedClassOutput =
 <<<PHP

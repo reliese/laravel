@@ -7,12 +7,12 @@ Feature: Eloquent Model Generator
     Given a default ModelGeneratorConfiguration
     And a default DatabaseBlueprintConfiguration
     And a new DatabaseBlueprint
-    And the DatabaseBlueprint has SchemaBlueprint "a_schema"
+    And the DatabaseBlueprint has SchemaBlueprint "sample"
 
   Scenario:
-    Given SchemaBlueprint "a_schema" has TableBlueprint "users"
-    And last table has identity ColumnBlueprint "id"
-    And last table has string ColumnBlueprint "title" of length "127"
+    Given SchemaBlueprint "sample" has TableBlueprint "users"
+    And last TableBlueprint has identity ColumnBlueprint "id"
+    And last TableBlueprint has string ColumnBlueprint "title" of length "127"
     And a ModelGenerator is created
     When a Model ClassDefinition is generated
     Then last ClassDefinition has class name "User"
