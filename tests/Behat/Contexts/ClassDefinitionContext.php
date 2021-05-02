@@ -75,6 +75,17 @@ class ClassDefinitionContext extends FeatureContext
     }
 
     /**
+     * @Then /^last ClassDefinition file path is "([^"]*)"$/
+     */
+    public function lastClassDefinitionFilePathIs($filePath)
+    {
+        Test::assertEquals(
+            $filePath,
+            $this->getLastClassDefinition()->getFilePath()
+        );
+    }
+
+    /**
      * @Then /^last AbstractClassDefinition has Eloquent table property with value "([^"]*)"$/
      */
     public function lastAbstractClassDefinitionHasEloquentTablePropertyWithValue($tableName)

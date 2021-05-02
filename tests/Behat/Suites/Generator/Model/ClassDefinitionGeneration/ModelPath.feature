@@ -1,23 +1,33 @@
-Feature: Model Class Parent
-  In order to work with base models
+Feature: Model Path
+  In order to place my models on a directory
   As a developer
-  I want to my models to inherit from an abstract model
+  I want to configure the output path
 
   Background:
     Given a default ModelGeneratorConfiguration
-    And ModelGeneratorConfiguration class suffix is "Model"
     And a default DatabaseBlueprintConfiguration
     And a new DatabaseBlueprint
     And the DatabaseBlueprint has SchemaBlueprint "sample"
 
-  Scenario Outline: abstract class extends from parent class
+  Scenario Outline: it generates models on given directory
     Given SchemaBlueprint "sample" has TableBlueprint "<table>"
-    And ModelGeneratorConfiguration parent is "<parentClassName>"
+    And ModelGeneratorConfiguration directory is "<directory>"
     And a ModelGenerator is created
     When a Model ClassDefinition is generated
-    Then last AbstractClassDefinition extends from "<parentClassName>"
+    Then last ClassDefinition file path is "<filePath>"
 
     Examples:
-      |  table  |   parentClassName  |
-      |  users  |     \UserModel     |
-      |  users  |   \UserEloquent    |
+      |  table  |     directory   |          filePath         |
+      |  users  | /opt/app/models | /opt/app/models/User.php |
+
+  Scenario Outline: it generates file path with suffix on given directory
+    Given SchemaBlueprint "sample" has TableBlueprint "<table>"
+    And ModelGeneratorConfiguration directory is "<directory>"
+    And ModelGeneratorConfiguration class suffix is "<suffix>"
+    And a ModelGenerator is created
+    When a Model ClassDefinition is generated
+    Then last ClassDefinition file path is "<filePath>"
+
+    Examples:
+      |  table  |  suffix  |     directory   |            filePath            |
+      |  users  |  Model  | /opt/app/models | /opt/app/models/UserModel.php |
