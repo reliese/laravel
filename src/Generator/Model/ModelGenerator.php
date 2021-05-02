@@ -227,6 +227,11 @@ class ModelGenerator
         return $this->modelGeneratorConfiguration->hasClassSuffix();
     }
 
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return ClassPropertyDefinition
+     */
     private function generateTableProperty(TableBlueprint $tableBlueprint): ClassPropertyDefinition
     {
         $property = new ClassPropertyDefinition(
