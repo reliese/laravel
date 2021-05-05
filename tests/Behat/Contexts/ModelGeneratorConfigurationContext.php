@@ -12,7 +12,7 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     /**
      * @Given /^a default ModelGeneratorConfiguration$/
      */
-    public function aDefaultModelGeneratorConfiguration()
+    public function givenDefaultModelGeneratorConfiguration()
     {
         $this->modelGeneratorConfiguration = (new ModelGeneratorConfiguration())
             ->setPath(__DIR__.DIRECTORY_SEPARATOR.'void')
@@ -42,11 +42,27 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     }
 
     /**
+     * @Given /^ModelGeneratorConfiguration namespace is "([^"]*)"$/
+     */
+    public function givenModelGeneratorConfigurationNamespaceIs($namespace)
+    {
+        $this->getModelGeneratorConfiguration()->setNamespace($namespace);
+    }
+
+    /**
      * @Given /^ModelGeneratorConfiguration class suffix is "([^"]*)"$/
      */
     public function givenModelGeneratorConfigurationClassSuffixIs($classSuffix)
     {
         $this->getModelGeneratorConfiguration()->setClassSuffix($classSuffix);
+    }
+
+    /**
+     * @Given /^ModelGeneratorConfiguration abstract class prefix is "([^"]*)"$/
+     */
+    public function givenModelGeneratorConfigurationParentClassPrefixIs($prefix)
+    {
+        $this->getModelGeneratorConfiguration()->setParentClassPrefix($prefix);
     }
 
     /**

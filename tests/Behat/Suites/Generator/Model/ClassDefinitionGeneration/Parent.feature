@@ -10,12 +10,12 @@ Feature: Model Class Parent
     And a new DatabaseBlueprint
     And the DatabaseBlueprint has SchemaBlueprint "sample"
 
-  Scenario Outline: abstract class extends from parent class
+  Scenario Outline: abstract model extends from parent class
     Given SchemaBlueprint "sample" has TableBlueprint "<table>"
     And ModelGeneratorConfiguration parent is "<parentClassName>"
     And a ModelGenerator is created
-    When a Model ClassDefinition is generated
-    Then last AbstractClassDefinition extends from "<parentClassName>"
+    When an Abstract Model ClassDefinition is generated
+    Then last Abstract Model ClassDefinition extends from "<parentClassName>"
 
     Examples:
       |  table  |   parentClassName  |

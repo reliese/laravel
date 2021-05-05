@@ -15,4 +15,4 @@ Feature: Eloquent Model Generator
     And last TableBlueprint has string ColumnBlueprint "title" of length "127"
     And a ModelGenerator is created
     When a Model ClassDefinition is generated
-    Then last ClassDefinition has class name "User"
+    Then last Model ClassDefinition has class name "User"

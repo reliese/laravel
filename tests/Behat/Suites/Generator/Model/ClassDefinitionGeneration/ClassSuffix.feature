@@ -9,13 +9,14 @@ Feature: Model Class Name Suffix
     And a new DatabaseBlueprint
     And the DatabaseBlueprint has SchemaBlueprint "sample"
 
-  Scenario Outline: it appends class name suffix
+  Scenario Outline: it generates models with suffix
     Given SchemaBlueprint "sample" has TableBlueprint "<table>"
     And ModelGeneratorConfiguration class suffix is "<suffix>"
     And a ModelGenerator is created
     When a Model ClassDefinition is generated
-    Then last ClassDefinition has class name "<className>"
-    And last AbstractClassDefinition has Eloquent table property with value "<table>"
+    And an Abstract Model ClassDefinition is generated
+    Then last Model ClassDefinition has class name "<className>"
+    And last Abstract Model ClassDefinition has Eloquent table property with value "<table>"
 
     Examples:
       |  table  |   suffix  |   className  |

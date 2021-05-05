@@ -17,6 +17,8 @@ use Reliese\MetaCode\Tool\ClassNameTool;
  */
 class ModelGenerator
 {
+    const PROPERTY_TABLE = 'table';
+
     private MySqlDataTypeMap $dataTypeMap;
 
     /**
@@ -235,7 +237,7 @@ class ModelGenerator
     private function generateTableProperty(TableBlueprint $tableBlueprint): ClassPropertyDefinition
     {
         $property = new ClassPropertyDefinition(
-            'table',
+            static::PROPERTY_TABLE,
             PhpTypeEnum::stringType(),
             VisibilityEnum::protectedEnum()
         );

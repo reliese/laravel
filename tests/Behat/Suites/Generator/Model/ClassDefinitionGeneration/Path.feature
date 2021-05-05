@@ -14,7 +14,7 @@ Feature: Model Path
     And ModelGeneratorConfiguration directory is "<directory>"
     And a ModelGenerator is created
     When a Model ClassDefinition is generated
-    Then last ClassDefinition file path is "<filePath>"
+    Then last Model ClassDefinition file path is "<filePath>"
 
     Examples:
       |  table  |     directory   |          filePath         |
@@ -26,7 +26,7 @@ Feature: Model Path
     And ModelGeneratorConfiguration class suffix is "<suffix>"
     And a ModelGenerator is created
     When a Model ClassDefinition is generated
-    Then last ClassDefinition file path is "<filePath>"
+    Then last Model ClassDefinition file path is "<filePath>"
 
     Examples:
       |  table  |  suffix  |     directory   |            filePath            |

@@ -2,14 +2,12 @@
 
 namespace Tests\Behat\Contexts;
 
+use Reliese\Generator\Model\ModelGenerator;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Tests\Test;
 
 class ClassDefinitionContext extends FeatureContext
 {
-    const ELOQUENT_PROPERTY_TABLE_NAME = 'table';
-    const ELOQUENT_PROPERTY_TABLE_VISIBILITY = 'protected';
-
     private ?ClassDefinition $lastClassDefinition;
     private ?ClassDefinition $lastAbstractClassDefinition;
 
@@ -66,7 +64,7 @@ class ClassDefinitionContext extends FeatureContext
     /**
      * @Then /^last ClassDefinition has class name "([^"]*)"$/
      */
-    public function lastClassDefinitionHasClassName($className)
+    public function thenLastClassDefinitionHasClassName($className)
     {
         Test::assertEquals(
             $className,
@@ -77,7 +75,7 @@ class ClassDefinitionContext extends FeatureContext
     /**
      * @Then /^last ClassDefinition file path is "([^"]*)"$/
      */
-    public function lastClassDefinitionFilePathIs($filePath)
+    public function thenLastClassDefinitionFilePathIs($filePath)
     {
         Test::assertEquals(
             $filePath,
@@ -86,60 +84,37 @@ class ClassDefinitionContext extends FeatureContext
     }
 
     /**
-     * @Then /^last AbstractClassDefinition has Eloquent table property with value "([^"]*)"$/
+     * @Then /^last ClassDefinition namespace is "([^"]*)"$/
      */
-    public function lastAbstractClassDefinitionHasEloquentTablePropertyWithValue($tableName)
+    public function thenLastClassDefinitionNamespaceIs($namespace)
+    {
+        Test::assertEquals(
+            $namespace,
+            $this->getLastClassDefinition()->getNamespace()
+        );
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return ClassPropertyDefinitionContext
+     */
+    public function getLastAbstractClassDefinitionPropertyDefinitionContext(string $propertyName): ClassPropertyDefinitionContext
     {
         $classDefinition = $this->getLastAbstractClassDefinition();
 
-        $hasProperty = $classDefinition->hasProperty(static::ELOQUENT_PROPERTY_TABLE_NAME);
+        $message = sprintf('Unable to find property [$%s] on class [%s]',
+            $propertyName,
+            $classDefinition->getFullyQualifiedName()
+        );
 
         Test::assertTrue(
-            $hasProperty,
-            'Eloquent Model property $table must be present'
+            $classDefinition->hasProperty($propertyName),
+            $message
         );
 
-        $propertyDefinition = $classDefinition->getProperty(static::ELOQUENT_PROPERTY_TABLE_NAME);
+        $classPropertyDefinition = $classDefinition->getProperty($propertyName);
 
-        Test::assertEquals(
-            static::ELOQUENT_PROPERTY_TABLE_NAME,
-            $propertyDefinition->getVariableName(),
-            'Eloquent Model property $table must have table as name'
-        );
-
-        Test::assertEquals(
-            $tableName,
-            $propertyDefinition->getValue(),
-            "Eloquent Model property \$table must have value equals to [$tableName]"
-        );
-    }
-
-    /**
-     * @Then /^last AbstractClassDefinition must not have Eloquent table property$/
-     */
-    public function lastAbstractClassDefinitionMustNotHaveEloquentTableProperty()
-    {
-        $classDefinition = $this->getLastAbstractClassDefinition();
-
-        $hasProperty = $classDefinition->hasProperty(static::ELOQUENT_PROPERTY_TABLE_NAME);
-
-        Test::assertFalse(
-            $hasProperty,
-            'Eloquent Model property $table must not be present'
-        );
-    }
-
-    /**
-     * @Then /^last AbstractClassDefinition extends from "([^"]*)"$/
-     */
-    public function lastAbstractClassDefinitionExtendsFrom($parentClassName)
-    {
-        $classDefinition = $this->getLastAbstractClassDefinition();
-
-        Test::assertEquals(
-            $parentClassName,
-            $classDefinition->getParentClassName(),
-            "Abstract Model should extend from [$parentClassName]"
-        );
+        return new ClassPropertyDefinitionContext($classDefinition, $classPropertyDefinition);
     }
 }

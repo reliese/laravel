@@ -1,4 +1,4 @@
-Feature: Model Table Property
+Feature: Eloquent Table Property
   In order to let the ORM know which table it references
   As a developer
   I want to my model to fill its table property when needed
@@ -13,12 +13,12 @@ Feature: Model Table Property
     Given SchemaBlueprint "sample" has TableBlueprint "users"
     And ModelGeneratorConfiguration class suffix is "Model"
     And a ModelGenerator is created
-    When a Model ClassDefinition is generated
-    Then last AbstractClassDefinition has Eloquent table property with value "users"
+    When an Abstract Model ClassDefinition is generated
+    Then last Abstract Model ClassDefinition has Eloquent table property with value "users"
 
   Scenario: Hides table property when suffix is absent
     Given SchemaBlueprint "sample" has TableBlueprint "users"
     And ModelGeneratorConfiguration class suffix is ""
     And a ModelGenerator is created
-    When a Model ClassDefinition is generated
-    Then last AbstractClassDefinition must not have Eloquent table property
+    When an Abstract Model ClassDefinition is generated
+    Then last Abstract Model ClassDefinition must not have Eloquent table property
