@@ -412,6 +412,15 @@ return [
         'override_pluralize_for' => [
 
         ],
+        /*
+        |--------------------------------------------------------------------------
+        | Move $fillable property to base files
+        |--------------------------------------------------------------------------
+        | When base_files is true you can set fillable_in_base_files to true 
+        | if you want the $fillable to be generated in base files
+        |
+        */
+        'fillable_in_base_files' => false,
     ],
 
     /*

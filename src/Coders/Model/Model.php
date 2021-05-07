@@ -1250,4 +1250,12 @@ class Model
     {
         return $this->factory->config($this->getBlueprint(), $key, $default);
     }
+
+    /**
+     * @return bool
+     */
+    public function fillableInBaseFiles(): bool
+    {
+        return $this->config('fillable_in_base_files', false);
+    }
 }

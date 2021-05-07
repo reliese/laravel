@@ -328,6 +328,15 @@ class Factory
                 $namespacePieces = explode('\\', $usedClass);
                 $className = array_pop($namespacePieces);
 
+                /**
+                 * Avoid breaking same-model relationships when using base classes
+                 *
+                 * @see https://github.com/reliese/laravel/issues/209
+                 */
+                if ($model->usesBaseFiles() && $usedClass === $model->getQualifiedUserClassName()) {
+                    continue;
+                }
+
                 //When same class name but different namespace, skip it.
                 if (
                     $className == $model->getClassName() &&
@@ -467,7 +476,7 @@ class Factory
             $body .= $this->class->field('hidden', $model->getHidden(), ['before' => "\n"]);
         }
 
-        if ($model->hasFillable() && $model->doesNotUseBaseFiles()) {
+        if ($model->hasFillable() && ($model->doesNotUseBaseFiles() || $model->fillableInBaseFiles())) {
             $body .= $this->class->field('fillable', $model->getFillable(), ['before' => "\n"]);
         }
 
@@ -576,7 +585,7 @@ class Factory
             $body .= $this->class->field('hidden', $model->getHidden());
         }
 
-        if ($model->hasFillable()) {
+        if ($model->hasFillable() && !$model->fillableInBaseFiles()) {
             $body .= $this->class->field('fillable', $model->getFillable(), ['before' => "\n"]);
         }
 
