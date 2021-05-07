@@ -28,6 +28,16 @@ class DataTransportGeneratorConfiguration
     private string $path;
 
     /**
+     * @var bool
+     */
+    private bool $useBeforeChangeObservableProperties = false;
+
+    /**
+     * @var bool
+     */
+    private bool $useAfterChangeObservableProperties = false;
+
+    /**
      * DataTransportGeneratorConfiguration constructor.
      *
      * @param array $configuration
@@ -38,6 +48,15 @@ class DataTransportGeneratorConfiguration
         $this->namespace = $configuration['Namespace'];
         $this->classSuffix = $configuration['ClassSuffix'];
         $this->parentClassPrefix = $configuration['ParentClassPrefix'];
+        if (\array_key_exists('ObservableProperties', $configuration)) {
+            $observableConfig = $configuration['ObservableProperties'];
+            if (\array_key_exists('BeforeChange', $observableConfig)) {
+                $this->useBeforeChangeObservableProperties = $observableConfig['BeforeChange'];
+            }
+            if (\array_key_exists('AfterChange', $observableConfig)) {
+                $this->useBeforeChangeObservableProperties = $observableConfig['AfterChange'];
+            }
+        }
     }
 
     /**
@@ -70,5 +89,21 @@ class DataTransportGeneratorConfiguration
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function useAfterChangeObservableProperties(): bool
+    {
+        return $this->useAfterChangeObservableProperties;
+    }
+
+    /**
+     * @return bool
+     */
+    public function useBeforeChangeObservableProperties(): bool
+    {
+        return $this->useBeforeChangeObservableProperties;
     }
 }

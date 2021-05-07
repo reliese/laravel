@@ -54,6 +54,10 @@ class ClassFormatter
             $lines[] = ' extends ' . $parent;
         }
 
+        if ($classDefinition->hasInterfaces()) {
+            $lines[] = ' implements '.\implode(', ', $classDefinition->getInterfaces());
+        }
+
         $lines[] = "\n";
         $lines[] = "{\n";
 

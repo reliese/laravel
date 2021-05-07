@@ -538,6 +538,10 @@ return [
             'Namespace' => 'App\DataTransportObjects',
             'ClassSuffix' => 'Dto',
             'ParentClassPrefix' => 'Abstract',
+            'ObservableProperties' => [
+                'BeforeChange' => false,
+                'AfterChange' => false,
+            ],
         ],
         // endregion Data Transport Generator Config
         // region Data Map Generator Config

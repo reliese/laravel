@@ -13,11 +13,13 @@ class ClassTraitDefinition implements ImportableInterface
     /**
      * ClassTraitDefinition constructor.
      *
-     * @param string $name
-     * @param string $namespace
+     * @param string $fullyQuallifiedTraitName
      */
-    public function __construct(string $name, string $namespace)
+    public function __construct(string $fullyQuallifiedTraitName)
     {
+        $parts = explode('\\', \ltrim($fullyQuallifiedTraitName, '\\'));
+        $name = \array_pop($parts);
+        $namespace = \implode('\\', $parts);
         $this->name = $name;
         $this->namespace = trim($namespace, '\\');
     }

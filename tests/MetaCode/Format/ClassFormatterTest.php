@@ -143,7 +143,7 @@ class OneClass
 
 PHP;
 
-        $someNiceTrait = new ClassTraitDefinition('SomeNiceTrait', '\SomeNamespace');
+        $someNiceTrait = new ClassTraitDefinition('\SomeNamespace\SomeNiceTrait');
 
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
         $classDefinition->addTrait($someNiceTrait);
@@ -178,7 +178,7 @@ class OneName
 
 PHP;
 
-        $someCollidedTrait = new ClassTraitDefinition('OneName', '\SomeNamespace');
+        $someCollidedTrait = new ClassTraitDefinition('\SomeNamespace\OneName');
 
         $classDefinition = new ClassDefinition('OneName', '\OneNamespace');
         $classDefinition->addTrait($someCollidedTrait);

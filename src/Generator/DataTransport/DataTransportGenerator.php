@@ -8,6 +8,7 @@ use Reliese\Configuration\DataTransportGeneratorConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
+use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use function file_exists;
@@ -64,6 +65,24 @@ class DataTransportGenerator
 
         $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
 
+        if ($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties()) {
+            $dtoAbstractClassDefinition->addInterface(
+                \PhpLibs\Observable\BeforeValueChangeObservableInterface::class
+            );
+            $dtoAbstractClassDefinition->addTrait(
+                new ClassTraitDefinition(\PhpLibs\Observable\BeforeValueChangeObservableTrait::class)
+            );
+        }
+
+        if ($this->dataTransportGeneratorConfiguration->useAfterChangeObservableProperties()) {
+            $dtoAbstractClassDefinition->addInterface(
+                \PhpLibs\Observable\AfterValueChangeObservableInterface::class
+            );
+            $dtoAbstractClassDefinition->addTrait(
+                new ClassTraitDefinition(\PhpLibs\Observable\AfterValueChangeObservableTrait::class)
+            );
+        }
+        
         $dtoClassDefinition = new ClassDefinition($className, $namespace);
         $dtoClassDefinition->setParentClass($dtoAbstractClassDefinition->getFullyQualifiedName());
 
@@ -80,6 +99,8 @@ class DataTransportGenerator
             );
 
             $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
+                ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties())
+                ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties())
                 ->withSetter()
                 ->withGetter()
             ;

@@ -7,6 +7,11 @@ namespace Reliese\MetaCode\Definition;
  */
 class ClassDefinition implements ImportableInterface
 {
+    /**
+     * @var bool[] Array keys are fully qualified interface names
+     */
+    private array $interfaces = [];
+
     private string $name;
 
     /**
@@ -52,9 +57,45 @@ class ClassDefinition implements ImportableInterface
         $this->namespace = trim($namespace, '\\');
     }
 
+    /**
+     * @param string $fullyQualifiedInterfaceName
+     */
+    public function addInterface(string $fullyQualifiedInterfaceName)
+    {
+        $this->interfaces[$fullyQualifiedInterfaceName] = true;
+    }
+
     public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition)
     {
         $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getInterfaces(): array
+    {
+        return \array_keys($this->interfaces);
+    }
+
+    public function hasInterfaces(): bool
+    {
+        return !empty($this->interfaces);
+    }
+
+    public function hasTrait(string $fullyQualifiedTraitName)
+    {
+        if (empty($this->getTraits())) {
+            return false;
+        }
+
+        foreach ($this->getTraits() as $classTraitDefinition) {
+            if ($fullyQualifiedTraitName === $classTraitDefinition->getFullyQualifiedName()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function setParentClass(string $fullyQualifiedClassName): ClassDefinition

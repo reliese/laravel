@@ -21,7 +21,8 @@
         "illuminate/database": ">=5.1",
         "illuminate/contracts": ">=5.1",
         "illuminate/filesystem": ">=5.1",
-        "illuminate/console": ">=5.1"
+        "illuminate/console": ">=5.1",
+        "php-libs/observable": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
