@@ -43,7 +43,10 @@ class ClassTraitDefinition implements ImportableInterface
      */
     public function getFullyQualifiedName(): string
     {
-        return '\\' . $this->getNamespace() . '\\' . $this->getName();
+        return '\\' . implode('\\', array_filter([
+            $this->getNamespace(),
+            $this->getName()
+        ]));
     }
 
     /**
@@ -60,5 +63,17 @@ class ClassTraitDefinition implements ImportableInterface
     public function getImportableName(): string
     {
         return $this->getName();
+    }
+
+    /**
+     * @param string $traitFullyQualifiedName
+     *
+     * @return bool
+     */
+    public function isFullyQualifiedName(string $traitFullyQualifiedName): bool
+    {
+        $compareTo = '\\' . trim($traitFullyQualifiedName, '\\');
+
+        return $this->getFullyQualifiedName() == $compareTo;
     }
 }

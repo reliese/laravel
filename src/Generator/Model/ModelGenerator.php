@@ -8,6 +8,8 @@ use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
+use Reliese\MetaCode\Definition\ClassTraitDefinition;
+use Reliese\MetaCode\Definition\ObjectTypeDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
 use Reliese\MetaCode\Tool\ClassNameTool;
@@ -69,6 +71,7 @@ class ModelGenerator
             ->setParentClass($this->getFullyQualifiedAbstractClass())
             ->setDirectory($this->getAbstractClassDirectory())
             ->setFilePath($this->getAbstractClassFilePath($tableBlueprint))
+            ->addTraits($this->generateTraits($tableBlueprint))
             ->addConstants($this->generateColumnConstants($tableBlueprint))
             ->addProperties($this->generateProperties($tableBlueprint))
         ;
@@ -245,5 +248,28 @@ class ModelGenerator
         $property->setValue($tableBlueprint->getName());
 
         return $property;
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return ClassTraitDefinition[]
+     */
+    private function generateTraits(TableBlueprint $tableBlueprint): array
+    {
+        $traitDefinitions = [];
+
+        foreach ($this->modelGeneratorConfiguration->getTraits() as $trait) {
+            $type = new ObjectTypeDefinition($trait);
+
+            $traitDefinition = new ClassTraitDefinition(
+                $type->getImportableName(),
+                $type->getNamespace()
+            );
+
+            $traitDefinitions[] = $traitDefinition;
+        }
+
+        return $traitDefinitions;
     }
 }

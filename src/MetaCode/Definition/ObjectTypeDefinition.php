@@ -59,7 +59,7 @@ class ObjectTypeDefinition implements ImportableInterface
     /**
      * @return string
      */
-    private function getNamespace(): string
+    public function getNamespace(): string
     {
         return $this->typeNamespace;
     }

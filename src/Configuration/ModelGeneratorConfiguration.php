@@ -7,6 +7,13 @@ namespace Reliese\Configuration;
  */
 class ModelGeneratorConfiguration
 {
+    const KEY_PATH = 'Path';
+    const KEY_NAMESPACE = 'Namespace';
+    const KEY_CLASS_SUFFIX = 'ClassSuffix';
+    const KEY_PARENT_CLASS_PREFIX = 'ParentClassPrefix';
+    const KEY_PARENT = 'Parent';
+    const KEY_TRAITS = 'Traits';
+
     /**
      * @var string
      */
@@ -33,6 +40,11 @@ class ModelGeneratorConfiguration
     private string $parent;
 
     /**
+     * @var string[]
+     */
+    private array $traits = [];
+
+    /**
      * ModelGeneratorConfiguration constructor.
      *
      * @param array $configuration
@@ -43,11 +55,12 @@ class ModelGeneratorConfiguration
             return ;
         }
 
-        $this->setPath($configuration['Path']);
-        $this->setNamespace($configuration['Namespace']);
-        $this->setClassSuffix($configuration['ClassSuffix'] ?? '');
-        $this->setParentClassPrefix($configuration['ParentClassPrefix'] ?? '');
-        $this->setParent($configuration['Parent']);
+        $this->setPath($configuration[static::KEY_PATH]);
+        $this->setNamespace($configuration[static::KEY_NAMESPACE]);
+        $this->setClassSuffix($configuration[static::KEY_CLASS_SUFFIX] ?? '');
+        $this->setParentClassPrefix($configuration[static::KEY_PARENT_CLASS_PREFIX] ?? '');
+        $this->setParent($configuration[static::KEY_PARENT]);
+        $this->setTraits($configuration[static::KEY_TRAITS] ?? []);
     }
 
     /**
@@ -151,5 +164,21 @@ class ModelGeneratorConfiguration
     {
         $this->parentClassPrefix = $parentClassPrefix;
         return $this;
+    }
+
+    /**
+     * @param string[] $traits
+     */
+    public function setTraits(array $traits)
+    {
+        $this->traits = $traits;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTraits(): array
+    {
+        return $this->traits;
     }
 }

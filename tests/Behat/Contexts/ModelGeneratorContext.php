@@ -64,14 +64,6 @@ class ModelGeneratorContext extends FeatureContext
     }
 
     /**
-     * @Then /^last Model ClassDefinition has class name "([^"]*)"$/
-     */
-    public function thenLastModelClassDefinitionHasClassName($className)
-    {
-        $this->classDefinitionContext->thenLastClassDefinitionHasClassName($className);
-    }
-
-    /**
      * @Then /^last Model ClassDefinition file path is "([^"]*)"$/
      */
     public function thenLastModelClassDefinitionFilePathIs($filePath)
@@ -85,6 +77,22 @@ class ModelGeneratorContext extends FeatureContext
     public function thenLastModelClassDefinitionNamespaceIs($namespace)
     {
         $this->classDefinitionContext->thenLastClassDefinitionNamespaceIs($namespace);
+    }
+
+    /**
+     * @Then /^last Model ClassDefinition has class name "([^"]*)"$/
+     */
+    public function thenLastModelClassDefinitionHasClassName($className)
+    {
+        $this->classDefinitionContext->thenLastClassDefinitionHasClassName($className);
+    }
+
+    /**
+     * @Then /^last Abstract Model ClassDefinition has trait "([^"]*)"$/
+     */
+    public function thenLastModelClassDefinitionHasTrait($trait)
+    {
+        $this->classDefinitionContext->thenLastAbstractClassDefinitionHasTrait($trait);
     }
 
     /**

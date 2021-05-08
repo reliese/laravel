@@ -95,6 +95,17 @@ class ClassDefinitionContext extends FeatureContext
     }
 
     /**
+     * @Then /^last Abstract ClassDefinition has trait "([^"]*)"$/
+     */
+    public function thenLastAbstractClassDefinitionHasTrait($trait)
+    {
+        Test::assertTrue(
+            $this->getLastAbstractClassDefinition()->hasTrait($trait),
+            "Generated class must contain trait [$trait]"
+        );
+    }
+
+    /**
      * @param string $propertyName
      *
      * @return ClassPropertyDefinitionContext

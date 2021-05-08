@@ -234,11 +234,41 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
+     * @param ClassTraitDefinition[] $traitDefinitions
+     *
+     * @return $this
+     */
+    public function addTraits(array $traitDefinitions): static
+    {
+        foreach ($traitDefinitions as $traitDefinition) {
+            $this->addTrait($traitDefinition);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return ClassTraitDefinition[]
      */
     public function getTraits(): array
     {
         return $this->traits;
+    }
+
+    /**
+     * @param string $traitFullyQualifiedName
+     *
+     * @return bool
+     */
+    public function hasTrait(string $traitFullyQualifiedName): bool
+    {
+        foreach ($this->getTraits() as $classTraitDefinition) {
+            if ($classTraitDefinition->isFullyQualifiedName($traitFullyQualifiedName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

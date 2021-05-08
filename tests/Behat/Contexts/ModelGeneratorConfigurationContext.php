@@ -72,4 +72,12 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     {
         $this->getModelGeneratorConfiguration()->setParent($parent);
     }
+
+    /**
+     * @Given /^ModelGeneratorConfiguration uses trait "([^"]*)"$/
+     */
+    public function givenModelGeneratorConfigurationWithTraits($trait)
+    {
+        $this->getModelGeneratorConfiguration()->setTraits([$trait]);
+    }
 }

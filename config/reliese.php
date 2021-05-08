@@ -183,7 +183,7 @@ return [
             |
             */
 
-            'use' => [
+            'Traits' => [
                 // Reliese\Database\Eloquent\BitBooleans::class,
                 // Reliese\Database\Eloquent\BlamableBehavior::class,
             ],
