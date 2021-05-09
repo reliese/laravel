@@ -195,7 +195,6 @@ class ModelGeneratorConfiguration
     public function appendConnection(bool $append): static
     {
         $this->appendConnection = $append;
-
         return $this;
     }
 
