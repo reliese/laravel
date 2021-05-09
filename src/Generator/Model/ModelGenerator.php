@@ -260,14 +260,7 @@ class ModelGenerator
         $traitDefinitions = [];
 
         foreach ($this->modelGeneratorConfiguration->getTraits() as $trait) {
-            $type = new ObjectTypeDefinition($trait);
-
-            $traitDefinition = new ClassTraitDefinition(
-                $type->getImportableName(),
-                $type->getNamespace()
-            );
-
-            $traitDefinitions[] = $traitDefinition;
+            $traitDefinitions[] = new ClassTraitDefinition($trait);
         }
 
         return $traitDefinitions;
