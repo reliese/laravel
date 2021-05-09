@@ -1,4 +1,4 @@
-Feature: Connection
+Feature: Append Connection
 
   Background:
     Given a default ModelGeneratorConfiguration
@@ -6,7 +6,7 @@ Feature: Connection
     And a new DatabaseBlueprint
     And the DatabaseBlueprint has SchemaBlueprint "sample"
 
-  Scenario Outline: it adds the connection property to generated models
+  Scenario Outline: it appends the connection property to generated models
     Given SchemaBlueprint "sample" has TableBlueprint "<table>"
     And last SchemaBlueprint is on connection "<connection>"
     And ModelGeneratorConfiguration has enabled the connection property
