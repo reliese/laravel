@@ -31,8 +31,7 @@ class TableBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
      * @param SchemaBlueprint $schemaBlueprint
      * @param string $tableName
      */
-    public function __construct(SchemaBlueprint $schemaBlueprint,
-        string $tableName)
+    public function __construct(SchemaBlueprint $schemaBlueprint, string $tableName)
     {
         $this->setSchemaBlueprint($schemaBlueprint);
         $this->setName($tableName);

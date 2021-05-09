@@ -191,12 +191,16 @@ class ClassFormatter
 
     private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
     {
+        $typeHint = $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum());
+
         $statement = $this->getIndentation($depth)
-            . $property->getVisibilityEnum()->toReservedWord()
-            . ' '
-            . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
-            . ' $'
-            . $property->getVariableName();
+            . $property->getVisibilityEnum()->toReservedWord();
+
+        if (!empty($typeHint)) {
+            $statement .= ' ' . $typeHint;
+        }
+
+        $statement .= ' $' . $property->getVariableName();
 
         if ($property->hasValue()) {
             $statement .= ' = ' . var_export($property->getValue(), true);

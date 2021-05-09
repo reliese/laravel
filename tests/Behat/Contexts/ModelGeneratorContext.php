@@ -160,4 +160,27 @@ class ModelGeneratorContext extends FeatureContext
             "Abstract Model must be named [$className]"
         );
     }
+
+    /**
+     * @Then /^last Abstract Model ClassDefinition has Eloquent connection property with value "([^"]*)"$/
+     */
+    public function thenLastAbstractModelClassDefinitionHasEloquentConnectionPropertyWithValue($connectionName)
+    {
+        $classPropertyDefinitionContext = $this->classDefinitionContext
+            ->getLastAbstractClassDefinitionPropertyDefinitionContext(ModelGenerator::PROPERTY_CONNECTION);
+
+        $classPropertyDefinitionContext->thenHasName(
+            ModelGenerator::PROPERTY_CONNECTION,
+            'Eloquent Model property $connection must be present'
+        );
+
+        $classPropertyDefinitionContext->thenVisibilityIsProtected(
+            'Eloquent Model property $connection must be private'
+        );
+
+        $classPropertyDefinitionContext->thenValueEquals(
+            $connectionName,
+            "Eloquent Model property \$connection must have value equals to [$connectionName]"
+        );
+    }
 }

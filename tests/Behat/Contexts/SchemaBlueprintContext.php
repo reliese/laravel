@@ -12,6 +12,8 @@ class SchemaBlueprintContext extends FeatureContext
      */
     private array $schemaBlueprints = [];
 
+    private ?SchemaBlueprint $lastSchemaBlueprint = null;
+
     /**
      * @param string $schemaName
      *
@@ -26,7 +28,22 @@ class SchemaBlueprintContext extends FeatureContext
             "\nTry adding 'the DatabaseBlueprint has SchemaBlueprint \"{$schemaName}\"' before this statement."
         );
 
-        return $this->schemaBlueprints[$schemaName];
+        return $this->lastSchemaBlueprint = $this->schemaBlueprints[$schemaName];
+    }
+
+    /**
+     * @return SchemaBlueprint
+     */
+    public function getLastSchemaBlueprint(): SchemaBlueprint
+    {
+        Test::assertInstanceOf(
+            SchemaBlueprint::class,
+            $this->lastSchemaBlueprint,
+            "You tried to reference a previously initialized SchemaBlueprint, but none has been constructed.".
+            "\nTry adding 'the DatabaseBlueprint has SchemaBlueprint \"some_squema\"' before this statement."
+        );
+
+        return $this->lastSchemaBlueprint;
     }
 
     /**
@@ -36,7 +53,8 @@ class SchemaBlueprintContext extends FeatureContext
     {
         $this->schemaBlueprints[$schemaName] = new SchemaBlueprint(
             $this->databaseBlueprintContext->getDatabaseBlueprint(),
-            $schemaName
+            $schemaName,
+            'some_connection'
         );
     }
 }

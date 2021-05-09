@@ -3,25 +3,31 @@
 namespace Reliese\Blueprint;
 
 use InvalidArgumentException;
+
 /**
  * Class SchemaBlueprint
  */
 class SchemaBlueprint
 {
     /**
+     * @var string
+     */
+    private string $connectionName;
+
+    /**
      * @var DatabaseBlueprint
      */
-    private $databaseBlueprint;
+    private DatabaseBlueprint $databaseBlueprint;
 
     /**
      * @var string
      */
-    private $schemaName;
+    private string $schemaName;
 
     /**
      * @var TableBlueprint[]
      */
-    private $tableBlueprints = [];
+    private array $tableBlueprints = [];
 
     /**
      * @var ViewBlueprint[]
@@ -33,11 +39,13 @@ class SchemaBlueprint
      *
      * @param DatabaseBlueprint $databaseBlueprint
      * @param string            $schemaName
+     * @param string            $connectionName
      */
-    public function __construct(DatabaseBlueprint $databaseBlueprint, string $schemaName)
+    public function __construct(DatabaseBlueprint $databaseBlueprint, string $schemaName, string $connectionName)
     {
         $this->schemaName = $schemaName;
         $this->databaseBlueprint = $databaseBlueprint;
+        $this->connectionName = $connectionName;
     }
 
     /**
@@ -120,5 +128,24 @@ class SchemaBlueprint
     public function hasTableBlueprint(string $tableName) : bool
     {
         return \array_key_exists($tableName, $this->tableBlueprints);
+    }
+
+    /**
+     * @return string
+     */
+    public function getConnectionName(): string
+    {
+        return $this->connectionName;
+    }
+
+    /**
+     * @param string $connectionName
+     *
+     * @return SchemaBlueprint
+     */
+    public function setConnectionName(string $connectionName): static
+    {
+        $this->connectionName = $connectionName;
+        return $this;
     }
 }

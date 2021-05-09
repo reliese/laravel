@@ -90,7 +90,11 @@ class DoctrineSchemaAnalyser
             return $this->schemaBlueprint;
         }
 
-        return $this->schemaBlueprint = new SchemaBlueprint($this->getDatabaseBlueprint(), $this->getSchemaName());
+        return $this->schemaBlueprint = new SchemaBlueprint(
+            $this->getDatabaseBlueprint(),
+            $this->getSchemaName(),
+            $this->getConnectionName()
+        );
     }
 
     /**
@@ -316,5 +320,13 @@ class DoctrineSchemaAnalyser
     protected function getDatabaseBlueprint(): DatabaseBlueprint
     {
         return $this->databaseBlueprint;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConnectionName(): string
+    {
+        return $this->doctrineDatabaseAnalyser->getConnectionName();
     }
 }

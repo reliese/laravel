@@ -302,6 +302,43 @@ PHP;
     /**
      * @test
      */
+    public function it_formats_a_class_with_one_property_with_an_absent_type()
+    {
+        $expectedClassOutput =
+<<<PHP
+<?php
+
+namespace OneNamespace;
+
+/**
+ * Class OneClass
+ * 
+ * Created by Reliese
+ */
+class OneClass
+{
+    private \$aProperty = 56;
+}
+
+PHP;
+
+        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::absentTypeEnum());
+
+        $aProperty->setValue(56);
+
+        $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
+        $classDefinition->addProperty($aProperty);
+
+        $classFormatter = new ClassFormatter();
+
+        $classOutput = $classFormatter->format($classDefinition);
+
+        $this->assertEquals($expectedClassOutput, $classOutput);
+    }
+
+    /**
+     * @test
+     */
     public function it_formats_a_class_with_one_property_of_type_global_object()
     {
         $expectedClassOutput =

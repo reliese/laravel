@@ -178,4 +178,15 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
             $schemaSpecificDoctrineSchemaManager
         );
     }
+
+    /**
+     * @return string
+     */
+    public function getConnectionName(): string
+    {
+        return $this->doctrineDatabaseAssistant->getRelieseConfiguration()
+                                               ->getDatabaseAnalyserConfiguration()
+                                               ->getConnectionName()
+            ;
+    }
 }

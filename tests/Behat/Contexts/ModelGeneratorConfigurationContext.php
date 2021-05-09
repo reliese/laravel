@@ -80,4 +80,12 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     {
         $this->getModelGeneratorConfiguration()->setTraits([$trait]);
     }
+
+    /**
+     * @Given /^ModelGeneratorConfiguration has enabled the connection property$/
+     */
+    public function givenModelGeneratorConfigurationWithConnectionEnabled()
+    {
+        $this->getModelGeneratorConfiguration()->appendConnection(true);
+    }
 }

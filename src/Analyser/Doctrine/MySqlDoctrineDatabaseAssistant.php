@@ -13,6 +13,11 @@ use Reliese\Configuration\RelieseConfiguration;
 class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterface
 {
     /**
+     * @var RelieseConfiguration
+     */
+    private RelieseConfiguration $relieseConfiguration;
+
+    /**
      * @var ConnectionInterface
      */
     private ConnectionInterface $configuredConnection;
@@ -40,6 +45,7 @@ class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterfa
         $this->connectionFactory = $connectionFactory;
         $this->configuredConnection = $configuredConnection;
         $this->schemaConnections[$configuredConnection->getConfig('database')] = $configuredConnection;
+        $this->relieseConfiguration = $relieseConfiguration;
     }
 
     public function getSchemaNames(): array
@@ -91,5 +97,13 @@ class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterfa
         $platform->registerDoctrineTypeMapping('enum', 'string');
 
         return $this->doctrineSchemaManagers[$schemaName] = $doctrineSchemaManager;
+    }
+
+    /**
+     * @return RelieseConfiguration
+     */
+    public function getRelieseConfiguration(): RelieseConfiguration
+    {
+        return $this->relieseConfiguration;
     }
 }

@@ -66,4 +66,12 @@ class SqliteDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterf
     {
         return $this->doctrineSchemaManagers['default'] ??= $this->getConnection()->getDoctrineSchemaManager();
     }
+
+    /**
+     * @return RelieseConfiguration
+     */
+    public function getRelieseConfiguration(): RelieseConfiguration
+    {
+        return $this->relieseConfiguration;
+    }
 }
