@@ -27,7 +27,7 @@ class ClassTraitDefinition implements ImportableInterface
     /**
      * @return string
      */
-    public function getName(): string
+    public function getTraitName(): string
     {
         return $this->name;
     }
@@ -45,7 +45,10 @@ class ClassTraitDefinition implements ImportableInterface
      */
     public function getFullyQualifiedName(): string
     {
-        return '\\' . $this->getNamespace() . '\\' . $this->getName();
+        return '\\' . implode('\\', array_filter([
+            $this->getNamespace(),
+            $this->getTraitName()
+        ]));
     }
 
     /**
@@ -61,6 +64,18 @@ class ClassTraitDefinition implements ImportableInterface
      */
     public function getImportableName(): string
     {
-        return $this->getName();
+        return $this->getTraitName();
+    }
+
+    /**
+     * @param string $traitFullyQualifiedName
+     *
+     * @return bool
+     */
+    public function isFullyQualifiedName(string $traitFullyQualifiedName): bool
+    {
+        $compareTo = '\\' . trim($traitFullyQualifiedName, '\\');
+
+        return $this->getFullyQualifiedName() == $compareTo;
     }
 }

@@ -1,0 +1,14 @@
+default:
+  suites:
+    default:
+      contexts:
+        - \Tests\Behat\Contexts\ClassDefinitionContext
+        - \Tests\Behat\Contexts\DatabaseBlueprintConfigurationContext
+        - \Tests\Behat\Contexts\DatabaseBlueprintContext
+        - \Tests\Behat\Contexts\FeatureContext
+        - \Tests\Behat\Contexts\ModelGeneratorConfigurationContext
+        - \Tests\Behat\Contexts\ModelGeneratorContext
+        - \Tests\Behat\Contexts\SchemaBlueprintContext
+        - \Tests\Behat\Contexts\TableBlueprintContext
+      paths:
+        - tests/Behat/Suites

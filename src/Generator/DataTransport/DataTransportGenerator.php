@@ -172,8 +172,8 @@ class DataTransportGenerator
             mkdir($abstractDtoClassFolder, 0777, true);
         }
 
-        $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
-        $abstractDtoFilePath = $abstractDtoClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getName() . '.php';
+        $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getClassName() . '.php';
+        $abstractDtoFilePath = $abstractDtoClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getClassName() . '.php';
 
         if (!file_exists($dtoFilePath)) {
             file_put_contents($dtoFilePath, $dtoClassPhpCode);

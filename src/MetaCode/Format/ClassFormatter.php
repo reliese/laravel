@@ -44,11 +44,11 @@ class ClassFormatter
         }
 
         $lines[] = "/**\n";
-        $lines[] = ' * Class ' . $classDefinition->getName() . "\n";
+        $lines[] = ' * Class ' . $classDefinition->getClassName() . "\n";
         $lines[] = " * \n";
         $lines[] = " * Created by Reliese\n";
         $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getName();
+        $lines[] = 'class ' . $classDefinition->getClassName();
 
         if (!empty($parent)) {
             $lines[] = ' extends ' . $parent;
@@ -91,9 +91,12 @@ class ClassFormatter
      */
     private function prepareGettersAndSetters(ClassDefinition $classDefinition): void
     {
+        /** @var ClassPropertyDefinition $property */
         foreach ($classDefinition->getProperties() as $property) {
             if ($property->hasSetter()) {
-                $this->appendSetter($property, $classDefinition);
+                $classDefinition->addMethodDefinition(
+                    $property->getSetterMethodDefinition($classDefinition)
+                );
             }
             if ($property->hasGetter()) {
                 $this->appendGetter($property, $classDefinition);
@@ -141,7 +144,7 @@ class ClassFormatter
 
         if (!$classDefinition->willCollideImport($trait)) {
             $classDefinition->addImport($trait);
-            $object = $trait->getName();
+            $object = $trait->getTraitName();
         }
 
 
@@ -195,13 +198,19 @@ class ClassFormatter
 
     private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
     {
-        return $this->getIndentation($depth)
-                . $property->getVisibilityEnum()->toReservedWord()
-                . ' '
-                . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
-                . ' $'
-                . $property->getVariableName()
-                . ';';
+        $statement = $this->getIndentation($depth)
+            . $property->getVisibilityEnum()->toReservedWord()
+            . ' '
+            . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
+            . ' $'
+            . $property->getVariableName()
+        ;
+
+        if ($property->hasValue()) {
+            $statement .= ' = ' . var_export($property->getValue(), true);
+        }
+
+        return $statement . ';';
     }
 
     /**
@@ -215,7 +224,7 @@ class ClassFormatter
         $getter = new ClassMethodDefinition('set' . Str::studly($property->getVariableName()),
             PhpTypeEnum::staticTypeEnum(),
             [
-                $param
+                $param,
             ]
         );
 

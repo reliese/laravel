@@ -7,6 +7,13 @@ namespace Reliese\Configuration;
  */
 class ModelGeneratorConfiguration
 {
+    const KEY_PATH = 'Path';
+    const KEY_NAMESPACE = 'Namespace';
+    const KEY_CLASS_SUFFIX = 'ClassSuffix';
+    const KEY_PARENT_CLASS_PREFIX = 'ParentClassPrefix';
+    const KEY_PARENT = 'Parent';
+    const KEY_TRAITS = 'Traits';
+
     /**
      * @var string
      */
@@ -28,24 +35,48 @@ class ModelGeneratorConfiguration
     private string $path;
 
     /**
-     * DataTransportGeneratorConfiguration constructor.
+     * @var string
+     */
+    private string $parent;
+
+    /**
+     * @var string[]
+     */
+    private array $traits = [];
+
+    /**
+     * ModelGeneratorConfiguration constructor.
      *
      * @param array $configuration
      */
-    public function __construct(array $configuration)
+    public function __construct(array $configuration = [])
     {
-        $this->path = $configuration['Path'];
-        $this->namespace = $configuration['Namespace'];
-        $this->classSuffix = $configuration['ClassSuffix'];
-        $this->parentClassPrefix = $configuration['ParentClassPrefix'];
+        if (empty($configuration)) {
+            return ;
+        }
+
+        $this->setPath($configuration[static::KEY_PATH]);
+        $this->setNamespace($configuration[static::KEY_NAMESPACE]);
+        $this->setClassSuffix($configuration[static::KEY_CLASS_SUFFIX] ?? '');
+        $this->setParentClassPrefix($configuration[static::KEY_PARENT_CLASS_PREFIX] ?? '');
+        $this->setParent($configuration[static::KEY_PARENT]);
+        $this->setTraits($configuration[static::KEY_TRAITS] ?? []);
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getClassSuffix(): mixed
+    public function getClassSuffix(): string
     {
         return $this->classSuffix;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasClassSuffix(): bool
+    {
+        return !empty($this->getClassSuffix());
     }
 
     /**
@@ -57,9 +88,9 @@ class ModelGeneratorConfiguration
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getParentClassPrefix(): mixed
+    public function getParentClassPrefix(): string
     {
         return $this->parentClassPrefix;
     }
@@ -70,5 +101,84 @@ class ModelGeneratorConfiguration
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setPath(string $path): ModelGeneratorConfiguration
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParent(): string
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param string $parent
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setParent(string $parent): ModelGeneratorConfiguration
+    {
+        $this->parent = trim($parent, '\\');
+        return $this;
+    }
+
+    /**
+     * @param string $classSuffix
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setClassSuffix(mixed $classSuffix): ModelGeneratorConfiguration
+    {
+        $this->classSuffix = $classSuffix;
+        return $this;
+    }
+
+    /**
+     * @param string $namespace
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setNamespace(string $namespace): ModelGeneratorConfiguration
+    {
+        $this->namespace = $namespace;
+        return $this;
+    }
+
+    /**
+     * @param string $parentClassPrefix
+     *
+     * @return ModelGeneratorConfiguration
+     */
+    public function setParentClassPrefix(string $parentClassPrefix): ModelGeneratorConfiguration
+    {
+        $this->parentClassPrefix = $parentClassPrefix;
+        return $this;
+    }
+
+    /**
+     * @param string[] $traits
+     */
+    public function setTraits(array $traits)
+    {
+        $this->traits = $traits;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTraits(): array
+    {
+        return $this->traits;
     }
 }

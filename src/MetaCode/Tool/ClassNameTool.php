@@ -47,6 +47,16 @@ abstract class ClassNameTool
      *
      * @return string
      */
+    public static function columnNameToConstantName(string $columnName): string
+    {
+        return Str::upper(Str::snake($columnName));
+    }
+
+    /**
+     * @param string $columnName
+     *
+     * @return string
+     */
     public static function columnNameToGetterName(string $columnName): string
     {
         return 'get'.str::studly($columnName);

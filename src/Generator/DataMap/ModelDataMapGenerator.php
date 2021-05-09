@@ -258,8 +258,8 @@ class ModelDataMapGenerator
             mkdir($abstractClassFolder, 0777, true);
         }
 
-        $classFilePath = $classFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
-        $abstractFilePath = $abstractClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getName() . '.php';
+        $classFilePath = $classFolder . DIRECTORY_SEPARATOR . $classDefinition->getClassName() . '.php';
+        $abstractFilePath = $abstractClassFolder . DIRECTORY_SEPARATOR . $abstractClassDefinition->getClassName() . '.php';
 
         if (!file_exists($classFilePath)) {
             file_put_contents($classFilePath, $classPhpCode);

@@ -31,7 +31,7 @@ class DatabaseBlueprint
         $this->databaseBlueprintConfiguration = $databaseBlueprintConfiguration;
     }
 
-    public function applyBlueprintFilters(\Reliese\Configuration\DatabaseBlueprintConfiguration $getDatabaseBlueprintConfiguration)
+    public function applyBlueprintFilters(DatabaseBlueprintConfiguration $databaseBlueprintConfiguration)
     {
         throw new RuntimeException(__METHOD__.' is incomplete');
     }
