@@ -17,11 +17,6 @@ class ClassPropertyDefinition
      */
     private ?InstanceEnum $getterInstanceEnum = null;
 
-    public function getPhpTypeEnum(): PhpTypeEnum
-    {
-        return $this->phpTypeEnum;
-    }
-
     /**
      * @var VisibilityEnum|null
      */
