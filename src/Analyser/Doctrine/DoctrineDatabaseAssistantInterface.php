@@ -5,6 +5,7 @@ namespace Reliese\Analyser\Doctrine;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\ConnectionInterface;
+use Reliese\Configuration\RelieseConfiguration;
 
 /**
  * Interface DoctrineDatabaseAssistantInterface
@@ -30,4 +31,9 @@ interface DoctrineDatabaseAssistantInterface
      * @throws Exception
      */
     public function getDoctrineSchemaManager(?string $schemaName = null): AbstractSchemaManager;
+
+    /**
+     * @return RelieseConfiguration
+     */
+    public function getRelieseConfiguration(): RelieseConfiguration;
 }

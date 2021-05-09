@@ -14,10 +14,15 @@ trait SchemaMemberTrait
     /**
      * @var SchemaBlueprint
      */
-    private $schemaBlueprint;
+    private SchemaBlueprint $schemaBlueprint;
 
     /**
-     * @return SchemaBlueprint|null
+     * @var string
+     */
+    private string $name;
+
+    /**
+     * @return SchemaBlueprint
      */
     public function getSchemaBlueprint(): SchemaBlueprint
     {
@@ -31,11 +36,6 @@ trait SchemaMemberTrait
     {
         $this->schemaBlueprint = $schemaBlueprint;
     }
-
-    /**
-     * @var string
-     */
-    private $name;
 
     /**
      * Returns the name of that uniquely identifies this schema member

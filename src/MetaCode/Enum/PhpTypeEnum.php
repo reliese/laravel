@@ -30,6 +30,8 @@ class PhpTypeEnum
     protected const STATIC_TYPE_ID = 70;
     protected const NULLABLE_STATIC_TYPE_ID = 75;
 
+    protected const ABSENT_TYPE_ID = 80;
+
     private static ?PhpTypeEnum $stringTypeInstance = null;
     private static ?PhpTypeEnum $nullableStringTypeInstance = null;
 
@@ -51,9 +53,11 @@ class PhpTypeEnum
     private static ?PhpTypeEnum $staticTypeInstance = null;
     private static ?PhpTypeEnum $nullableStaticTypeInstance = null;
 
+    private static ?PhpTypeEnum $absentTypeInstance = null;
+
     /**
      * Only used for Array Type
-     * @var string|null 
+     * @var string|null
      */
     private ?string $containedTypeName = null;
 
@@ -190,6 +194,11 @@ class PhpTypeEnum
         return static::NULLABLE_STATIC_TYPE_ID === $this->phpTypeId;
     }
 
+    public function isAbsent(): bool
+    {
+        return static::ABSENT_TYPE_ID === $this->phpTypeId;
+    }
+
     public static function stringType(): PhpTypeEnum
     {
         if (static::$stringTypeInstance) {
@@ -306,6 +315,15 @@ class PhpTypeEnum
         return static::$nullableStaticTypeInstance = new static(static::NULLABLE_STATIC_TYPE_ID);
     }
 
+    public static function absentTypeEnum(): PhpTypeEnum
+    {
+        if (static::$absentTypeInstance) {
+            return static::$absentTypeInstance;
+        }
+
+        return static::$absentTypeInstance = new static(static::ABSENT_TYPE_ID);
+    }
+
     public function toDeclarationType() : string
     {
         if (static::STRING_TYPE_ID === $this->phpTypeId) {
@@ -362,6 +380,10 @@ class PhpTypeEnum
 
         if (static::NULLABLE_STATIC_TYPE_ID === $this->phpTypeId) {
             return '?static';
+        }
+
+        if (static::ABSENT_TYPE_ID === $this->phpTypeId) {
+            return '';
         }
 
         throw new RuntimeException(__METHOD__." Died because ".__CLASS__." was misused.");
@@ -423,6 +445,10 @@ class PhpTypeEnum
 
         if (static::STATIC_TYPE_ID === $this->phpTypeId) {
             return 'nullable static';
+        }
+
+        if (static::ABSENT_TYPE_ID === $this->phpTypeId) {
+            return '';
         }
 
         throw new RuntimeException(__METHOD__." Died because ".__CLASS__." was misused.");

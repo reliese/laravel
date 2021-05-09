@@ -2,6 +2,8 @@
 
 namespace Reliese\Configuration;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * Class ModelGeneratorConfiguration
  */
@@ -13,6 +15,7 @@ class ModelGeneratorConfiguration
     const KEY_PARENT_CLASS_PREFIX = 'ParentClassPrefix';
     const KEY_PARENT = 'Parent';
     const KEY_TRAITS = 'Traits';
+    const KEY_APPEND_CONNECTION = 'AppendConnection';
 
     /**
      * @var string
@@ -45,22 +48,24 @@ class ModelGeneratorConfiguration
     private array $traits = [];
 
     /**
+     * @var bool
+     */
+    private bool $appendConnection;
+
+    /**
      * ModelGeneratorConfiguration constructor.
      *
      * @param array $configuration
      */
     public function __construct(array $configuration = [])
     {
-        if (empty($configuration)) {
-            return ;
-        }
-
-        $this->setPath($configuration[static::KEY_PATH]);
-        $this->setNamespace($configuration[static::KEY_NAMESPACE]);
+        $this->setPath($configuration[static::KEY_PATH] ?? '');
+        $this->setNamespace($configuration[static::KEY_NAMESPACE] ?? '');
         $this->setClassSuffix($configuration[static::KEY_CLASS_SUFFIX] ?? '');
         $this->setParentClassPrefix($configuration[static::KEY_PARENT_CLASS_PREFIX] ?? '');
-        $this->setParent($configuration[static::KEY_PARENT]);
+        $this->setParent($configuration[static::KEY_PARENT] ?? Model::class);
         $this->setTraits($configuration[static::KEY_TRAITS] ?? []);
+        $this->appendConnection($configuration[static::KEY_APPEND_CONNECTION] ?? false);
     }
 
     /**
@@ -180,5 +185,25 @@ class ModelGeneratorConfiguration
     public function getTraits(): array
     {
         return $this->traits;
+    }
+
+    /**
+     * @param bool $append
+     *
+     * @return $this
+     */
+    public function appendConnection(bool $append): static
+    {
+        $this->appendConnection = $append;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function appendsConnection(): bool
+    {
+        return $this->appendConnection;
     }
 }

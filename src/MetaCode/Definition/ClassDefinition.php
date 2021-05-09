@@ -256,14 +256,14 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
-     * @param string $traitFullyQualifiedName
+     * @param string $fullyQualifiedTraitName
      *
      * @return bool
      */
-    public function hasTrait(string $traitFullyQualifiedName): bool
+    public function hasTrait(string $fullyQualifiedTraitName): bool
     {
         foreach ($this->getTraits() as $classTraitDefinition) {
-            if ($classTraitDefinition->isFullyQualifiedName($traitFullyQualifiedName)) {
+            if ($classTraitDefinition->isFullyQualifiedName($fullyQualifiedTraitName)) {
                 return true;
             }
         }

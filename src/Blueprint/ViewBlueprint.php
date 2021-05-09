@@ -2,7 +2,6 @@
 
 namespace Reliese\Blueprint;
 
-use Doctrine\DBAL\Schema\View;
 /**
  * Class ViewBlueprint
  */
@@ -10,11 +9,6 @@ class ViewBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
 {
     use SchemaMemberTrait;
     use ColumnOwnerTrait;
-
-    /**
-     * @var SchemaBlueprint
-     */
-    private $schemaBlueprint;
 
     /**
      * ViewBlueprint constructor.
@@ -34,5 +28,15 @@ class ViewBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
     public function getSchemaMemberType(): SchemaMemberType
     {
         return SchemaMemberType::View();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUniqueName(): string
+    {
+        return sprintf('%s.%s',
+            $this->getSchemaBlueprint()->getSchemaName(),
+            $this->getName());
     }
 }

@@ -59,6 +59,14 @@ class TableBlueprintContext extends FeatureContext
     }
 
     /**
+     * @Given /^last SchemaBlueprint is on connection "([^"]*)"$/
+     */
+    public function givenLastSchemaBlueprintIsOnConnection(string $connectionName)
+    {
+        $this->schemaBlueprintContext->getLastSchemaBlueprint()->setConnectionName($connectionName);
+    }
+
+    /**
      * @Given /^last TableBlueprint has identity ColumnBlueprint "([^"]*)"$/
      */
     public function lastTableHasIdentityColumnBlueprint($columnName)

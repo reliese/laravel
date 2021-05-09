@@ -20,6 +20,7 @@ use Reliese\MetaCode\Tool\ClassNameTool;
 class ModelGenerator
 {
     const PROPERTY_TABLE = 'table';
+    const PROPERTY_CONNECTION = 'connection';
 
     private MySqlDataTypeMap $dataTypeMap;
 
@@ -221,6 +222,10 @@ class ModelGenerator
             $properties[] = $this->generateTableProperty($tableBlueprint);
         }
 
+        if ($this->modelGeneratorConfiguration->appendsConnection()) {
+            $properties[] = $this->generateConnectionProperty($tableBlueprint);
+        }
+
         return $properties;
     }
 
@@ -241,7 +246,7 @@ class ModelGenerator
     {
         $property = new ClassPropertyDefinition(
             static::PROPERTY_TABLE,
-            PhpTypeEnum::stringType(),
+            PhpTypeEnum::absentTypeEnum(),
             VisibilityEnum::protectedEnum()
         );
 
@@ -271,5 +276,23 @@ class ModelGenerator
         }
 
         return $traitDefinitions;
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return ClassPropertyDefinition
+     */
+    private function generateConnectionProperty(TableBlueprint $tableBlueprint): ClassPropertyDefinition
+    {
+        $property = new ClassPropertyDefinition(
+            static::PROPERTY_CONNECTION,
+            PhpTypeEnum::absentTypeEnum(),
+            VisibilityEnum::protectedEnum()
+        );
+
+        $property->setValue($tableBlueprint->getSchemaBlueprint()->getConnectionName());
+
+        return $property;
     }
 }
