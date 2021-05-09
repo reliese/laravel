@@ -56,7 +56,8 @@ class RelieseConfigurationFactory
 
     public function getRelieseConfiguration(string $configurationProfileName): RelieseConfiguration
     {
-        Log::info("Creating RelieseConfiguration for Configuration Profile \"$configurationProfileName\"");
+// TODO: figure out how to make logging work w/ tests as well
+//                Log::info("Creating RelieseConfiguration for Configuration Profile \"$configurationProfileName\"");
 
         if (!array_key_exists($configurationProfileName, $this->relieseConfigurationProfiles)) {
             throw new InvalidArgumentException("Unable to locate a configuration profile named $configurationProfileName in {$this->relieseConfigurationFilePath}");

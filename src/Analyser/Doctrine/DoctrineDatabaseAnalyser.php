@@ -55,7 +55,8 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
              * Must be specifically included and NOT match an exclude filter
              */
             if ($databaseBlueprintConfiguration->getSchemaFilter()->isExcludedSchema($schemaName)) {
-                Log::debug("Skipping Schema \"$schemaName\"");
+// TODO: figure out how to make logging work w/ tests as well
+//                Log::debug("Skipping Schema \"$schemaName\"");
                 continue;
             }
 
@@ -84,7 +85,8 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
                  */
                 $tableBlueprint = $databaseBlueprint->getSchemaBlueprint($schemaName)->getTableBlueprint($tableName);
 
-                Log::info(sprintf("Looking for Foreign Keys in [%s] columns: \n%s",
+// TODO: figure out how to make logging work w/ tests as well
+//                Log::info(sprintf("Looking for Foreign Keys in [%s] columns: \n%s",
                     $tableBlueprint->getName(),
                     json_encode($tableBlueprint->getColumnNames(), JSON_PRETTY_PRINT)));
 
@@ -114,7 +116,8 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
                          * TODO: Decide if we should apply a "best guess" methodology where table and column matching resolves the key
                          * TODO: Alternative, throw an exception that is handled by requiring the user to specify the schema and for this FK manually and store that in a config
                          */
-                        Log::notice(sprintf("Skipping Foreign Key \"%s\": Unable to resolve relationships across schemas", $foreignKey->getName()));
+// TODO: figure out how to make logging work w/ tests as well
+//                Log::notice(sprintf("Skipping Foreign Key \"%s\": Unable to resolve relationships across schemas", $foreignKey->getName()));
                         continue;
                     }
 

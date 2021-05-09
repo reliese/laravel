@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Behat\Contexts;
+namespace Tests\Behat\Contexts\Blueprint;
 
 use Reliese\Blueprint\SchemaBlueprint;
 use Tests\Test;
 
-class SchemaBlueprintContext extends FeatureContext
+class SchemaBlueprintContext extends BlueprintContexts
 {
     /**
      * @var SchemaBlueprint[]
@@ -32,10 +32,10 @@ class SchemaBlueprintContext extends FeatureContext
     /**
      * @Given /^the DatabaseBlueprint has SchemaBlueprint "([^"]*)"$/
      */
-    public function theDatabaseBlueprintHasSchemaBlueprint($schemaName)
+    public function addDatabaseBlueprintSchemaBlueprintWithName(string $schemaName)
     {
         $this->schemaBlueprints[$schemaName] = new SchemaBlueprint(
-            $this->databaseBlueprintContext->getDatabaseBlueprint(),
+            $this->getDatabaseBlueprintContext()->getDatabaseBlueprint(),
             $schemaName
         );
     }

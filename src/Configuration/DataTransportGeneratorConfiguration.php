@@ -4,6 +4,8 @@ namespace Reliese\Configuration;
 
 /**
  * Class DataTransportGeneratorConfiguration
+ *
+ * @deprecated Please use DataTransportObjectGeneratorConfiguration
  */
 class DataTransportGeneratorConfiguration
 {

@@ -2,13 +2,19 @@ default:
   suites:
     default:
       contexts:
+        - \Tests\Behat\Contexts\Blueprint\BlueprintContexts
+        - \Tests\Behat\Contexts\Blueprint\DatabaseBlueprintContext
+        - \Tests\Behat\Contexts\Blueprint\SchemaBlueprintContext
+        - \Tests\Behat\Contexts\Blueprint\TableBlueprintContext
+        - \Tests\Behat\Contexts\Configuration\ConfigurationContexts
+        - \Tests\Behat\Contexts\Configuration\DatabaseBlueprintConfigurationContext
+        - \Tests\Behat\Contexts\Configuration\DataTransportObjectGeneratorConfigurationContext
+        - \Tests\Behat\Contexts\Configuration\ModelGeneratorConfigurationContext
+        - \Tests\Behat\Contexts\Configuration\RelieseConfigurationContext
         - \Tests\Behat\Contexts\ClassDefinitionContext
-        - \Tests\Behat\Contexts\DatabaseBlueprintConfigurationContext
-        - \Tests\Behat\Contexts\DatabaseBlueprintContext
         - \Tests\Behat\Contexts\FeatureContext
-        - \Tests\Behat\Contexts\ModelGeneratorConfigurationContext
-        - \Tests\Behat\Contexts\ModelGeneratorContext
-        - \Tests\Behat\Contexts\SchemaBlueprintContext
-        - \Tests\Behat\Contexts\TableBlueprintContext
+        - \Tests\Behat\Contexts\Generator\GeneratorContexts
+        - \Tests\Behat\Contexts\Generator\DataTransportObjectGeneratorContext
+        - \Tests\Behat\Contexts\Generator\ModelGeneratorContext
       paths:
         - tests/Behat/Suites

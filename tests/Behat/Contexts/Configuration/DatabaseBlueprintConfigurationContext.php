@@ -1,27 +1,25 @@
 <?php
 
-namespace Tests\Behat\Contexts;
+namespace Tests\Behat\Contexts\Configuration;
 
 use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Tests\Behat\Contexts\FeatureContext;
 use Tests\Test;
 
 class DatabaseBlueprintConfigurationContext extends FeatureContext
 {
-    private ?DatabaseBlueprintConfiguration $databaseBlueprintConfiguration;
+    private ?DatabaseBlueprintConfiguration $databaseBlueprintConfiguration = null;
 
     /**
      * @return DatabaseBlueprintConfiguration
      */
     public function getDatabaseBlueprintConfiguration(): DatabaseBlueprintConfiguration
     {
-        Test::assertInstanceOf(
-            DatabaseBlueprintConfiguration::class,
-            $this->databaseBlueprintConfiguration,
-            'You tried to use a DatabaseBlueprintConfiguration before initializing one.'.
-            "\nTry adding 'Given a default DatabaseBlueprintConfiguration' before this statement."
-        );
-
-        return $this->databaseBlueprintConfiguration;
+        return $this->databaseBlueprintConfiguration
+            ??= $this->getConfigurationContexts()
+                            ->getRelieseConfigurationContext()
+                            ->getRelieseConfiguration()
+                            ->getDatabaseBlueprintConfiguration();
     }
 
     /**

@@ -18,6 +18,8 @@ use const DIRECTORY_SEPARATOR;
 
 /**
  * Class DataTransportGenerator
+ *
+ * @deprecated Please use DataTransportObjectGenerator instead
  */
 class DataTransportGenerator
 {
@@ -182,3 +184,4 @@ class DataTransportGenerator
         file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
     }
 }
+

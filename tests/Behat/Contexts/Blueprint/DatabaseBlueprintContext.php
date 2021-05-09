@@ -1,13 +1,18 @@
 <?php
 
-namespace Tests\Behat\Contexts;
+namespace Tests\Behat\Contexts\Blueprint;
 
+use Behat\Behat\Tester\Exception\PendingException;
+use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
+use Reliese\Blueprint\SchemaBlueprint;
+use Reliese\Blueprint\TableBlueprint;
+use Tests\Behat\Contexts\FeatureContext;
 use Tests\Test;
 
-class DatabaseBlueprintContext extends FeatureContext
+class DatabaseBlueprintContext extends BlueprintContexts
 {
-    private ?DatabaseBlueprint $databaseBlueprint;
+    private ?DatabaseBlueprint $databaseBlueprint = null;
 
     /**
      * @return DatabaseBlueprint
@@ -29,7 +34,9 @@ class DatabaseBlueprintContext extends FeatureContext
     public function aNewDatabaseBlueprint()
     {
         $this->databaseBlueprint = new DatabaseBlueprint(
-            $this->databaseBlueprintConfigurationContext->getDatabaseBlueprintConfiguration()
+            $this->getConfigurationContexts()
+            ->getDatabaseBlueprintConfigurationContext()
+            ->getDatabaseBlueprintConfiguration()
         );
     }
 }

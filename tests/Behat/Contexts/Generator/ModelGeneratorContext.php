@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Behat\Contexts;
+namespace Tests\Behat\Contexts\Generator;
 
 use Reliese\Generator\Model\ModelGenerator;
 use Tests\Test;
 
-class ModelGeneratorContext extends FeatureContext
+class ModelGeneratorContext extends GeneratorContexts
 {
     private ?ModelGenerator $modelGenerator;
 
@@ -25,7 +25,9 @@ class ModelGeneratorContext extends FeatureContext
     public function givenAModelGeneratorIsCreated()
     {
         $this->modelGenerator = new ModelGenerator(
-            $this->modelGeneratorConfigurationContext->getModelGeneratorConfiguration()
+            $this->getConfigurationContexts()
+                 ->getModelGeneratorConfigurationContext()
+                 ->getModelGeneratorConfiguration()
         );
     }
 
@@ -45,7 +47,7 @@ class ModelGeneratorContext extends FeatureContext
         $this->classDefinitionContext->setLastClassDefinition(
             $this->getModelGenerator()
                  ->generateModelClass(
-                     $this->tableBlueprintContext->getLastTableBlueprint()
+                     $this->getBlueprintContexts()->getTableBlueprintContext()->getLastTableBlueprint()
                  )
         );
     }
@@ -58,7 +60,7 @@ class ModelGeneratorContext extends FeatureContext
         $this->classDefinitionContext->setLastAbstractClassDefinition(
             $this->getModelGenerator()
                  ->generateModelAbstractClass(
-                     $this->tableBlueprintContext->getLastTableBlueprint()
+                     $this->getBlueprintContexts()->getTableBlueprintContext()->getLastTableBlueprint()
                  )
         );
     }

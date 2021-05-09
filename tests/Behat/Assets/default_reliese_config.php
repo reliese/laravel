@@ -43,7 +43,7 @@ return [
             | that should be used to populate schema and table blueprints
             |
             */
-            'ConnectionName' => env('DB_CONNECTION'),
+            'ConnectionName' => 'DB_CONNECTION',
             'DoctrineDatabaseAssistantClass' => MySqlDoctrineDatabaseAssistant::class,
         ],
         // endregion Database Analyser Configuration
@@ -126,7 +126,7 @@ return [
             |
             */
 
-            'Path' => app_path('Models'),
+            'Path' => $appRoot.'Models',
 
             /*
             |--------------------------------------------------------------------------
@@ -529,7 +529,7 @@ return [
         // endregion Model Generator Config
         // region Data Transport Generator Config
         DataTransportGeneratorConfiguration::class => [
-            'Path' => app_path().'/DataTransportObjects',
+            'Path' => $appRoot.'/DataTransportObjects',
             'Namespace' => 'App\DataTransportObjects',
             'ClassSuffix' => 'Dto',
             'ParentClassPrefix' => 'Abstract',
@@ -541,7 +541,7 @@ return [
         // endregion Data Transport Generator Config
         // region Data Map Generator Config
         ModelDataMapGeneratorConfiguration::class => [
-            'Path' => app_path().'/DataMaps/PrimaryDatabase',
+            'Path' => $appRoot.'/DataMaps/PrimaryDatabase',
             'Namespace' => 'App\DataMaps\PrimaryDatabase',
             'ClassSuffix' => 'Map',
             'ParentClassPrefix' => 'Abstract',

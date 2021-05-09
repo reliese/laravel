@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests\Behat\Contexts;
+namespace Tests\Behat\Contexts\Configuration;
 
 use Reliese\Configuration\ModelGeneratorConfiguration;
+use Tests\Behat\Contexts\FeatureContext;
 use Tests\Test;
 
 class ModelGeneratorConfigurationContext extends FeatureContext
@@ -28,9 +29,11 @@ class ModelGeneratorConfigurationContext extends FeatureContext
      */
     public function getModelGeneratorConfiguration(): ModelGeneratorConfiguration
     {
-        Test::assertInstanceOf(ModelGeneratorConfiguration::class, $this->modelGeneratorConfiguration);
-
-        return $this->modelGeneratorConfiguration;
+        return $this->modelGeneratorConfiguration
+            ??= $this->getConfigurationContexts()
+                     ->getRelieseConfigurationContext()
+                     ->getRelieseConfiguration()
+                     ->getModelGeneratorConfiguration();
     }
 
     /**

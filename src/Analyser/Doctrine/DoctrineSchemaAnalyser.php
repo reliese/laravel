@@ -99,7 +99,8 @@ class DoctrineSchemaAnalyser
      */
     public function analyseSchemaObjectStructures(): SchemaBlueprint
     {
-        Log::info("Creating SchemaBlueprint for \"{$this->getSchemaName()}\"");
+// TODO: figure out how to make logging work w/ tests as well
+//                Log::info("Creating SchemaBlueprint for \"{$this->getSchemaName()}\"");
 
         $schemaBlueprint = $this->getSchemaBlueprint();
 
@@ -161,7 +162,8 @@ class DoctrineSchemaAnalyser
      */
     private function analyseTable(SchemaBlueprint $schemaBlueprint, Table $tableDefinition): TableBlueprint
     {
-        Log::info(sprintf("Creating TableBlueprint for \"%s\"", $tableDefinition->getName()));
+// TODO: figure out how to make logging work w/ tests as well
+//                Log::info(sprintf("Creating TableBlueprint for \"%s\"", $tableDefinition->getName()));
         $tableName = $tableDefinition->getName();
         /*
          * Keep the table definition for use while resolving relationships
