@@ -503,9 +503,14 @@ class Model
      */
     public function getBaseNamespace()
     {
+        $baseNameSpace = $this->getNamespace().'\\Base';
+        $modelNameSpace = $this->getNamespace();
+        if($this->placeModelInOwnDirectory()){
+            $modelNameSpace = $modelNameSpace.'\\'.$this->getClassName();
+        }
         return $this->usesBaseFiles()
-            ? $this->getNamespace().'\\Base'
-            : $this->getNamespace();
+            ? $baseNameSpace
+            : $modelNameSpace;
     }
 
     /**
@@ -1269,4 +1274,12 @@ class Model
     {
         return $this->config('fillable_in_base_files', false);
     }
+    /**
+     * @return bool
+     */
+    public function placeModelInOwnDirectory(): bool
+    {
+        return $this->config('place_model_in_own_directory', false);
+    }
+    
 }

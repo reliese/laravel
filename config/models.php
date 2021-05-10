@@ -22,6 +22,7 @@ return [
         | We need a location to store your new generated files. All files will be
         | placed within this directory. When you turn on base files, they will
         | be placed within a Base directory inside this location.
+        | There is one variable caleed {model_name} it will repa
         |
         */
 
@@ -421,6 +422,14 @@ return [
         |
         */
         'fillable_in_base_files' => false,
+        /*
+        |--------------------------------------------------------------------------
+        | Place Model in its owner directory
+        |--------------------------------------------------------------------------
+        | 
+        |
+        */
+        'place_model_in_own_directory' => false,
     ],
 
     /*

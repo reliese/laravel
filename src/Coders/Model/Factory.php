@@ -488,11 +488,23 @@ class Factory
      */
     protected function modelPath(Model $model, $custom = [])
     {
+        
+
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
+
+        if(!in_array('Base',$custom)){
+            //add 
+            if($model->placeModelInOwnDirectory()){
+                $modelsDirectory.= '\\'.$model->getClassName();
+            }
+        }
 
         if (! $this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
+
+       
+        
 
         return $this->path([$modelsDirectory, $model->getClassName().'.php']);
     }
