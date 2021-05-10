@@ -252,10 +252,10 @@ class ModelDataMapGenerator
         $classFolder = $this->modelDataMapGeneratorConfiguration->getPath();
         $abstractClassFolder = $classFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($classFolder)) {
-            mkdir($classFolder, 0777, true);
+            \mkdir($classFolder, 0755, true);
         }
         if (!is_dir($abstractClassFolder)) {
-            mkdir($abstractClassFolder, 0777, true);
+            \mkdir($abstractClassFolder, 0755, true);
         }
 
         $classFilePath = $classFolder . DIRECTORY_SEPARATOR . $classDefinition->getClassName() . '.php';

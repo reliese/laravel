@@ -4,7 +4,8 @@ namespace Reliese\Generator\DataTransport;
 
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DataTransportGeneratorConfiguration;
+use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
+use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
@@ -24,9 +25,14 @@ use const DIRECTORY_SEPARATOR;
 class DataTransportGenerator
 {
     /**
-     * @var DataTransportGeneratorConfiguration
+     * @var DataAttributeGenerator
      */
-    private DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration;
+    private DataAttributeGenerator $dataAttributeGenerator;
+
+    /**
+     * @var DataTransportObjectGeneratorConfiguration
+     */
+    private DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration;
 
     /**
      * @var MySqlDataTypeMap
@@ -41,15 +47,19 @@ class DataTransportGenerator
     /**
      * DataTransportGenerator constructor.
      *
-     * @param DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration
+     * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
+     * @param DataAttributeGenerator $dataAttributeGenerator
      */
-    public function __construct(DataTransportGeneratorConfiguration $dataTransportGeneratorConfiguration)
-    {
+    public function __construct(
+        DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration,
+        DataAttributeGenerator $dataAttributeGenerator
+    ) {
         $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */
         $this->dataTypeMap = new MySqlDataTypeMap();
+        $this->dataAttributeGenerator = $dataAttributeGenerator;
     }
 
     /**
@@ -97,9 +107,14 @@ class DataTransportGenerator
                 $columnBlueprint->getMaximumCharacters(),
                 $columnBlueprint->getNumericPrecision(),
                 $columnBlueprint->getNumericScale(),
-                $columnBlueprint->getIsNullable()
+                // This value must always be true in order to allow for partial DTOs.
+                // Otherwise and error is raised when attempting to read a property that has not been assigned a value
+                true //$columnBlueprint->getIsNullable()
             );
 
+            /*
+             * Use a property defined directly on the class
+             */
             $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
                 ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties())
                 ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties())
@@ -168,10 +183,10 @@ class DataTransportGenerator
         $dtoClassFolder = $this->dataTransportGeneratorConfiguration->getPath();
         $abstractDtoClassFolder = $dtoClassFolder . DIRECTORY_SEPARATOR . 'Generated';
         if (!is_dir($dtoClassFolder)) {
-            mkdir($dtoClassFolder, 0777, true);
+            \mkdir($dtoClassFolder, 0755, true);
         }
         if (!is_dir($abstractDtoClassFolder)) {
-            mkdir($abstractDtoClassFolder, 0777, true);
+            \mkdir($abstractDtoClassFolder, 0755, true);
         }
 
         $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getClassName() . '.php';

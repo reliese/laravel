@@ -356,7 +356,7 @@ use DateTime;
  */
 class OneClass
 {
-    private ?DateTime \$aProperty;
+    private ?DateTime \$aProperty = null;
 }
 
 PHP;
@@ -393,8 +393,8 @@ use DateTime;
  */
 class OneClass
 {
-    private ?DateTime \$aProperty;
-    private ?DateTime \$anotherProperty;
+    private ?DateTime \$aProperty = null;
+    private ?DateTime \$anotherProperty = null;
 }
 
 PHP;
@@ -431,7 +431,7 @@ namespace OneNamespace;
  */
 class OneClass
 {
-    private ?string \$aProperty;
+    private ?string \$aProperty = null;
 }
 
 PHP;

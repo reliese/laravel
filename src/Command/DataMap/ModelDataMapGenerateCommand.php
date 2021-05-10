@@ -9,6 +9,7 @@ use Reliese\Analyser\AnalyserFactory;
 use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
+use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 use Reliese\Generator\DataMap\ModelDataMapGenerator;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
 use Reliese\Generator\Model\ModelGenerator;
@@ -105,7 +106,10 @@ class ModelDataMapGenerateCommand extends Command
         $modelDataMapGenerator = new ModelDataMapGenerator(
             $relieseConfiguration->getModelDataMapGeneratorConfiguration(),
             new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration()),
-            new DataTransportGenerator($relieseConfiguration->getDataTransportGeneratorConfiguration()),
+            new DataTransportGenerator(
+                $relieseConfiguration->getDataTransportGeneratorConfiguration(),
+                new DataAttributeGenerator($relieseConfiguration->getDataAttributeGeneratorConfiguration())
+            ),
         );
 
         if (!empty($table)) {

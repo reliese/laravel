@@ -18,6 +18,11 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
  */
 class ClassFormatter
 {
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return string
+     */
     public function format(ClassDefinition $classDefinition): string
     {
         $depth = 0;
@@ -44,11 +49,14 @@ class ClassFormatter
         }
 
         $lines[] = "/**\n";
-        $lines[] = ' * Class ' . $classDefinition->getClassName() . "\n";
+        $lines[] = ' * ' . Str::studly($classDefinition->getStructureType()) . ' ' . $classDefinition->getName() . "\n";
         $lines[] = " * \n";
         $lines[] = " * Created by Reliese\n";
+        foreach ($classDefinition->getClassComments() as $line) {
+            $lines[] = " * \n * ".$line."\n";
+        }
         $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getClassName();
+        $lines[] = Str::lower($classDefinition->getStructureType()) . ' ' . $classDefinition->getName();
 
         if (!empty($parent)) {
             $lines[] = ' extends ' . $parent;
@@ -198,19 +206,21 @@ class ClassFormatter
 
     private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
     {
-        $statement = $this->getIndentation($depth)
-            . $property->getVisibilityEnum()->toReservedWord()
-            . ' '
-            . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
-            . ' $'
-            . $property->getVariableName()
-        ;
-
+        $defaultValueString = '';
         if ($property->hasValue()) {
-            $statement .= ' = ' . var_export($property->getValue(), true);
+            $defaultValueString = ' = '. var_export($property->getValue(), true);
+        } elseif ($property->getPhpTypeEnum()->isNullable()) {
+            $defaultValueString = ' = null';
         }
 
-        return $statement . ';';
+        return $this->getIndentation($depth)
+                . $property->getVisibilityEnum()->toReservedWord()
+                . ' '
+                . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
+                . ' $'
+                . $property->getVariableName()
+                . $defaultValueString
+                . ';';
     }
 
     /**

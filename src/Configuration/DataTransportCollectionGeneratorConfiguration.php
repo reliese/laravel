@@ -3,27 +3,27 @@
 namespace Reliese\Configuration;
 
 /**
- * Class ModelDataMapGeneratorConfiguration
+ * Class DataTransportCollectionGeneratorConfiguration
  */
-class ModelDataMapGeneratorConfiguration
+class DataTransportCollectionGeneratorConfiguration
 {
     /**
-     * @var mixed
+     * @var string
      */
     private string $classSuffix;
 
     /**
-     * @var string|mixed
+     * @var string
      */
     private string $namespace;
 
     /**
-     * @var mixed
+     * @var string
      */
     private string $parentClassPrefix;
 
     /**
-     * @var string|mixed
+     * @var string
      */
     private string $path;
 
@@ -34,7 +34,6 @@ class ModelDataMapGeneratorConfiguration
      */
     public function __construct(array $configuration)
     {
-
         $this->path = $configuration['Path'];
         $this->namespace = $configuration['Namespace'];
         $this->classSuffix = $configuration['ClassSuffix'] ?? '';

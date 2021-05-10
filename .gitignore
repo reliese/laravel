@@ -1,6 +1,10 @@
 /vendor
 .phpunit.result.cache
+<<<<<<< HEAD
 
+=======
+.idea/**/markdown-navigator*
+>>>>>>> v2-additional-generation-commands
 # Ingore .env files
 .env
 .env.behat
