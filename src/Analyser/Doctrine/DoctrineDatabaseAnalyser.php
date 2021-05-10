@@ -87,8 +87,8 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
 
 // TODO: figure out how to make logging work w/ tests as well
 //                Log::info(sprintf("Looking for Foreign Keys in [%s] columns: \n%s",
-                    $tableBlueprint->getName(),
-                    json_encode($tableBlueprint->getColumnNames(), JSON_PRETTY_PRINT)));
+//                    $tableBlueprint->getName(),
+//                    json_encode($tableBlueprint->getColumnNames(), JSON_PRETTY_PRINT)));
 
                 foreach ($foreignKeys as $foreignKey) {
                     /*
