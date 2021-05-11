@@ -2,13 +2,35 @@
 
 namespace Reliese\MetaCode\Writers;
 
-use Reliese\MetaCode\Definition\CodeDefinitionInterface\CodeDefinitionInterface;
-use Reliese\MetaCode\Format\ClassFormatter;
+use Reliese\MetaCode\Definition\CodeDefinitionInterface;
 
 class CodeWriter
 {
+    public function createClassDefinition(
+        string $fileName,
+        string $classSourceCode,
+    ) {
+        if (\file_exists($fileName)) {
+            return;
+        }
+
+        $this->overwriteClassDefinition($fileName, $classSourceCode);
+    }
+
+    public function overwriteClassDefinition(
+        string $fileName,
+        string $classSourceCode,
+    ) {
+        $directory = dirname($fileName);
+
+        if (!is_dir($directory)) {
+            \mkdir($directory, 0755, true);
+        }
+
+        file_put_contents($fileName, $classSourceCode);
+    }
+
     private function writeClassFiles(
-        ClassFormatter $classFormatter,
         CodeDefinitionInterface $codeDefinition,
         bool $overrideExisting
     ): void
