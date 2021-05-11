@@ -157,7 +157,7 @@ class DataTransportGenerator
                     $fkDtoProperty = (
                         new ClassPropertyDefinition(
                             $dtoVariableName,
-                            PhpTypeEnum::objectOfType(
+                            PhpTypeEnum::nullableObjectOfType(
                                 $this->getFullyQualifiedClassName($referencedTableBlueprint)
                             )
                         )
