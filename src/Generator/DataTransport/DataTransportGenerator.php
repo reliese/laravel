@@ -140,9 +140,6 @@ class DataTransportGenerator
         foreach ($tableBlueprint->getForeignKeyBlueprintsGroupedByReferencedTable() as
             $referencedTableName => $foreignKeyBlueprints
         ) {
-            $comments = "Fk to: ".$referencedTableName;
-            $dtoAbstractClassDefinition->addClassComment($comments);
-
             $commonColumns = [];
             $fkDtoProperty = null;
             $dtoVariableName = null;
