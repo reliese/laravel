@@ -12,6 +12,9 @@ use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Configuration\RelieseConfiguration;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\Model\ModelGenerator;
+use Reliese\MetaCode\Definition\ClassDefinition;
+use Reliese\MetaCode\Format\ClassFormatter;
+use Reliese\MetaCode\Writers\CodeWriter;
 
 /**
  * Class NewModelGenerateCommand
@@ -45,6 +48,16 @@ class NewModelGenerateCommand extends Command
     protected $config;
 
     /**
+     * @var ClassFormatter
+     */
+    private ClassFormatter $classFormatter;
+
+    /**
+     * @var CodeWriter
+     */
+    private CodeWriter $codeWriter;
+
+    /**
      * Create a new command instance.
      *
      * @param \Reliese\Coders\Model\Factory $models
@@ -60,6 +73,8 @@ class NewModelGenerateCommand extends Command
 
         $this->models = $models;
         $this->config = $config;
+        $this->codeWriter = new CodeWriter();
+        $this->classFormatter = new ClassFormatter();
     }
 
     /**
@@ -102,7 +117,11 @@ class NewModelGenerateCommand extends Command
         if (!empty($table)) {
             // Generate only for the specified table
             $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
-            $modelGenerator->generateModelClass($tableBlueprint);
+            $this->writeClassFiles(
+                $modelGenerator,
+                $modelGenerator->generateModelClass($tableBlueprint),
+                $modelGenerator->generateModelAbstractClass($tableBlueprint)
+            );
             return;
         }
 
@@ -110,8 +129,28 @@ class NewModelGenerateCommand extends Command
          * Display the data that would be used to perform code generation
          */
         foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-            $modelGenerator->generateModelClass($tableBlueprint);
+            $this->writeClassFiles(
+                $modelGenerator,
+                $modelGenerator->generateModelClass($tableBlueprint),
+                $modelGenerator->generateModelAbstractClass($tableBlueprint)
+            );
         }
+    }
+
+    protected function writeClassFiles(
+        \Reliese\Generator\Model\ModelGenerator $modelGenerator,
+        ClassDefinition $modelClass,
+        ClassDefinition $abstractModelClass
+    ) {
+        $this->codeWriter->overwriteClassDefinition(
+            $modelGenerator->getAbstractModelClassFilePath($abstractModelClass),
+            $this->classFormatter->format($abstractModelClass)
+        );
+
+        $this->codeWriter->createClassDefinition(
+            $modelGenerator->getModelClassFilePath($modelClass),
+            $this->classFormatter->format($modelClass)
+        );
     }
 
     /**

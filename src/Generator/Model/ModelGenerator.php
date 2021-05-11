@@ -12,7 +12,9 @@ use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\ObjectTypeDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
+use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Class ModelGenerator
@@ -264,5 +266,25 @@ class ModelGenerator
         }
 
         return $traitDefinitions;
+    }
+
+    public function getModelClassDirectory() : string
+    {
+        return $this->modelGeneratorConfiguration->getPath();
+    }
+
+    public function getModelClassFilePath(ClassDefinition $classDefinition): string
+    {
+        return $this->getModelClassDirectory(). DIRECTORY_SEPARATOR . $classDefinition->getClassName() . '.php';
+    }
+
+    public function getAbstractModelClassDirectory() : string
+    {
+        return $this->modelGeneratorConfiguration->getPath(). DIRECTORY_SEPARATOR . 'Generated';
+    }
+
+    public function getAbstractModelClassFilePath(ClassDefinition $classDefinition): string
+    {
+        return $this->getAbstractModelClassDirectory(). DIRECTORY_SEPARATOR . $classDefinition->getClassName() . '.php';
     }
 }
