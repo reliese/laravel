@@ -71,4 +71,9 @@ abstract class ClassNameTool
     {
         return 'set'.str::studly($columnName);
     }
+
+    public static function dtoClassNameToVariableName(string $dtoClassName)
+    {
+        return \strtolower($dtoClassName[0]).\substr($dtoClassName, 1);
+    }
 }

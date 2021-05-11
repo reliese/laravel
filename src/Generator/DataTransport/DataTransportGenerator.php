@@ -2,7 +2,9 @@
 
 namespace Reliese\Generator\DataTransport;
 
+use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
+use Reliese\Blueprint\ForeignKeyBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
 use Reliese\Generator\DataAttribute\DataAttributeGenerator;
@@ -10,6 +12,8 @@ use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassTraitDefinition;
+use Reliese\MetaCode\Definition\RawStatementDefinition;
+use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use function file_exists;
@@ -77,7 +81,7 @@ class DataTransportGenerator
 
         $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
 
-        if ($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties()) {
+        if ($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties()) {
             $dtoAbstractClassDefinition->addInterface(
                 \PhpLibs\Observable\BeforeValueChangeObservableInterface::class
             );
@@ -86,7 +90,7 @@ class DataTransportGenerator
             );
         }
 
-        if ($this->dataTransportGeneratorConfiguration->useAfterChangeObservableProperties()) {
+        if ($this->dataTransportGeneratorConfiguration->getUseAfterChangeObservableProperties()) {
             $dtoAbstractClassDefinition->addInterface(
                 \PhpLibs\Observable\AfterValueChangeObservableInterface::class
             );
@@ -116,13 +120,85 @@ class DataTransportGenerator
              * Use a property defined directly on the class
              */
             $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
-                ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties())
-                ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->useBeforeChangeObservableProperties())
+                ->setIsBeforeChangeObservable(
+                    $this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties()
+                )
+                ->setIsAfterChangeObservable(
+                    $this->dataTransportGeneratorConfiguration->getUseAfterChangeObservableProperties()
+                )
                 ->withSetter()
                 ->withGetter()
             ;
 
             $dtoAbstractClassDefinition->addProperty($columnClassProperty);
+        }
+
+        /**
+         * Examine FKs
+         * @var ForeignKeyBlueprint $foreignKeyBlueprint
+         */
+        foreach ($tableBlueprint->getForeignKeyBlueprintsGroupedByReferencedTable() as
+            $referencedTableName => $foreignKeyBlueprints
+        ) {
+            $comments = "Fk to: ".$referencedTableName;
+            $dtoAbstractClassDefinition->addClassComment($comments);
+
+            $commonColumns = [];
+            $fkDtoProperty = null;
+            $dtoVariableName = null;
+
+            $referencedTableBlueprint = null;
+            foreach ($foreignKeyBlueprints as $foreignKeyName =>  $foreignKeyBlueprint) {
+
+                $referencedTableBlueprint ??= $foreignKeyBlueprint->getReferencedTableBlueprint();
+
+                $fkDtoClassName = $this->getClassName($referencedTableBlueprint);
+
+                $dtoVariableName = ClassNameTool::dtoClassNameToVariableName($fkDtoClassName);
+//
+                if (\is_null($fkDtoProperty)) {
+                    $fkDtoProperty = (
+                        new ClassPropertyDefinition(
+                            $dtoVariableName,
+                            PhpTypeEnum::objectOfType(
+                                $this->getFullyQualifiedClassName($referencedTableBlueprint)
+                            )
+                        )
+                    )
+                    ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
+                    ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
+                    ->withSetter()
+                    ->withGetter()
+                    ;
+                }
+
+                foreach ($foreignKeyBlueprint->getFkColumnPairs() as $columns) {
+                    /**
+                     * @var ColumnBlueprint $referencingColumn
+                     * @var ColumnBlueprint $referencedColumn
+                     */
+                    [$referencingColumn, $referencedColumn] = $columns;
+
+                    $commonColumns[$referencingColumn->getColumnName().' = '.$referencedColumn->getColumnName()] =
+                        [$referencingColumn, $referencedColumn];
+                }
+            }
+
+            foreach ($commonColumns as $columnPairs) {
+                [$referencingColumn, $referencedColumn] = $columnPairs;
+
+                $fkDtoProperty->addAdditionalSetterOperation(
+                    new RawStatementDefinition(
+                        \sprintf(
+                            "\$this->%s(\$%s->%s());\n",
+                            ClassNameTool::columnNameToSetterName($referencingColumn->getColumnName()),
+                            $dtoVariableName,
+                            ClassNameTool::columnNameToGetterName($referencedColumn->getColumnName()),
+                        )
+                    )
+                );
+            }
+            $dtoAbstractClassDefinition->addProperty($fkDtoProperty);
         }
 
         /*

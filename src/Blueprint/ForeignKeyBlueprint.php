@@ -101,4 +101,28 @@ class ForeignKeyBlueprint
     {
         return $this->referencedTable;
     }
+
+    /**
+     * @return ColumnBlueprint[]
+     */
+    public function getReferencedColumns() : array
+    {
+        return $this->referencedColumns;
+    }
+
+    public function getFkColumnPairs():array
+    {
+        $columns = [];
+        $i = -1;
+        foreach ($this->referencingColumns as $referencingColumn) {
+            $i++;
+            $columns[$i][0] = $referencingColumn;
+        }
+        $i = -1;
+        foreach ($this->referencedColumns as $referencedColumn) {
+            $i++;
+            $columns[$i][1] = $referencedColumn;
+        }
+        return $columns;
+    }
 }

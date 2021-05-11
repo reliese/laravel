@@ -23,6 +23,11 @@ class ClassPropertyDefinition
     private ?VisibilityEnum $getterVisibilityEnum = null;
 
     /**
+     * @var StatementDefinitionInterface[]
+     */
+    private array $additionalSetterOperations = [];
+
+    /**
      * @var InstanceEnum|null
      */
     private ?InstanceEnum $instanceEnum;
@@ -145,16 +150,26 @@ class ClassPropertyDefinition
             $this->getSetterInstanceEnum(),
         );
 
-        if ($this->getIsBeforeChangeObservable() && $containingClass->hasTrait('BeforeValueChangeObservableTrait')) {
-            $setter->appendBodyStatement(new RawStatementDefinition(\sprintf("\$this->raiseBeforeValueChange('%s', \$this->%s, \$\%s);\n",
+        if ($this->getIsBeforeChangeObservable() ) {
+            $setter->appendBodyStatement(
+                new RawStatementDefinition(
+                    \sprintf(
+                        "\$this->raiseBeforeValueChange('%s', \$this->%s, \$%s);\n",
                         $this->getVariableName(),
                         $this->getVariableName(),
-                        $param->getParameterName(),)));
+                        $param->getParameterName(),
+                    )
+                )
+            );
         }
 
         $setter->appendBodyStatement(new RawStatementDefinition(\sprintf("\$this->%s = $%s;\n",
                 $this->getVariableName(),
                 $param->getParameterName())));
+
+        foreach ($this->additionalSetterOperations as $additionalSetterOperation) {
+            $setter->appendBodyStatement($additionalSetterOperation);
+        }
 
         if ($this->getIsAfterChangeObservable() && $containingClass->hasTrait('AfterValueChangeObservableTrait')) {
             $setter->appendBodyStatement(new RawStatementDefinition(\sprintf("\$this->raiseAfterValueChange('%s', \$this->%s);\n",
@@ -289,4 +304,14 @@ class ClassPropertyDefinition
         return $this;
     }
 
+    /**
+     * @param StatementDefinitionInterface $statementDefinition
+     *
+     * @return $this
+     */
+    public function addAdditionalSetterOperation(StatementDefinitionInterface $statementDefinition): static
+    {
+        $this->additionalSetterOperations[] = $statementDefinition;
+        return $this;
+    }
 }

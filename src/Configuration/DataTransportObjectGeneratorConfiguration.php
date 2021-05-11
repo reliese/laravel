@@ -54,10 +54,10 @@ class DataTransportObjectGeneratorConfiguration
         if (\array_key_exists('ObservableProperties', $configuration)) {
             $observableConfig = $configuration['ObservableProperties'];
             if (\array_key_exists('BeforeChange', $observableConfig)) {
-                $this->useBeforeChangeObservableProperties = $observableConfig['BeforeChange'];
+                $this->useBeforeChangeObservableProperties = true === $observableConfig['BeforeChange'];
             }
             if (\array_key_exists('AfterChange', $observableConfig)) {
-                $this->useBeforeChangeObservableProperties = $observableConfig['AfterChange'];
+                $this->useAfterChangeObservableProperties = true === $observableConfig['AfterChange'];
             }
         }
     }
@@ -97,7 +97,7 @@ class DataTransportObjectGeneratorConfiguration
     /**
      * @return bool
      */
-    public function useAfterChangeObservableProperties(): bool
+    public function getUseAfterChangeObservableProperties(): bool
     {
         return $this->useAfterChangeObservableProperties;
     }
@@ -105,7 +105,7 @@ class DataTransportObjectGeneratorConfiguration
     /**
      * @return bool
      */
-    public function useBeforeChangeObservableProperties(): bool
+    public function getUseBeforeChangeObservableProperties(): bool
     {
         return $this->useBeforeChangeObservableProperties;
     }
