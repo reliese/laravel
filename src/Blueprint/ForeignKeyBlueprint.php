@@ -88,4 +88,17 @@ class ForeignKeyBlueprint
     {
         return $this->tableOrViewBlueprint->getUniqueName();
     }
+
+    public function getReferencingColumnNames(): array
+    {
+        return \array_keys($this->referencingColumns);
+    }
+
+    /**
+     * @return ColumnOwnerInterface
+     */
+    public function getReferencedTableBlueprint() : ColumnOwnerInterface
+    {
+        return $this->referencedTable;
+    }
 }

@@ -50,6 +50,16 @@ class TableBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
     }
 
     /**
+     * @param string $foreignKeyName
+     *
+     * @return ForeignKeyBlueprint
+     */
+    public function getForeignKeyBlueprint(string $foreignKeyName) : ForeignKeyBlueprint
+    {
+        return $this->foreignKeyBlueprints[$foreignKeyName];
+    }
+
+    /**
      * @param IndexBlueprint $indexBlueprint
      *
      * @return $this
@@ -95,5 +105,25 @@ class TableBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
         return sprintf('%s.%s',
             $this->getSchemaBlueprint()->getSchemaName(),
             $this->getName());
+    }
+
+    /**
+     * @return ForeignKeyBlueprint[]
+     */
+    public function getForeignKeyBlueprints() : array
+    {
+        return $this->foreignKeyBlueprints;
+    }
+
+    /**
+     * @return array
+     */
+    public function getForeignKeyBlueprintsGroupedByReferencedTable() : array
+    {
+        $results = [];
+        foreach ($this->foreignKeyBlueprints as $foreignKeyName => $foreignKeyBlueprint) {
+            $results[$foreignKeyBlueprint->getReferencedTableName()][$foreignKeyName] = $foreignKeyBlueprint;
+        }
+        return $results;
     }
 }
