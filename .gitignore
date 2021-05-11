@@ -1,6 +1,8 @@
 /vendor
 .phpunit.result.cache
 
+.idea/**/markdown-navigator*
+
 # Ingore .env files
 .env
 .env.behat
