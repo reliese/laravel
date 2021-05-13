@@ -38,6 +38,8 @@ class DataTransportObjectGeneratorConfiguration
      */
     private bool $useAfterChangeObservableProperties = false;
 
+    private $useValueStateTracking;
+
     /**
      * DataTransportGeneratorConfiguration constructor.
      *
@@ -51,6 +53,7 @@ class DataTransportObjectGeneratorConfiguration
         $this->parentClassPrefix = $configuration['ParentClassPrefix'] ?? '';
         $this->classSuffix = $configuration['ClassSuffix'];
         $this->parentClassPrefix = $configuration['ParentClassPrefix'];
+        $this->useValueStateTracking = $configuration['UseValueStateTracking'] ?? false;
         if (\array_key_exists('ObservableProperties', $configuration)) {
             $observableConfig = $configuration['ObservableProperties'];
             if (\array_key_exists('BeforeChange', $observableConfig)) {
@@ -108,5 +111,10 @@ class DataTransportObjectGeneratorConfiguration
     public function getUseBeforeChangeObservableProperties(): bool
     {
         return $this->useBeforeChangeObservableProperties;
+    }
+
+    public function getUseValueStateTracking(): bool
+    {
+        return $this->useValueStateTracking;
     }
 }

@@ -23,7 +23,7 @@
         "illuminate/filesystem": ">=5.1",
         "illuminate/console": ">=5.1",
         "php-libs/observable": "^1.0",
-        "php-libs/value-states": "^1.0"
+        "php-libs/value-states": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

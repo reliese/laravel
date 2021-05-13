@@ -557,6 +557,7 @@ return [
             'Namespace' => 'App\DataTransportObjects',
             'ClassSuffix' => 'Dto',
             'ParentClassPrefix' => 'Abstract',
+            'UseValueStateTracking' => true,
             'ObservableProperties' => [
                 'BeforeChange' => false,
                 'AfterChange' => false,

@@ -109,11 +109,14 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 
     /**
      * @param string $fullyQualifiedInterfaceName
+     *
+     * @return $this
      */
-    public function addInterface(string $fullyQualifiedInterfaceName)
+    public function addInterface(string $fullyQualifiedInterfaceName): static
     {
         $fullyQualifiedInterfaceName = ClassNameTool::globalClassFQN($fullyQualifiedInterfaceName);
         $this->interfaces[$fullyQualifiedInterfaceName] = true;
+        return $this;
     }
 
     /*
@@ -412,10 +415,11 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this->constructorStatementsCollection;
     }
 
-    public function addConstructorStatement(StatementDefinitionInterface $statementDefinition)
+    public function addConstructorStatement(StatementDefinitionInterface $statementDefinition): static
     {
         $this->getConstructorStatementsCollection()
             ->addStatementDefinition($statementDefinition);
+        return $this;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Reliese\Generator\DataTransport;
 
+use PhpLibs\ValueState\ValueStateProviderInterface;
 use PhpLibs\ValueState\WithValueStates;
 use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
@@ -80,11 +81,21 @@ class DataTransportGenerator
         $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
 
         $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
-        $dtoAbstractClassDefinition
-            ->addTrait(new ClassTraitDefinition(WithValueStates::class))
-            ->addConstructorStatement(
-                new RawStatementDefinition("\$this->bindValueChangeStateTracking();")
-            );
+        if ($this->dataTransportGeneratorConfiguration->getUseValueStateTracking()) {
+            /*
+             * Add interface:
+             *  ValueStateProviderInterface
+             * include:
+             *   use WithValueStates;
+             * And bind the tracking in the constructor:
+             *   $this->bindValueChangeStateTracking();
+             */
+            $dtoAbstractClassDefinition
+                ->addInterface(ValueStateProviderInterface::class)
+                ->addTrait(new ClassTraitDefinition(WithValueStates::class))
+                ->addConstructorStatement(new RawStatementDefinition("\$this->bindValueChangeStateTracking();"))
+            ;
+        }
 
         if ($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties()) {
             $dtoAbstractClassDefinition->addInterface(

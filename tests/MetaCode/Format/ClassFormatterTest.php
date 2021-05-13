@@ -807,7 +807,6 @@ class OneClass
     public function setOneProperty(string \$oneProperty): static
     {
         \$this->oneProperty = \$oneProperty;
-
         return \$this;
     }
 
@@ -831,6 +830,6 @@ PHP;
 
         $classOutput = $classFormatter->format($classDefinition);
 
-        $this->assertEquals($expectedClassOutput, $classOutput);
+        $this->assertEquals($expectedClassOutput, $classOutput, "\n $expectedClassOutput \n VERSUS \n $classOutput");
     }
 }

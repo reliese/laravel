@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd44ace547e9f9a0fd5e030c72306f70",
+    "content-hash": "2287d487b5bed6fcb9aca7901763151d",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1104,16 +1104,16 @@
         },
         {
             "name": "php-libs/value-states",
-            "version": "1.0",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-libs/value-state.git",
-                "reference": "6f7d16b25e4417d23be0f4092a44fca940247d89"
+                "reference": "3f402085d7299cbe49914914542509c9979db2b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-libs/value-state/zipball/6f7d16b25e4417d23be0f4092a44fca940247d89",
-                "reference": "6f7d16b25e4417d23be0f4092a44fca940247d89",
+                "url": "https://api.github.com/repos/php-libs/value-state/zipball/3f402085d7299cbe49914914542509c9979db2b6",
+                "reference": "3f402085d7299cbe49914914542509c9979db2b6",
                 "shasum": ""
             },
             "require": {
@@ -1133,9 +1133,9 @@
             "description": "Extends php-libs/observer to track if a values have been initialized or modified (changed after initialization)",
             "support": {
                 "issues": "https://github.com/php-libs/value-state/issues",
-                "source": "https://github.com/php-libs/value-state/tree/1.0"
+                "source": "https://github.com/php-libs/value-state/tree/1.1"
             },
-            "time": "2021-05-13T08:31:45+00:00"
+            "time": "2021-05-13T09:17:15+00:00"
         },
         {
             "name": "psr/container",
