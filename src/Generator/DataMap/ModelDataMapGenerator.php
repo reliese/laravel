@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
+use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
 use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
 use Reliese\Generator\DataTransport\DataTransportGenerator;
 use Reliese\Generator\Model\ModelGenerator;
@@ -43,6 +44,11 @@ class ModelDataMapGenerator
     private DataTransportGenerator $dataTransportGenerator;
 
     /**
+     * @var DataTransportObjectGeneratorConfiguration
+     */
+    private DataTransportObjectGeneratorConfiguration $dataTransportObjectGeneratorConfiguration;
+
+    /**
      * @var ModelDataMapGeneratorConfiguration
      */
     private ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration;
@@ -65,12 +71,14 @@ class ModelDataMapGenerator
     /**
      * ModelDataMapGenerator constructor.
      *
-     * @param ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration
-     * @param ModelGenerator $modelGenerator
-     * @param DataTransportGenerator $dataTransportGenerator
+     * @param ModelDataMapGeneratorConfiguration        $modelDataMapGeneratorConfiguration
+     * @param DataTransportObjectGeneratorConfiguration $dataTransportObjectGeneratorConfiguration
+     * @param ModelGenerator                            $modelGenerator
+     * @param DataTransportGenerator                    $dataTransportGenerator
      */
     public function __construct(
         ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration,
+        DataTransportObjectGeneratorConfiguration $dataTransportObjectGeneratorConfiguration,
         ModelGenerator $modelGenerator,
         DataTransportGenerator $dataTransportGenerator
     ) {
@@ -82,6 +90,7 @@ class ModelDataMapGenerator
 
         $this->modelGenerator = $modelGenerator;
         $this->dataTransportGenerator = $dataTransportGenerator;
+        $this->dataTransportObjectGeneratorConfiguration = $dataTransportObjectGeneratorConfiguration;
     }
 
     /**
@@ -282,10 +291,28 @@ class ModelDataMapGenerator
         foreach ($tableBlueprint->getColumnBlueprints() as $columnBlueprint) {
             $modelConstant = '\\'.$modelParameterType->toDeclarationType().'::'.Str::upper($columnBlueprint->getColumnName());
             $getterName = ClassNameTool::columnNameToGetterName($columnBlueprint->getColumnName());
-            $dtoPropertyAssignmentStatement = "\${$modelParameterName}[{$modelConstant}] = \${$dtoParameterName}->{$getterName}();";
-            $mapToDtoMethodDefinition->appendBodyStatement(new RawStatementDefinition($dtoPropertyAssignmentStatement));
-            //            dd($dtoPropertyAssignmentStatement);
-            //            dd([$modelParameterName, $modelConstant, $dtoParameterName, $setterName]);
+            $propertyConstant = ClassPropertyDefinition::getPropertyNameConstantName(
+                ClassNameTool::columnNameToPropertyName($columnBlueprint->getColumnName())
+            );
+
+            $dtoPropertyAssignmentStatement = new RawStatementDefinition(
+                "\${$modelParameterName}[{$modelConstant}] = \${$dtoParameterName}->{$getterName}();"
+            );
+
+            if ($this->dataTransportObjectGeneratorConfiguration->getUseValueStateTracking()) {
+                $conditionalAssignmentBlock
+                    = new StatementBlockDefinition(
+                        new RawStatementDefinition(\sprintf("if (\$%s->getValueState()->isInitialized(%s::%s))",
+                            $dtoParameterName,
+                            $dtoClassName,
+                            $propertyConstant)));
+                $conditionalAssignmentBlock->addStatementDefinition($dtoPropertyAssignmentStatement);
+                $mapToDtoMethodDefinition->appendBodyStatement($conditionalAssignmentBlock);
+            } else {
+                $mapToDtoMethodDefinition->appendBodyStatement($dtoPropertyAssignmentStatement);
+            }
+
+            $mapToDtoMethodDefinition->appendBodyStatement($conditionalAssignmentBlock);
         }
         $mapToDtoMethodDefinition->appendBodyStatement(new RawStatementDefinition("return true;"));
 

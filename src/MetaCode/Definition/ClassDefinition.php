@@ -181,7 +181,7 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 
             $this->addConstant(
                 new ClassConstantDefinition(
-                    $classPropertyDefinition->getPropertyNameConstantName(
+                    ClassPropertyDefinition::getPropertyNameConstantName(
                         $classPropertyDefinition->getVariableName()
                     ),
                     $classPropertyDefinition->getVariableName()

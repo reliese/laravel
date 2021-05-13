@@ -161,7 +161,7 @@ class ClassPropertyDefinition
                 new RawStatementDefinition(
                     \sprintf(
                         "\$this->raiseBeforeValueChange(static::%s, \$this->%s, \$%s);\n",
-                        $this->getPropertyNameConstantName($this->getVariableName()),
+                        ClassPropertyDefinition::getPropertyNameConstantName($this->getVariableName()),
                         $this->getVariableName(),
                         $param->getParameterName(),
                     )
@@ -179,7 +179,7 @@ class ClassPropertyDefinition
 
         if ($this->getIsAfterChangeObservable() && $containingClass->hasTrait('AfterValueChangeObservableTrait')) {
             $setter->appendBodyStatement(new RawStatementDefinition(\sprintf("\$this->raiseAfterValueChange(static::%s, \$this->%s);\n",
-                        $this->getPropertyNameConstantName($this->getVariableName()),
+                        ClassPropertyDefinition::getPropertyNameConstantName($this->getVariableName()),
                         $this->getVariableName())));
         }
 
@@ -354,7 +354,7 @@ class ClassPropertyDefinition
         return $classMethod;
     }
 
-    public function getPropertyNameConstantName(string $propertyName)
+    public static function getPropertyNameConstantName(string $propertyName): string
     {
         return ClassNameTool::identifierNameToConstantName($propertyName)."_PROPERTY";
     }

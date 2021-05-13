@@ -105,6 +105,7 @@ class ModelDataMapGenerateCommand extends Command
          */
         $modelDataMapGenerator = new ModelDataMapGenerator(
             $relieseConfiguration->getModelDataMapGeneratorConfiguration(),
+            $relieseConfiguration->getDataTransportGeneratorConfiguration(),
             new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration()),
             new DataTransportGenerator(
                 $relieseConfiguration->getDataTransportGeneratorConfiguration(),
