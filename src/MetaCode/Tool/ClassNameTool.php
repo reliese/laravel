@@ -105,4 +105,9 @@ abstract class ClassNameTool
     {
         return "\\".trim($fullyQualifiedTypeName, "\\");
     }
+
+    public static function identifierNameToConstantName(string $identifierName): string
+    {
+        return \strtoupper(str::snake($identifierName));
+    }
 }

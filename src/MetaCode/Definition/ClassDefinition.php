@@ -104,6 +104,7 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     ) {
         $this->className = $className;
         $this->namespace = trim($namespace, '\\');
+        $this->constructorStatementsCollection = new StatementDefinitionCollection();
     }
 
     /**
@@ -171,6 +172,20 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition
     {
         $this->properties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
+
+        if ($classPropertyDefinition->getIsBeforeChangeObservable()
+            || $classPropertyDefinition->getIsAfterChangeObservable()) {
+
+            $this->addConstant(
+                new ClassConstantDefinition(
+                    $classPropertyDefinition->getPropertyNameConstantName(
+                        $classPropertyDefinition->getVariableName()
+                    ),
+                    $classPropertyDefinition->getVariableName()
+                )
+            );
+        }
+
         return $this;
     }
 
@@ -388,6 +403,19 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         }
 
         return $this;
+    }
+
+    private StatementDefinitionCollection $constructorStatementsCollection;
+
+    public function getConstructorStatementsCollection(): StatementDefinitionCollection
+    {
+        return $this->constructorStatementsCollection;
+    }
+
+    public function addConstructorStatement(StatementDefinitionInterface $statementDefinition)
+    {
+        $this->getConstructorStatementsCollection()
+            ->addStatementDefinition($statementDefinition);
     }
 
     /**

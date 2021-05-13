@@ -35,4 +35,9 @@ class StatementDefinitionCollection implements StatementDefinitionInterface
         }
         return \implode("\n", $statements);
     }
+
+    public function hasStatements(): bool
+    {
+        return !empty($this->statementDefinitions);
+    }
 }

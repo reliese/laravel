@@ -30,6 +30,13 @@ class PhpTypeEnum
     protected const STATIC_TYPE_ID = 70;
     protected const NULLABLE_STATIC_TYPE_ID = 75;
 
+    protected const NOT_DEFINED_TYPE_ID = 80;
+
+    /**
+     * @var PhpTypeEnum
+     */
+    private static ?PhpTypeEnum $notDefined = null;
+
     private static ?PhpTypeEnum $stringTypeInstance = null;
     private static ?PhpTypeEnum $nullableStringTypeInstance = null;
 
@@ -77,6 +84,19 @@ class PhpTypeEnum
     {
         $this->phpTypeId = $phpTypeId;
         $this->isNullable = $isNullable;
+    }
+
+    public static function notDefined(): PhpTypeEnum
+    {
+        if (static::$notDefined) {
+            return static::$notDefined;
+        }
+        return static::$notDefined = new static(static::NOT_DEFINED_TYPE_ID, true);
+    }
+
+    public function isDefined(): bool
+    {
+        return static::NOT_DEFINED_TYPE_ID !== $this->phpTypeId;
     }
 
     public function isNullable(): bool
@@ -364,6 +384,10 @@ class PhpTypeEnum
             return '?static';
         }
 
+        if (static::NOT_DEFINED_TYPE_ID === $this->phpTypeId) {
+            return '';
+        }
+
         throw new RuntimeException(__METHOD__." Died because ".__CLASS__." was misused.");
     }
 
@@ -423,6 +447,10 @@ class PhpTypeEnum
 
         if (static::STATIC_TYPE_ID === $this->phpTypeId) {
             return 'nullable static';
+        }
+
+        if (static::NOT_DEFINED_TYPE_ID === $this->phpTypeId) {
+            return '';
         }
 
         throw new RuntimeException(__METHOD__." Died because ".__CLASS__." was misused.");

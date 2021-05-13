@@ -2,6 +2,7 @@
 
 namespace Reliese\Generator\DataTransport;
 
+use PhpLibs\ValueState\WithValueStates;
 use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\ForeignKeyBlueprint;
@@ -18,7 +19,6 @@ use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use function file_exists;
 use function file_put_contents;
-use function mkdir;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -80,6 +80,11 @@ class DataTransportGenerator
         $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
 
         $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
+        $dtoAbstractClassDefinition
+            ->addTrait(new ClassTraitDefinition(WithValueStates::class))
+            ->addConstructorStatement(
+                new RawStatementDefinition("\$this->bindValueChangeStateTracking();")
+            );
 
         if ($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties()) {
             $dtoAbstractClassDefinition->addInterface(

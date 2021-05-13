@@ -37,6 +37,7 @@ class ClassFormatter implements IndentationProviderInterface
         $body[] = $this->formatTraits($classDefinition, $depth);
         $body[] = $this->formatConstants($classDefinition, $depth);
         $body[] = $this->formatProperties($classDefinition, $depth);
+        $body[] = $this->formatConstructor($classDefinition, $depth);
         $body[] = $this->formatMethods($classDefinition, $depth);
 
         $lines[] = "<?php\n\n";
@@ -290,8 +291,13 @@ class ClassFormatter implements IndentationProviderInterface
 
         $signature .= implode(', ', $parameters);
 
-        $signature .= '): ';
-        $signature .= $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
+        $signature .= ')';
+        if ($method->getReturnPhpTypeEnum()->isDefined()) {
+            /*
+             * This condition is required because constructors do not have return types
+             */
+            $signature .= ": ". $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
+        }
         $signature .= "\n";
 
         $signature .= $this->getIndentation($depth) . "{\n";
@@ -354,5 +360,17 @@ class ClassFormatter implements IndentationProviderInterface
         }
 
         return $typeHint;
+    }
+
+    private function formatConstructor(ClassDefinition $classDefinition, int $depth): string
+    {
+        if (!$classDefinition->getConstructorStatementsCollection()->hasStatements()) {
+            return "";
+        }
+
+        $constructorMethodDefinition = new ClassMethodDefinition('__construct', PhpTypeEnum::notDefined());
+        $constructorMethodDefinition->appendBodyStatement($classDefinition->getConstructorStatementsCollection());
+
+        return $this->formatMethod($classDefinition, $constructorMethodDefinition, $depth+1);
     }
 }
