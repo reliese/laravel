@@ -1104,16 +1104,16 @@
         },
         {
             "name": "php-libs/value-states",
-            "version": "1.1",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-libs/value-state.git",
-                "reference": "3f402085d7299cbe49914914542509c9979db2b6"
+                "reference": "d8d215a525b67695256addf20d53b9d7b8a3d523"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-libs/value-state/zipball/3f402085d7299cbe49914914542509c9979db2b6",
-                "reference": "3f402085d7299cbe49914914542509c9979db2b6",
+                "url": "https://api.github.com/repos/php-libs/value-state/zipball/d8d215a525b67695256addf20d53b9d7b8a3d523",
+                "reference": "d8d215a525b67695256addf20d53b9d7b8a3d523",
                 "shasum": ""
             },
             "require": {
@@ -1133,9 +1133,9 @@
             "description": "Extends php-libs/observer to track if a values have been initialized or modified (changed after initialization)",
             "support": {
                 "issues": "https://github.com/php-libs/value-state/issues",
-                "source": "https://github.com/php-libs/value-state/tree/1.1"
+                "source": "https://github.com/php-libs/value-state/tree/1.2.1"
             },
-            "time": "2021-05-13T09:17:15+00:00"
+            "time": "2021-05-13T10:42:22+00:00"
         },
         {
             "name": "psr/container",

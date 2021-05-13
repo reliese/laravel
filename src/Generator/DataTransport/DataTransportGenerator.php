@@ -3,7 +3,7 @@
 namespace Reliese\Generator\DataTransport;
 
 use PhpLibs\ValueState\ValueStateProviderInterface;
-use PhpLibs\ValueState\WithValueStates;
+use PhpLibs\ValueState\WithValueStateManager;
 use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\ForeignKeyBlueprint;
@@ -92,7 +92,7 @@ class DataTransportGenerator
              */
             $dtoAbstractClassDefinition
                 ->addInterface(ValueStateProviderInterface::class)
-                ->addTrait(new ClassTraitDefinition(WithValueStates::class))
+                ->addTrait(new ClassTraitDefinition(WithValueStateManager::class))
                 ->addConstructorStatement(new RawStatementDefinition("\$this->bindValueChangeStateTracking();"))
             ;
         }
