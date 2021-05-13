@@ -86,7 +86,7 @@ class DataTransportGenerator
              * Add interface:
              *  ValueStateProviderInterface
              * include:
-             *   use WithValueStates;
+             *   use WithValueStateManager;
              * And bind the tracking in the constructor:
              *   $this->bindValueChangeStateTracking();
              */
