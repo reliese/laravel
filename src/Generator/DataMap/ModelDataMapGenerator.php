@@ -302,7 +302,7 @@ class ModelDataMapGenerator
             if ($this->dataTransportObjectGeneratorConfiguration->getUseValueStateTracking()) {
                 $conditionalAssignmentBlock
                     = new StatementBlockDefinition(
-                        new RawStatementDefinition(\sprintf("if (\$%s->getValueIsInitialized(%s::%s))",
+                        new RawStatementDefinition(\sprintf("if (\$%s->getValueWasInitialized(%s::%s))",
                             $dtoParameterName,
                             $dtoClassName,
                             $propertyConstant)));
