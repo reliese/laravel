@@ -4,6 +4,7 @@
 namespace Reliese\MetaCode\Definition;
 
 
+use Reliese\MetaCode\Tool\ClassNameTool;
 class ClassTraitDefinition implements ImportableInterface
 {
     private string $name;
@@ -17,11 +18,8 @@ class ClassTraitDefinition implements ImportableInterface
      */
     public function __construct(string $fullyQualifiedTraitName)
     {
-        $parts = explode('\\', \ltrim($fullyQualifiedTraitName, '\\'));
-        $name = \array_pop($parts);
-        $namespace = \implode('\\', $parts);
-        $this->name = $name;
-        $this->namespace = trim($namespace, '\\');
+        $this->name = ClassNameTool::fullyQualifiedClassNameToClassName($fullyQualifiedTraitName);
+        $this->namespace = trim(ClassNameTool::fullyQualifiedClassNameToNamespace($fullyQualifiedTraitName));
     }
 
     /**

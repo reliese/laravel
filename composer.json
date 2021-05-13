@@ -48,12 +48,5 @@
     },
     "scripts": {
       "test": "phpunit --testdox"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Reliese\\RelieseServiceProvider"
-            ]
-        }
     }
 }

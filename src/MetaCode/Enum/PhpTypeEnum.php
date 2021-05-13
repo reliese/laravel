@@ -437,6 +437,11 @@ class PhpTypeEnum
         return __METHOD__.' failed';
     }
 
+    public function getFullyQualifiedObjectClassName(): ?string
+    {
+        return '\\'.trim($this->fullyQualifiedObjectClassName, '\\');
+    }
+
     private function setContainedTypeName(string $containedTypeName) : PhpTypeEnum
     {
         $this->containedTypeName = $containedTypeName;

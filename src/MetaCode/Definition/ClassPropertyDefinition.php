@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Reliese\MetaCode\Enum\InstanceEnum;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
+use Reliese\MetaCode\Tool\ClassNameTool;
 
 /**
  * Class ClassPropertyDefinition
@@ -16,6 +17,11 @@ class ClassPropertyDefinition
      * @var InstanceEnum|null
      */
     private ?InstanceEnum $getterInstanceEnum = null;
+
+    /**
+     * @var StatementDefinitionInterface|null
+     */
+    private ?StatementDefinitionInterface $getterMethodBody;
 
     /**
      * @var VisibilityEnum|null
@@ -245,16 +251,20 @@ class ClassPropertyDefinition
     }
 
     /**
-     * @param VisibilityEnum|null $getterVisibilityEnum
-     * @param InstanceEnum|null   $getterInstanceEnum
+     * @param VisibilityEnum|null               $getterVisibilityEnum
+     * @param InstanceEnum|null                 $getterInstanceEnum
+     * @param StatementDefinitionInterface|null $statementDefinitionInterface
      *
      * @return $this
      */
-    public function withGetter(?VisibilityEnum $getterVisibilityEnum = null,
-        ?InstanceEnum $getterInstanceEnum = null): ClassPropertyDefinition
-    {
+    public function withGetter(
+        ?VisibilityEnum $getterVisibilityEnum = null,
+        ?InstanceEnum $getterInstanceEnum = null,
+        ?StatementDefinitionInterface $statementDefinitionInterface = null
+    ): ClassPropertyDefinition {
         $this->getterVisibilityEnum = $getterVisibilityEnum ?? VisibilityEnum::publicEnum();
         $this->getterInstanceEnum = $getterInstanceEnum ?? InstanceEnum::instanceEnum();
+        $this->getterMethodBody = $statementDefinitionInterface;
         return $this;
     }
 
@@ -313,5 +323,34 @@ class ClassPropertyDefinition
     {
         $this->additionalSetterOperations[] = $statementDefinition;
         return $this;
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return ClassMethodDefinition
+     */
+    public function getGetterMethodDefinition(ClassDefinition $classDefinition) : ClassMethodDefinition
+    {
+        return $this->getterMethodDefinition ??= $this->defaultGetterMethodDefinition();
+    }
+
+    /**
+     * @return ClassMethodDefinition
+     */
+    protected function defaultGetterMethodDefinition(): ClassMethodDefinition
+    {
+        $getterFunctionName = ClassNameTool::variableNameToGetterName($this->getVariableName());
+        $getterFunctionType = $this->getPhpTypeEnum();
+
+        $classMethod = new ClassMethodDefinition($getterFunctionName, $getterFunctionType);
+
+        if ($this->getterMethodBody instanceof StatementDefinitionInterface) {
+            $classMethod->appendBodyStatement($this->getterMethodBody);
+        } else {
+            $classMethod->appendBodyStatement(new RawStatementDefinition('return $this->' . $this->getVariableName() . ';'));
+        }
+
+        return $classMethod;
     }
 }

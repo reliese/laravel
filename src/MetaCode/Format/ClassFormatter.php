@@ -16,7 +16,7 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
 /**
  * Class ClassFormatter
  */
-class ClassFormatter
+class ClassFormatter implements IndentationProviderInterface
 {
     /**
      * @param ClassDefinition $classDefinition
@@ -81,7 +81,7 @@ class ClassFormatter
      *
      * @return string
      */
-    private function getIndentation(int $depth): string
+    public function getIndentation(int $depth): string
     {
         return str_repeat($this->getIndentationSymbol(), $depth);
     }
@@ -89,7 +89,7 @@ class ClassFormatter
     /**
      * @return string
      */
-    private function getIndentationSymbol(): string
+    public function getIndentationSymbol(): string
     {
         return '    ';
     }
@@ -107,7 +107,9 @@ class ClassFormatter
                 );
             }
             if ($property->hasGetter()) {
-                $this->appendGetter($property, $classDefinition);
+                $classDefinition->addMethodDefinition(
+                    $property->getGetterMethodDefinition($classDefinition)
+                );
             }
         }
     }
@@ -249,19 +251,6 @@ class ClassFormatter
     }
 
     /**
-     * @param ClassPropertyDefinition $property
-     * @param ClassDefinition $classDefinition
-     */
-    private function appendGetter(ClassPropertyDefinition $property, ClassDefinition $classDefinition): void
-    {
-        $getter = new ClassMethodDefinition('get' . Str::studly($property->getVariableName()),
-            $property->getPhpTypeEnum());
-        $getter->appendBodyStatement(new RawStatementDefinition('return $this->' . $property->getVariableName() . ';'));
-
-        $classDefinition->addMethodDefinition($getter);
-    }
-
-    /**
      * @param ClassDefinition $classDefinition
      * @param int $depth
      *
@@ -309,8 +298,7 @@ class ClassFormatter
 
         $blockDepth = $depth + 1;
         foreach ($method->getBlockStatements() as $statement) {
-            $signature .= $this->getIndentation($blockDepth)
-                . $statement->toPhpCode()
+            $signature .= $statement->toPhpCode($this, $blockDepth)
                 . "\n";
         }
 

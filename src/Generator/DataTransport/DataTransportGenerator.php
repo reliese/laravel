@@ -133,68 +133,7 @@ class DataTransportGenerator
             $dtoAbstractClassDefinition->addProperty($columnClassProperty);
         }
 
-        /**
-         * Examine FKs
-         * @var ForeignKeyBlueprint $foreignKeyBlueprint
-         */
-        foreach ($tableBlueprint->getForeignKeyBlueprintsGroupedByReferencedTable() as
-            $referencedTableName => $foreignKeyBlueprints
-        ) {
-            $commonColumns = [];
-            $fkDtoProperty = null;
-            $dtoVariableName = null;
-
-            $referencedTableBlueprint = null;
-            foreach ($foreignKeyBlueprints as $foreignKeyName =>  $foreignKeyBlueprint) {
-
-                $referencedTableBlueprint ??= $foreignKeyBlueprint->getReferencedTableBlueprint();
-
-                $fkDtoClassName = $this->getClassName($referencedTableBlueprint);
-
-                $dtoVariableName = ClassNameTool::dtoClassNameToVariableName($fkDtoClassName);
-//
-                if (\is_null($fkDtoProperty)) {
-                    $fkDtoProperty = (
-                        new ClassPropertyDefinition(
-                            $dtoVariableName,
-                            PhpTypeEnum::nullableObjectOfType(
-                                $this->getFullyQualifiedClassName($referencedTableBlueprint)
-                            )
-                        )
-                    )
-                    ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
-                    ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
-                    ->withSetter()
-                    ->withGetter()
-                    ;
-                }
-
-                foreach ($foreignKeyBlueprint->getFkColumnPairs() as $columns) {
-                    /**
-                     * @var ColumnBlueprint $referencingColumn
-                     * @var ColumnBlueprint $referencedColumn
-                     */
-                    [$referencingColumn, $referencedColumn] = $columns;
-
-                    $commonColumns[$referencingColumn->getColumnName().' = '.$referencedColumn->getColumnName()] =
-                        [$referencingColumn, $referencedColumn];
-                }
-            }
-
-            foreach ($commonColumns as $columnPairs) {
-                [$referencingColumn, $referencedColumn] = $columnPairs;
-
-                $fkDtoProperty->addAdditionalSetterOperation(
-                    new RawStatementDefinition(
-                        \sprintf(
-                            "\$this->%s(\$%s->%s());\n",
-                            ClassNameTool::columnNameToSetterName($referencingColumn->getColumnName()),
-                            $dtoVariableName,
-                            ClassNameTool::columnNameToGetterName($referencedColumn->getColumnName()),
-                        )
-                    )
-                );
-            }
+        foreach ($this->getForeignKeyDtoPropertyDefinitions($tableBlueprint) as $fkDtoProperty) {
             $dtoAbstractClassDefinition->addProperty($fkDtoProperty);
         }
 
@@ -270,6 +209,86 @@ class DataTransportGenerator
         }
 
         file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
+    }
+
+    /**
+     * @param TableBlueprint $tableBlueprint
+     * TODO: figure out how to cache these so they are not rebuilt on every call
+     * @return ClassPropertyDefinition[]
+     */
+    public function getForeignKeyDtoPropertyDefinitions(TableBlueprint $tableBlueprint): array
+    {
+        $results = [];
+
+        if (empty($tableBlueprint->getForeignKeyBlueprints())) {
+            return $results;
+        }
+
+        /**
+         * Examine FKs
+         * @var ForeignKeyBlueprint $foreignKeyBlueprint
+         */
+        foreach ($tableBlueprint->getForeignKeyBlueprintsGroupedByReferencedTable() as
+            $referencedTableName => $foreignKeyBlueprints
+        ) {
+            $commonColumns = [];
+            $fkDtoProperty = null;
+            $dtoVariableName = null;
+
+            $referencedTableBlueprint = null;
+            foreach ($foreignKeyBlueprints as $foreignKeyName =>  $foreignKeyBlueprint) {
+
+                $referencedTableBlueprint ??= $foreignKeyBlueprint->getReferencedTableBlueprint();
+
+                $fkDtoClassName = $this->getClassName($referencedTableBlueprint);
+
+                $dtoVariableName = ClassNameTool::dtoClassNameToVariableName($fkDtoClassName);
+                //
+                if (\is_null($fkDtoProperty)) {
+                    $fkDtoProperty = (
+                    new ClassPropertyDefinition(
+                        $dtoVariableName,
+                        PhpTypeEnum::nullableObjectOfType(
+                            $this->getFullyQualifiedClassName($referencedTableBlueprint)
+                        )
+                    )
+                    )
+                        ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
+                        ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
+                        ->withSetter()
+                        ->withGetter()
+                    ;
+                }
+
+                foreach ($foreignKeyBlueprint->getFkColumnPairs() as $columns) {
+                    /**
+                     * @var ColumnBlueprint $referencingColumn
+                     * @var ColumnBlueprint $referencedColumn
+                     */
+                    [$referencingColumn, $referencedColumn] = $columns;
+
+                    $commonColumns[$referencingColumn->getColumnName().' = '.$referencedColumn->getColumnName()] =
+                        [$referencingColumn, $referencedColumn];
+                }
+            }
+
+            foreach ($commonColumns as $columnPairs) {
+                [$referencingColumn, $referencedColumn] = $columnPairs;
+
+                $fkDtoProperty->addAdditionalSetterOperation(
+                    new RawStatementDefinition(
+                        \sprintf(
+                            "\$this->%s(\$%s->%s());",
+                            ClassNameTool::columnNameToSetterName($referencingColumn->getColumnName()),
+                            $dtoVariableName,
+                            ClassNameTool::columnNameToGetterName($referencedColumn->getColumnName()),
+                        )
+                    )
+                );
+            }
+            $results[] = $fkDtoProperty;
+        }
+        return $results;
     }
 }
 

@@ -76,4 +76,33 @@ abstract class ClassNameTool
     {
         return \strtolower($dtoClassName[0]).\substr($dtoClassName, 1);
     }
+
+    public static function variableNameToGetterName(string $variableName)
+    {
+        return 'get'.str::studly($variableName);
+    }
+
+    public static function variableNameToSetterName(string $variableName)
+    {
+        return 'set'.str::studly($variableName);
+    }
+
+    public static function fullyQualifiedClassNameToClassName(string $fullyQualifiedClassName): string
+    {
+        $parts = explode('\\', \ltrim($fullyQualifiedClassName, '\\'));
+        return trim(\array_pop($parts));
+    }
+
+    public static function fullyQualifiedClassNameToNamespace(string $fullyQualifiedClassName): string
+    {
+        $parts = explode('\\', \ltrim($fullyQualifiedClassName, '\\'));
+        \array_pop($parts);
+        $namespace = \implode('\\', $parts);
+        return \implode('\\', $parts);
+    }
+
+    public static function globalClassFQN(string $fullyQualifiedTypeName): string
+    {
+        return "\\".trim($fullyQualifiedTypeName, "\\");
+    }
 }

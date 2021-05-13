@@ -579,6 +579,8 @@ return [
             'Namespace' => 'App\DataMaps\PrimaryDatabase',
             'ClassSuffix' => 'Map',
             'ParentClassPrefix' => 'Abstract',
+            'AccessorTraitNamespace' => 'app\DataMapAccessors\PrimaryDatabase',
+            'AccessorTraitPath' => app_path().'/DataMapAccessors/PrimaryDatabase',
         ],
         // endregion Data Map Generator Config
     ]
