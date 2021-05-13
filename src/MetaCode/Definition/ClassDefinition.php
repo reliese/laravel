@@ -2,6 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Tool\ClassNameTool;
 use RuntimeException;
 
 /**
@@ -110,6 +111,7 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     public function addInterface(string $fullyQualifiedInterfaceName)
     {
+        $fullyQualifiedInterfaceName = ClassNameTool::globalClassFQN($fullyQualifiedInterfaceName);
         $this->interfaces[$fullyQualifiedInterfaceName] = true;
     }
 
