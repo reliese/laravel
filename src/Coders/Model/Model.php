@@ -235,7 +235,7 @@ class Model
             $belongsTo = new BelongsTo($relation, $this, $model);
             $this->relations[$belongsTo->name()] = $belongsTo;
         }
-
+        
         foreach ($this->factory->referencing($this) as $related) {
             $factory = new ReferenceFactory($related, $this);
             $references = $factory->make();
@@ -477,6 +477,9 @@ class Model
      */
     public function withNamespace($namespace)
     {
+        if($this->placeModelInOwnDirectory()){
+            $namespace = $namespace.'\\'.$this->getClassName();
+        }
         $this->namespace = $namespace;
 
         return $this;
@@ -503,11 +506,14 @@ class Model
      */
     public function getBaseNamespace()
     {
+        $className = $this->getClassName();
         $baseNameSpace = $this->getNamespace().'\\Base';
         $modelNameSpace = $this->getNamespace();
+        
         if($this->placeModelInOwnDirectory()){
-            $modelNameSpace = $modelNameSpace.'\\'.$this->getClassName();
+            $baseNameSpace = Str::replaceFirst($className,'Base',$modelNameSpace);
         }
+    
         return $this->usesBaseFiles()
             ? $baseNameSpace
             : $modelNameSpace;
