@@ -49,6 +49,16 @@ class ModelDataMapGenerator
     private DataTransportObjectGeneratorConfiguration $dataTransportObjectGeneratorConfiguration;
 
     /**
+     * @var ClassDefinition[]
+     */
+    private array $generatedAbstractModelDataMapClassDefinitions = [];
+
+    /**
+     * @var ClassDefinition[]
+     */
+    private array $generatedModelDataMapClassDefinitions = [];
+
+    /**
      * @var ModelDataMapGeneratorConfiguration
      */
     private ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration;
@@ -311,8 +321,6 @@ class ModelDataMapGenerator
             } else {
                 $mapToDtoMethodDefinition->appendBodyStatement($dtoPropertyAssignmentStatement);
             }
-
-            $mapToDtoMethodDefinition->appendBodyStatement($conditionalAssignmentBlock);
         }
         $mapToDtoMethodDefinition->appendBodyStatement(new RawStatementDefinition("return true;"));
 
