@@ -11,7 +11,7 @@ use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 use Reliese\Generator\DataMap\ModelDataMapGenerator;
-use Reliese\Generator\DataTransport\DataTransportGenerator;
+use Reliese\Generator\DataTransport\DataTransportObjectGenerator;
 use Reliese\Generator\Model\ModelGenerator;
 
 /**
@@ -107,7 +107,7 @@ class ModelDataMapGenerateCommand extends Command
             $relieseConfiguration->getModelDataMapGeneratorConfiguration(),
             $relieseConfiguration->getDataTransportGeneratorConfiguration(),
             new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration()),
-            new DataTransportGenerator(
+            new DataTransportObjectGenerator(
                 $relieseConfiguration->getDataTransportGeneratorConfiguration(),
                 new DataAttributeGenerator($relieseConfiguration->getDataAttributeGeneratorConfiguration())
             ),

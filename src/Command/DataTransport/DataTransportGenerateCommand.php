@@ -10,7 +10,7 @@ use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataAttribute\DataAttributeGenerator;
-use Reliese\Generator\DataTransport\DataTransportGenerator;
+use Reliese\Generator\DataTransport\DataTransportObjectGenerator;
 
 /**
  * Class DataTransportGenerateCommand
@@ -95,7 +95,7 @@ class DataTransportGenerateCommand extends Command
         /*
          * Generate class files
          */
-        $dataTransportGenerator = new DataTransportGenerator(
+        $dataTransportGenerator = new DataTransportObjectGenerator(
             $relieseConfiguration->getDataTransportGeneratorConfiguration(),
             new DataAttributeGenerator($relieseConfiguration->getDataAttributeGeneratorConfiguration())
         );

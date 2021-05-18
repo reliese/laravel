@@ -10,7 +10,7 @@ use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
 use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
-use Reliese\Generator\DataTransport\DataTransportGenerator;
+use Reliese\Generator\DataTransport\DataTransportObjectGenerator;
 use Reliese\Generator\Model\ModelGenerator;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
@@ -39,9 +39,9 @@ use const DIRECTORY_SEPARATOR;
 class ModelDataMapGenerator
 {
     /**
-     * @var DataTransportGenerator
+     * @var DataTransportObjectGenerator
      */
-    private DataTransportGenerator $dataTransportGenerator;
+    private DataTransportObjectGenerator $dataTransportObjectGenerator;
 
     /**
      * @var DataTransportObjectGeneratorConfiguration
@@ -74,13 +74,13 @@ class ModelDataMapGenerator
      * @param ModelDataMapGeneratorConfiguration        $modelDataMapGeneratorConfiguration
      * @param DataTransportObjectGeneratorConfiguration $dataTransportObjectGeneratorConfiguration
      * @param ModelGenerator                            $modelGenerator
-     * @param DataTransportGenerator                    $dataTransportGenerator
+     * @param DataTransportObjectGenerator              $dataTransportObjectGenerator
      */
     public function __construct(
         ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration,
         DataTransportObjectGeneratorConfiguration $dataTransportObjectGeneratorConfiguration,
         ModelGenerator $modelGenerator,
-        DataTransportGenerator $dataTransportGenerator
+        DataTransportObjectGenerator $dataTransportObjectGenerator
     ) {
         $this->modelDataMapGeneratorConfiguration = $modelDataMapGeneratorConfiguration;
         /*
@@ -89,7 +89,7 @@ class ModelDataMapGenerator
         $this->dataTypeMap = new MySqlDataTypeMap();
 
         $this->modelGenerator = $modelGenerator;
-        $this->dataTransportGenerator = $dataTransportGenerator;
+        $this->dataTransportObjectGenerator = $dataTransportObjectGenerator;
         $this->dataTransportObjectGeneratorConfiguration = $dataTransportObjectGeneratorConfiguration;
     }
 
