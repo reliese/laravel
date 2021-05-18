@@ -8,6 +8,7 @@ namespace Reliese\Blueprint;
 class IndexBlueprint implements ColumnOwnerInterface
 {
     use ColumnOwnerTrait;
+    use SchemaMemberTrait;
 
     /**
      * @var string
@@ -78,5 +79,10 @@ class IndexBlueprint implements ColumnOwnerInterface
     public function isUnique(): bool
     {
         return $this->isUnique || $this->isPrimaryKey();
+    }
+
+    public function getSchemaMemberType(): SchemaMemberType
+    {
+        return SchemaMemberType::Index();
     }
 }

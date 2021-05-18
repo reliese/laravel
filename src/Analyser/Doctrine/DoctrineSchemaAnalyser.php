@@ -16,6 +16,7 @@ use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\IndexBlueprint;
 use Reliese\Blueprint\SchemaBlueprint;
 use Reliese\Blueprint\TableBlueprint;
+use Reliese\Configuration\DatabaseBlueprintConfiguration;
 
 /**
  * Class DoctrineSchemaAnalyser
@@ -26,6 +27,11 @@ class DoctrineSchemaAnalyser
      * @var DatabaseBlueprint
      */
     private DatabaseBlueprint $databaseBlueprint;
+
+    /**
+     * @var DatabaseBlueprintConfiguration
+     */
+    private DatabaseBlueprintConfiguration $databaseBlueprintConfiguration;
 
     /**
      * @var DoctrineDatabaseAnalyser
@@ -66,7 +72,8 @@ class DoctrineSchemaAnalyser
         DatabaseBlueprint $databaseBlueprint,
         DoctrineDatabaseAnalyser $doctrineDatabaseAnalyser,
         ConnectionInterface $connection,
-        AbstractSchemaManager $doctrineSchemaManager
+        AbstractSchemaManager $doctrineSchemaManager,
+        DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
     )
     {
         $this->schemaName = $schemaName;
@@ -74,6 +81,7 @@ class DoctrineSchemaAnalyser
         $this->doctrineDatabaseAnalyser = $doctrineDatabaseAnalyser;
         $this->schemaSpecificConnection = $connection;
         $this->doctrineSchemaManager = $doctrineSchemaManager;
+        $this->databaseBlueprintConfiguration = $databaseBlueprintConfiguration;
     }
 
     /**
@@ -110,6 +118,13 @@ class DoctrineSchemaAnalyser
         $tableDefinitions = $this->getDoctrineSchemaManager()->listTables();
         if (!empty($tableDefinitions)) {
             foreach ($tableDefinitions as $tableDefinition) {
+                $isExcluded = $this->databaseBlueprintConfiguration
+                    ->getSchemaFilter()
+                    ->isExcludedTable($this->getSchemaName(), $tableDefinition->getName())
+                ;
+                if ($isExcluded) {
+                    continue;
+                }
                 /*
                  * Keep for future use
                  */
@@ -189,6 +204,15 @@ class DoctrineSchemaAnalyser
         }
 
         foreach ($columnDefinitions as $columnDefinition) {
+            $isExcluded = $this->databaseBlueprintConfiguration->getSchemaFilter()->isExcludedColumn(
+                $this->getSchemaName(),
+                $tableDefinition->getName(),
+                $columnDefinition->getName()
+            );
+            if ($isExcluded) {
+                continue;
+            }
+
             $columnBlueprint = $this->analyseColumn($tableBlueprint, $columnDefinition);
             $tableBlueprint->addColumnBlueprint($columnBlueprint);
         }

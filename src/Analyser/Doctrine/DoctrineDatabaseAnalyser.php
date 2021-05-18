@@ -60,7 +60,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
                 continue;
             }
 
-            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName);
+            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName, $databaseBlueprintConfiguration);
             $databaseBlueprint->addSchemaBlueprint(
                 // TODO: Add support for Views
                 $schemaAnalyser->analyseSchemaObjectStructures()
@@ -71,7 +71,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
          * Analyse foreign key constraint relationships which could potentially span schemas
          */
         foreach ($schemaNames as $schemaName) {
-            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName);
+            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName, $databaseBlueprintConfiguration);
 
             foreach ($schemaAnalyser->getTableDefinitions() as $tableName => $doctrineTableDefinition) {
 
@@ -164,7 +164,11 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
      *
      * @return DoctrineSchemaAnalyser
      */
-    protected function getSchemaAnalyser(DatabaseBlueprint $databaseBlueprint, string $schemaName): DoctrineSchemaAnalyser
+    protected function getSchemaAnalyser(
+        DatabaseBlueprint $databaseBlueprint,
+        string $schemaName,
+        DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
+    ): DoctrineSchemaAnalyser
     {
         if (array_key_exists($schemaName, $this->schemaAnalysers)) {
             return $this->schemaAnalysers[$schemaName];
@@ -178,7 +182,8 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
             $databaseBlueprint,
             $this,
             $schemaSpecificConnection,
-            $schemaSpecificDoctrineSchemaManager
+            $schemaSpecificDoctrineSchemaManager,
+            $databaseBlueprintConfiguration
         );
     }
 }

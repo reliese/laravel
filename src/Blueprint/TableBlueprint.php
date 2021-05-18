@@ -98,16 +98,6 @@ class TableBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
     }
 
     /**
-     * @return string
-     */
-    public function getUniqueName(): string
-    {
-        return sprintf('%s.%s',
-            $this->getSchemaBlueprint()->getSchemaName(),
-            $this->getName());
-    }
-
-    /**
      * @return ForeignKeyBlueprint[]
      */
     public function getForeignKeyBlueprints() : array

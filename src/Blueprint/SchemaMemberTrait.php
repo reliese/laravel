@@ -54,4 +54,18 @@ trait SchemaMemberTrait
     {
         $this->name = $name;
     }
+
+    /**
+     * @return string
+     */
+    public function getUniqueName(): string
+    {
+        if (empty($this->getSchemaBlueprint()->getSchemaName())) {
+            return $this->getName();
+        }
+
+        return sprintf('%s.%s',
+            $this->getSchemaBlueprint()->getSchemaName(),
+            $this->getName());
+    }
 }
