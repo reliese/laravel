@@ -5,6 +5,7 @@ namespace Reliese\Generator\DataTransport;
 use PhpLibs\ValueState\ValueStateProviderInterface;
 use PhpLibs\ValueState\WithValueStateManager;
 use Reliese\Blueprint\ColumnBlueprint;
+use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\ForeignKeyBlueprint;
 use Reliese\Blueprint\TableBlueprint;
@@ -15,6 +16,7 @@ use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
+use Reliese\MetaCode\Definition\StatementBlockDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
@@ -50,6 +52,21 @@ class DataTransportGenerator
     private DatabaseBlueprint $databaseBlueprint;
 
     /**
+     * @var ClassDefinition[]
+     */
+    private array $generatedDataTransportObjectClassDefinitions = [];
+
+    /**
+     * @var ClassDefinition[]
+     */
+    private array $generatedAbstractDataTransportObjectClassDefinitions = [];
+
+    /**
+     * @var ClassPropertyDefinition[]
+     */
+    private array $generatedForeignKeyDtoPropertyDefinitions = [];
+
+    /**
      * DataTransportGenerator constructor.
      *
      * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
@@ -72,15 +89,52 @@ class DataTransportGenerator
      */
     public function fromTableBlueprint(TableBlueprint $tableBlueprint)
     {
-        $className = $this->getClassName($tableBlueprint);
+        $dtoAbstractClassDefinition = $this->generateAbstractDataTransportObjectClassDefinition($tableBlueprint);
+        $dtoClassDefinition = $this->generateDataTransportObjectClassDefinition($tableBlueprint);
 
-        $abstractClassName = $this->getAbstractClassName($tableBlueprint);
+        /*
+         * Write the Class Files
+         */
+        $this->writeClassFiles($dtoClassDefinition, $dtoAbstractClassDefinition);
+    }
 
-        $namespace = $this->getClassNamespace($tableBlueprint);
+    /**
+     * @param TableBlueprint $tableBlueprint
+     *
+     * @return string
+     */
+    public function getFullyQualifiedClassName(ColumnOwnerInterface $tableBlueprint): string
+    {
+        return $this->getClassNamespace($tableBlueprint).'\\'.$this->getClassName($tableBlueprint);
+    }
 
-        $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
+    public function getClassNamespace(TableBlueprint $tableBlueprint): string
+    {
+        return $this->dataTransportGeneratorConfiguration->getNamespace();
+    }
 
-        $dtoAbstractClassDefinition = new ClassDefinition($abstractClassName, $abstractNamespace);
+    public function getClassName(ColumnOwnerInterface $tableBlueprint): string
+    {
+        return ClassNameTool::snakeCaseToClassName(
+            null,
+            $tableBlueprint->getName(),
+            $this->dataTransportGeneratorConfiguration->getClassSuffix()
+        );
+    }
+
+    public function generateAbstractDataTransportObjectClassDefinition(TableBlueprint $tableBlueprint): ClassDefinition
+    {
+        if (\array_key_exists($tableBlueprint->getUniqueName(),
+            $this->generatedAbstractDataTransportObjectClassDefinitions)
+        ) {
+            return $this->generatedAbstractDataTransportObjectClassDefinitions[$tableBlueprint->getUniqueName()];
+        }
+
+        $dtoAbstractClassDefinition = new ClassDefinition(
+            $this->getAbstractClassName($tableBlueprint),
+            $this->getAbstractClassNamespace($tableBlueprint)
+        );
+
         if ($this->dataTransportGeneratorConfiguration->getUseValueStateTracking()) {
             /*
              * Add interface:
@@ -114,9 +168,6 @@ class DataTransportGenerator
                 new ClassTraitDefinition(\PhpLibs\Observable\AfterValueChangeObservableTrait::class)
             );
         }
-        
-        $dtoClassDefinition = new ClassDefinition($className, $namespace);
-        $dtoClassDefinition->setParentClass($dtoAbstractClassDefinition->getFullyQualifiedName());
 
         foreach ($tableBlueprint->getColumnBlueprints() as $columnBlueprint) {
 
@@ -153,34 +204,25 @@ class DataTransportGenerator
             $dtoAbstractClassDefinition->addProperty($fkDtoProperty);
         }
 
-        /*
-         * Write the Class Files
-         */
-        $this->writeClassFiles($dtoClassDefinition, $dtoAbstractClassDefinition);
+        return $dtoAbstractClassDefinition;
     }
 
-    /**
-     * @param TableBlueprint $tableBlueprint
-     *
-     * @return string
-     */
-    public function getFullyQualifiedClassName(TableBlueprint $tableBlueprint): string
+    public function generateDataTransportObjectClassDefinition(TableBlueprint $tableBlueprint): ClassDefinition
     {
-        return $this->getClassNamespace($tableBlueprint).'\\'.$this->getClassName($tableBlueprint);
-    }
+        if (\array_key_exists($tableBlueprint->getUniqueName(), $this->generatedDataTransportObjectClassDefinitions)) {
+            return $this->generatedDataTransportObjectClassDefinitions[$tableBlueprint->getUniqueName()];
+        }
 
-    public function getClassNamespace(TableBlueprint $tableBlueprint): string
-    {
-        return $this->dataTransportGeneratorConfiguration->getNamespace();
-    }
-
-    public function getClassName(TableBlueprint $tableBlueprint): string
-    {
-        return ClassNameTool::snakeCaseToClassName(
-            null,
-            $tableBlueprint->getName(),
-            $this->dataTransportGeneratorConfiguration->getClassSuffix()
+        $dtoClassDefinition = new ClassDefinition(
+            $this->getClassName($tableBlueprint),
+            $this->getClassNamespace($tableBlueprint)
         );
+        $dtoClassDefinition->setParentClass(
+            $this->generateAbstractDataTransportObjectClassDefinition($tableBlueprint)->getFullyQualifiedName()
+        );
+
+        return $this->generatedDataTransportObjectClassDefinitions[$tableBlueprint->getUniqueName()]
+            = $dtoClassDefinition;
     }
 
     private function getAbstractClassName(TableBlueprint $tableBlueprint): string
@@ -227,6 +269,93 @@ class DataTransportGenerator
         file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
     }
 
+    public function generateForeignKeyDtoPropertyDefinition(
+        TableBlueprint $tableBlueprint,
+        ForeignKeyBlueprint $foreignKeyBlueprint
+    ) : ClassPropertyDefinition {
+
+        if (\array_key_exists($foreignKeyBlueprint->getName(), $this->generatedForeignKeyDtoPropertyDefinitions)) {
+            return $this->generatedForeignKeyDtoPropertyDefinitions[$foreignKeyBlueprint->getName()];
+        }
+
+        $fkDtoProperty = null;
+        $dtoVariableName = null;
+
+        $referencedTableBlueprint = $foreignKeyBlueprint->getReferencedTableBlueprint();
+
+        $fkDtoClassName = $this->getClassName($referencedTableBlueprint);
+
+        $dtoVariableName = ClassNameTool::dtoClassNameToVariableName($fkDtoClassName);
+
+        $fkDtoProperty = new ClassPropertyDefinition(
+            $dtoVariableName,
+            PhpTypeEnum::nullableObjectOfType($this->getFullyQualifiedClassName($referencedTableBlueprint))
+        );
+
+        $fkDtoProperty
+            ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
+            ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
+            ->withSetter()
+            ->withGetter()
+        ;
+
+        $commonColumns = [];
+        /*
+         * Track which columns should be updated when this property is set
+         */
+        foreach ($foreignKeyBlueprint->getFkColumnPairs() as $columns) {
+            /**
+             * @var ColumnBlueprint $referencingColumn
+             * @var ColumnBlueprint $referencedColumn
+             */
+            [$referencingColumn, $referencedColumn] = $columns;
+
+            $commonColumns[$referencingColumn->getColumnName().' = '.$referencedColumn->getColumnName()] =
+                [$referencingColumn, $referencedColumn];
+        }
+
+        foreach ($commonColumns as $columnPairs) {
+            [$referencingColumn, $referencedColumn] = $columnPairs;
+
+            $propertyConstant = ClassPropertyDefinition::getPropertyNameConstantName(
+                ClassNameTool::columnNameToPropertyName($referencedColumn->getColumnName())
+            );
+
+            $propertyGetterCall = \sprintf(
+                "\$%s->%s()",
+                $dtoVariableName,
+                ClassNameTool::columnNameToGetterName($referencedColumn->getColumnName()),
+            );
+
+            /*
+             * If the referenced value was initialized, then set the fk value to match
+             */
+            $ifInitialized = new RawStatementDefinition(
+                sprintf(
+                    "if (\$%s->getValueWasInitialized(%s::%s) && !empty(%s))",
+                    $dtoVariableName,
+                    $fkDtoClassName,
+                    $propertyConstant,
+                    $propertyGetterCall
+                )
+            );
+
+            $setFkFieldIfInitialized = new StatementBlockDefinition($ifInitialized);
+            $setFkFieldIfInitialized->addStatementDefinition(
+                new RawStatementDefinition(
+                    \sprintf(
+                        "\$this->%s(%s);",
+                        ClassNameTool::columnNameToSetterName($referencingColumn->getColumnName()),
+                        $propertyGetterCall,
+                    )
+                )
+            );
+
+            $fkDtoProperty->addAdditionalSetterOperation($setFkFieldIfInitialized);
+        }
+        return $fkDtoProperty;
+    }
+
     /**
      * @param TableBlueprint $tableBlueprint
      * TODO: figure out how to cache these so they are not rebuilt on every call
@@ -239,6 +368,12 @@ class DataTransportGenerator
         if (empty($tableBlueprint->getForeignKeyBlueprints())) {
             return $results;
         }
+
+        foreach ($tableBlueprint->getForeignKeyBlueprints() as $foreignKeyBlueprint) {
+            $fkDtoProperty = $this->generateForeignKeyDtoPropertyDefinition($tableBlueprint, $foreignKeyBlueprint);
+            $results[] = $fkDtoProperty;
+        }
+        return $results;
 
         /**
          * Examine FKs

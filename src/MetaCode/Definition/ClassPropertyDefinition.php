@@ -145,7 +145,10 @@ class ClassPropertyDefinition
      */
     public function getSetterMethodDefinition(ClassDefinition $containingClass): ClassMethodDefinition
     {
-        $param = new FunctionParameterDefinition($this->getVariableName(), $this->getPhpTypeEnum());
+        $param = new FunctionParameterDefinition(
+            $this->getVariableName(),
+            $this->getPhpTypeEnum()
+        );
         $setter = new ClassMethodDefinition(
             $this->getSetterMethodName(),
             PhpTypeEnum::staticTypeEnum(),

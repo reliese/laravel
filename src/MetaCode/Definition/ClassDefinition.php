@@ -148,10 +148,13 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 
     /**
      * @param ClassMethodDefinition $classMethodDefinition
+     *
+     * @return $this
      */
-    public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition)
+    public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition) : static
     {
         $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
+        return $this;
     }
 
     /**

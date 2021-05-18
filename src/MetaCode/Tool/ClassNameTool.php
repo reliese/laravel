@@ -110,4 +110,10 @@ abstract class ClassNameTool
     {
         return \strtoupper(str::snake($identifierName));
     }
+
+    public static function fkNameToVariableName(string $foreignKeyname): string
+    {
+        $name = str::studly($foreignKeyname);
+        return \strtolower($name[0]).\substr($foreignKeyname, 1);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Reliese\Generator\Model;
 
+use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
@@ -134,6 +135,20 @@ class ModelGenerator
     public function getAbstractClassNamespace(TableBlueprint $tableBlueprint): string
     {
         return $this->getClassNamespace($tableBlueprint) .'\\Generated';
+    }
+
+    /**
+     * @param ColumnBlueprint $columnBlueprint
+     *
+     * @return ClassConstantDefinition
+     */
+    public function generateColumnConstantDefinition(ColumnBlueprint $columnBlueprint): ClassConstantDefinition
+    {
+        return new ClassConstantDefinition(
+            ClassNameTool::columnNameToConstantName($columnBlueprint->getColumnName()),
+            $columnBlueprint->getColumnName(),
+            VisibilityEnum::publicEnum()
+        );
     }
 
     /**
