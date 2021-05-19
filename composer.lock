@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2287d487b5bed6fcb9aca7901763151d",
+    "content-hash": "42ab9c20c5e6de27e9fab27a0869a8ef",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1070,16 +1070,16 @@
         },
         {
             "name": "php-libs/observable",
-            "version": "1.0",
+            "version": "1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-libs/observable.git",
-                "reference": "68efabfa33f9bbe1e25e1b7c95e6bcd7fc5b62c5"
+                "reference": "0f6b33db27228c7800556a2c11e1ca7a7c80871e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-libs/observable/zipball/68efabfa33f9bbe1e25e1b7c95e6bcd7fc5b62c5",
-                "reference": "68efabfa33f9bbe1e25e1b7c95e6bcd7fc5b62c5",
+                "url": "https://api.github.com/repos/php-libs/observable/zipball/0f6b33db27228c7800556a2c11e1ca7a7c80871e",
+                "reference": "0f6b33db27228c7800556a2c11e1ca7a7c80871e",
                 "shasum": ""
             },
             "require": {
@@ -1098,27 +1098,27 @@
             "description": "Provides clases to simplify observer pattern implementation",
             "support": {
                 "issues": "https://github.com/php-libs/observable/issues",
-                "source": "https://github.com/php-libs/observable/tree/1.0"
+                "source": "https://github.com/php-libs/observable/tree/1.3"
             },
-            "time": "2021-05-06T20:42:12+00:00"
+            "time": "2021-05-19T07:15:17+00:00"
         },
         {
             "name": "php-libs/value-states",
-            "version": "1.2.1",
+            "version": "1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-libs/value-state.git",
-                "reference": "d8d215a525b67695256addf20d53b9d7b8a3d523"
+                "reference": "d9dcc44c5826dfbd7e7350bf5b217654151bf773"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-libs/value-state/zipball/d8d215a525b67695256addf20d53b9d7b8a3d523",
-                "reference": "d8d215a525b67695256addf20d53b9d7b8a3d523",
+                "url": "https://api.github.com/repos/php-libs/value-state/zipball/d9dcc44c5826dfbd7e7350bf5b217654151bf773",
+                "reference": "d9dcc44c5826dfbd7e7350bf5b217654151bf773",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.0",
-                "php-libs/observable": "^1.0"
+                "php-libs/observable": "^1.3"
             },
             "type": "library",
             "autoload": {
@@ -1133,9 +1133,9 @@
             "description": "Extends php-libs/observer to track if a values have been initialized or modified (changed after initialization)",
             "support": {
                 "issues": "https://github.com/php-libs/value-state/issues",
-                "source": "https://github.com/php-libs/value-state/tree/1.2.1"
+                "source": "https://github.com/php-libs/value-state/tree/1.3"
             },
-            "time": "2021-05-13T10:42:22+00:00"
+            "time": "2021-05-19T07:16:58+00:00"
         },
         {
             "name": "psr/container",
