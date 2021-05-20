@@ -57,7 +57,10 @@ class ClassFormatter implements IndentationProviderInterface
             $lines[] = " * \n * ".$line."\n";
         }
         $lines[] = " */\n";
-        $lines[] = Str::lower($classDefinition->getStructureType()) . ' ' . $classDefinition->getName();
+        $lines[] = $classDefinition->getAbstractEnumType()->toReservedWord(true)
+            . Str::lower($classDefinition->getStructureType())
+            . ' '
+            . $classDefinition->getClassName();
 
         if (!empty($parent)) {
             $lines[] = ' extends ' . $parent;
@@ -272,12 +275,12 @@ class ClassFormatter implements IndentationProviderInterface
     {
         $signature = $this->getIndentation($depth);
 
-        if ($method->getAbstractEnum()->isAbstract()) {
-            $signature .= $method->getAbstractEnum()->toReservedWord() . ' ';
-        }
-
         if ($method->getVisibilityEnum()) {
             $signature .= $method->getVisibilityEnum()->toReservedWord() . ' ';
+        }
+
+        if ($method->getAbstractEnum()->isAbstract()) {
+            $signature .= $method->getAbstractEnum()->toReservedWord() . ' ';
         }
 
         $signature .= 'function ' . $method->getFunctionName() . '(';
@@ -297,6 +300,9 @@ class ClassFormatter implements IndentationProviderInterface
              * This condition is required because constructors do not have return types
              */
             $signature .= ": ". $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
+        }
+        if ($method->getAbstractEnum()->isAbstract()) {
+            return $signature . ";\n";
         }
         $signature .= "\n";
 

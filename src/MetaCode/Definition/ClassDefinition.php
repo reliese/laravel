@@ -2,6 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\AbstractEnum;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use RuntimeException;
 
@@ -10,6 +11,11 @@ use RuntimeException;
  */
 class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 {
+    /**
+     * @var AbstractEnum
+     */
+    private ?AbstractEnum $abstractEnumType;
+
     /**
      * @var bool[] Array keys are fully qualified interface names
      */
@@ -95,16 +101,19 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     /**
      * ClassDefinition constructor.
      *
-     * @param string $className
-     * @param string $namespace
+     * @param string        $className
+     * @param string        $namespace
+     * @param ?AbstractEnum $abstractEnumType
      */
     public function __construct(
         string $className,
-        string $namespace
+        string $namespace,
+        ?AbstractEnum $abstractEnumType = null
     ) {
         $this->className = $className;
         $this->namespace = trim($namespace, '\\');
         $this->constructorStatementsCollection = new StatementDefinitionCollection();
+        $this->abstractEnumType = $abstractEnumType ?? AbstractEnum::concreteEnum();
     }
 
     /**
@@ -479,5 +488,13 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function getFilePath(): string
     {
         return $this->filePath;
+    }
+
+    /**
+     * @return AbstractEnum
+     */
+    public function getAbstractEnumType(): AbstractEnum
+    {
+        return $this->abstractEnumType;
     }
 }
