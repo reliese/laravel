@@ -128,8 +128,8 @@ class ModelDataMapGenerator
         /*
          * Determine the dto Class name and namespace
          */
-        $dtoClassName = $this->dataTransportGenerator->getClassName($tableBlueprint);
-        $dtoFullyQualifiedClassName = $this->dataTransportGenerator->getFullyQualifiedClassName($tableBlueprint);
+        $dtoClassName = $this->dataTransportObjectGenerator->getClassName($tableBlueprint);
+        $dtoFullyQualifiedClassName = $this->dataTransportObjectGenerator->getFullyQualifiedClassName($tableBlueprint);
         $dtoParameterName = ClassNameTool::classNameToParameterName($dtoClassName);
         $dtoParameterType = PhpTypeEnum::objectOfType($dtoFullyQualifiedClassName);
 
@@ -186,7 +186,7 @@ class ModelDataMapGenerator
         }
          */
         $requiredMapAccessorTraits = [];
-        $fkDtoProperties = $this->dataTransportGenerator->getForeignKeyDtoPropertyDefinitions($tableBlueprint);
+        $fkDtoProperties = $this->dataTransportObjectGenerator->getForeignKeyDtoPropertyDefinitions($tableBlueprint);
         foreach ($fkDtoProperties as $fkDtoProperty) {
 //            $fkDtoProperty = $fkDtoProperties[$foreignKeyBlueprint->getName()];
 
@@ -330,6 +330,13 @@ class ModelDataMapGenerator
             .$traitDefinition->getClassName().".php";
             $codeWriter->overwriteClassDefinition($filePath, $traitSource);
         }
+
+        $traitDefinition = $this->generateModelDataMapAccessorTrait($modelMapClassDefinition->getFullyQualifiedName());
+        $traitSource = (new ClassFormatter())->format($traitDefinition);
+        $filePath = $this->modelDataMapGeneratorConfiguration->getAccessorTraitPath().'/'
+            .$traitDefinition->getClassName().".php";
+        $codeWriter->overwriteClassDefinition($filePath, $traitSource);
+
         $this->writeClassFiles($modelMapClassDefinition, $modelMapAbstractClassDefinition);
     }
 
@@ -431,6 +438,11 @@ class ModelDataMapGenerator
     public function getAbstractClassNamespace(TableBlueprint $tableBlueprint): string
     {
         return $this->getClassNamespace($tableBlueprint) .'\\Generated';
+    }
+
+    public function getModelMapAccessorTraitMethodName(TableBlueprint $tableBlueprint): string
+    {
+        return 'get'.$this->getClassName($tableBlueprint);
     }
 
     /**
