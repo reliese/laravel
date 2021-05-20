@@ -282,7 +282,7 @@ class DoctrineSchemaAnalyser
             $indexDefinition->getName(),
             $columnBlueprints,
             $indexDefinition->isPrimary(),
-            false
+            $indexDefinition->isUnique()
         );
     }
 
