@@ -116,4 +116,9 @@ abstract class ClassNameTool
         $name = str::studly($foreignKeyname);
         return \strtolower($name[0]).\substr($foreignKeyname, 1);
     }
+
+    public static function fullyQualifiedName(string $name)
+    {
+        return '\\'. ltrim($name, '\\');
+    }
 }
