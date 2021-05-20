@@ -152,6 +152,12 @@ class ModelGenerator
         );
     }
 
+    public function getClassAsVariableName(TableBlueprint $tableBlueprint): string
+    {
+        $name = $this->getClassName($tableBlueprint);
+        return strtolower($name[0]).substr($name, 1);
+    }
+
     /**
      * @return string
      */
