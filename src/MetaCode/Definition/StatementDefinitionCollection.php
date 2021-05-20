@@ -6,7 +6,7 @@ use Reliese\MetaCode\Format\IndentationProviderInterface;
 /**
  * Class StatementDefinitionCollection
  */
-class StatementDefinitionCollection implements StatementDefinitionInterface
+class StatementDefinitionCollection implements StatementDefinitionInterface, StatementDefinitionCollectionInterface
 {
     /**
      * @var StatementDefinitionInterface[]

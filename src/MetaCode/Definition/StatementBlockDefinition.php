@@ -7,21 +7,43 @@ use Reliese\MetaCode\Format\IndentationProviderInterface;
 /**
  * Class StatementBlockDefinition
  */
-class StatementBlockDefinition extends StatementDefinitionCollection
+class StatementBlockDefinition implements StatementDefinitionInterface, StatementDefinitionCollectionInterface
 {
     /**
      * @var StatementDefinitionInterface|null
      */
     private ?StatementDefinitionInterface $blockPrefixStatement;
 
+    /**
+     * @var StatementDefinitionCollectionInterface
+     */
+    private StatementDefinitionCollectionInterface $statementDefinitionCollection;
+
+    /**
+     * StatementBlockDefinition constructor.
+     *
+     * @param StatementDefinitionInterface|null  $blockPrefixStatement
+     * @param StatementDefinitionCollectionInterface|null $statementDefinitionCollection
+     */
     public function __construct(
-        ?StatementDefinitionInterface $blockPrefixStatement
+        ?StatementDefinitionInterface $blockPrefixStatement,
+        ?StatementDefinitionCollectionInterface $statementDefinitionCollection = null,
     ) {
         $this->blockPrefixStatement = $blockPrefixStatement;
+        $this->statementDefinitionCollection = $statementDefinitionCollection ?? new StatementDefinitionCollection();
     }
 
     private ?StatementDefinitionInterface $blockSuffixStatement = null;
+    public function addStatementDefinition(StatementDefinitionInterface $statementDefinition) : static
+    {
+        $this->statementDefinitionCollection->addStatementDefinition($statementDefinition);
+        return $this;
+    }
 
+    public function hasStatements(): bool
+    {
+        return $this->statementDefinitionCollection->hasStatements();
+    }
     /**
      * @return string
      */
@@ -41,7 +63,7 @@ class StatementBlockDefinition extends StatementDefinitionCollection
         return \sprintf(
             "%s{\n%s\n%s}%s\n",
             $prefixStatement,
-            parent::toPhpCode($indentationProvider, $blockDepth + 1),
+            $this->statementDefinitionCollection->toPhpCode($indentationProvider, $blockDepth + 1),
             $indentationProvider->getIndentation($blockDepth),
             $suffixStatement
         );
