@@ -8,6 +8,7 @@ use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\DataAttributeGeneratorConfiguration;
+use Reliese\Configuration\RelieseConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\TraitDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
@@ -38,12 +39,11 @@ class DataAttributeGenerator
     /**
      * DataAttributeGenerator constructor.
      *
-     * @param DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration
+     * @param RelieseConfiguration $relieseConfiguration
      */
-    public function __construct(
-        DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration
-    ) {
-        $this->dataAttributeGeneratorConfiguration = $dataAttributeGeneratorConfiguration;
+    public function __construct(RelieseConfiguration $relieseConfiguration)
+    {
+        $this->dataAttributeGeneratorConfiguration = $relieseConfiguration->getDataAttributeGeneratorConfiguration();
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */

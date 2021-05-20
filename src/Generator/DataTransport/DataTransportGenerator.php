@@ -10,6 +10,7 @@ use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\ForeignKeyBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
+use Reliese\Configuration\RelieseConfiguration;
 use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassDefinition;
@@ -69,19 +70,17 @@ class DataTransportGenerator
     /**
      * DataTransportGenerator constructor.
      *
-     * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
-     * @param DataAttributeGenerator $dataAttributeGenerator
+     * @param RelieseConfiguration $relieseConfiguration
      */
     public function __construct(
-        DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration,
-        DataAttributeGenerator $dataAttributeGenerator
+        RelieseConfiguration $relieseConfiguration
     ) {
-        $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
+        $this->dataTransportGeneratorConfiguration = $relieseConfiguration->getDataTransportGeneratorConfiguration();
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */
         $this->dataTypeMap = new MySqlDataTypeMap();
-        $this->dataAttributeGenerator = $dataAttributeGenerator;
+        $this->dataAttributeGenerator = new DataAttributeGenerator($relieseConfiguration);
     }
 
     /**

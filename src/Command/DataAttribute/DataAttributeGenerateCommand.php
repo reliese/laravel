@@ -81,10 +81,7 @@ class DataAttributeGenerateCommand extends Command
         /*
          * Create the correct analyser for the configuration profile
          */
-        $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
-            $relieseConfiguration->getDatabaseAnalyserConfiguration()
-        );
+        $databaseAnalyser =  $analyserFactory->databaseAnalyser($relieseConfiguration);
 
         /*
          * Allow the $databaseAnalyser to create the Database Blueprint
@@ -94,9 +91,7 @@ class DataAttributeGenerateCommand extends Command
         /*
          * Generate class files
          */
-        $dataAttributeGenerator = new DataAttributeGenerator(
-            $relieseConfiguration->getDataAttributeGeneratorConfiguration()
-        );
+        $dataAttributeGenerator = new DataAttributeGenerator($relieseConfiguration);
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
 

@@ -85,4 +85,9 @@ class IndexBlueprint implements ColumnOwnerInterface
     {
         return SchemaMemberType::Index();
     }
+
+    public function getName(): string
+    {
+        return $this->indexName;
+    }
 }

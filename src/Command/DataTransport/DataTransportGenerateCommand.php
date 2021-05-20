@@ -95,10 +95,7 @@ class DataTransportGenerateCommand extends Command
         /*
          * Generate class files
          */
-        $dataTransportGenerator = new DataTransportObjectGenerator(
-            $relieseConfiguration->getDataTransportGeneratorConfiguration(),
-            new DataAttributeGenerator($relieseConfiguration->getDataAttributeGeneratorConfiguration())
-        );
+        $dataTransportGenerator = new DataTransportObjectGenerator($relieseConfiguration);
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
 

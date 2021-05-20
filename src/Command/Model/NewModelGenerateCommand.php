@@ -100,9 +100,7 @@ class NewModelGenerateCommand extends Command
         /*
          * Create the correct analyser for the configuration profile
          */
-        $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration
-        );
+        $databaseAnalyser =  $analyserFactory->databaseAnalyser($relieseConfiguration);
 
         /*
          * Allow the $databaseAnalyser to create the Database Blueprint
@@ -110,7 +108,7 @@ class NewModelGenerateCommand extends Command
         $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
         // TODO: Apply Command Line options that override the configuration values
-        $modelGenerator = new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration());
+        $modelGenerator = new ModelGenerator($relieseConfiguration);
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
 

@@ -9,6 +9,8 @@ use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Generator\DataAccess\DataAccessGenerator;
+use Reliese\Generator\DataTransport\DataTransportObjectGenerator;
+use Reliese\Generator\Model\ModelGenerator;
 
 /**
  * Class DataAccessGenerateCommand
@@ -81,10 +83,7 @@ class DataAccessGenerateCommand extends Command
         /*
          * Create the correct analyser for the configuration profile
          */
-        $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration->getDatabaseBlueprintConfiguration(),
-            $relieseConfiguration->getDatabaseAnalyserConfiguration()
-        );
+        $databaseAnalyser =  $analyserFactory->databaseAnalyser($relieseConfiguration);
 
         /*
          * Allow the $databaseAnalyser to create the Database Blueprint
@@ -94,11 +93,16 @@ class DataAccessGenerateCommand extends Command
         /*
          * Generate class files
          */
-        $dataAccessGenerator = new DataAccessGenerator(
-            $relieseConfiguration->getDataAccessGeneratorConfiguration()
-        );
+        $dataAccessGenerator = new DataAccessGenerator($relieseConfiguration);
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
+
+        if (!empty($table)) {
+            // Generate only for the specified table
+            $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
+            $dataAccessGenerator->fromTableBlueprint($tableBlueprint);
+            return;
+        }
 
         /*
          * Display the data that would be used to perform code generation

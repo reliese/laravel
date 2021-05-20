@@ -116,4 +116,54 @@ class TableBlueprint implements SchemaMemberInterface, ColumnOwnerInterface
         }
         return $results;
     }
+
+    /**
+     * @param bool $includePrimaryKey
+     *
+     * @return array[]
+     */
+    public function getUniqueColumnGroups(bool $includePrimaryKey = true): array
+    {
+        $uniqueColumnGroups = [];
+
+        foreach ($this->indexBlueprints as $indexBlueprint) {
+            if ($indexBlueprint->isPrimaryKey() && !$includePrimaryKey) {
+                continue;
+            }
+            if (!$indexBlueprint->isUnique()) {
+                continue;
+            }
+
+            $uniqueColumnGroups[] = $indexBlueprint->getColumnBlueprints();
+        }
+
+        return $uniqueColumnGroups;
+    }
+
+    /**
+     * @param bool $includePrimaryKey
+     *
+     * @return IndexBlueprint[]
+     */
+    public function getUniqueIndexes(bool $includePrimaryKey = true): array
+    {
+        $uniqueIndexes = [];
+
+        foreach ($this->indexBlueprints as $indexBlueprint) {
+            if ($indexBlueprint->isPrimaryKey() && !$includePrimaryKey) {
+                continue;
+            }
+            if (!$indexBlueprint->isUnique()) {
+                continue;
+            }
+
+            $uniqueIndexes[] = $indexBlueprint;
+        }
+
+        usort($uniqueIndexes, function (IndexBlueprint $a, IndexBlueprint $b) {
+            return strncasecmp($a->getName(),
+            $b->getName(), mb_strlen($a->getName()));});
+
+        return $uniqueIndexes;
+    }
 }

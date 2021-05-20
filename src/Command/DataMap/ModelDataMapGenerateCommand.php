@@ -87,9 +87,7 @@ class ModelDataMapGenerateCommand extends Command
         /*
          * Create the correct analyser for the configuration profile
          */
-        $databaseAnalyser =  $analyserFactory->databaseAnalyser(
-            $relieseConfiguration
-        );
+        $databaseAnalyser =  $analyserFactory->databaseAnalyser($relieseConfiguration);
 
         /*
          * Allow the $databaseAnalyser to create the Database Blueprint
@@ -103,15 +101,7 @@ class ModelDataMapGenerateCommand extends Command
         /*
          * Create a ModelDataMapGenerator
          */
-        $modelDataMapGenerator = new ModelDataMapGenerator(
-            $relieseConfiguration->getModelDataMapGeneratorConfiguration(),
-            $relieseConfiguration->getDataTransportGeneratorConfiguration(),
-            new ModelGenerator($relieseConfiguration->getModelGeneratorConfiguration()),
-            new DataTransportObjectGenerator(
-                $relieseConfiguration->getDataTransportGeneratorConfiguration(),
-                new DataAttributeGenerator($relieseConfiguration->getDataAttributeGeneratorConfiguration())
-            ),
-        );
+        $modelDataMapGenerator = new ModelDataMapGenerator($relieseConfiguration);
 
         if (!empty($table)) {
             // Generate only for the specified table
