@@ -168,12 +168,12 @@ class SchemaFilter
         return $this->includeByDefault;
     }
 
-    public function isExcludedColumn(string $schemaName, string $tableName, string $column) : bool
+    public function isExcludedColumn(string $schemaName, string $tableName, string $columnName) : bool
     {
-        return !$this->isIncludedTable($schemaName, $tableName);
+        return !$this->isIncludedColumn($schemaName, $tableName, $columnName);
     }
 
-    public function isIncludedColumn(string $schemaName, string $tableName, string $column) : bool
+    public function isIncludedColumn(string $schemaName, string $tableName, string $columnName) : bool
     {
         if (empty($this->exceptions)) {
             return $this->includeByDefault;
@@ -190,7 +190,7 @@ class SchemaFilter
                 continue;
             }
 
-            if (!empty($condition[static::COLUMN_STRING_FILTERS_INDEX])) {
+            if (empty($condition[static::COLUMN_STRING_FILTERS_INDEX])) {
                 // column match requires a column filter
                 continue;
             }
@@ -206,7 +206,7 @@ class SchemaFilter
 
             if ($schemaStringFilter->isIncluded($schemaName)
                 && $tableStringFilter->isIncluded($tableName)
-                && $columnStringFilter->isIncluded($column)
+                && $columnStringFilter->isIncluded($columnName)
             ) {
                 // this table matches on schema, table, and column, so invert the default response
                 return !$this->includeByDefault;
