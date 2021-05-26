@@ -25,9 +25,7 @@ class ModelGeneratorContext extends GeneratorContexts
     public function givenAModelGeneratorIsCreated()
     {
         $this->modelGenerator = new ModelGenerator(
-            $this->getConfigurationContexts()
-                 ->getModelGeneratorConfigurationContext()
-                 ->getModelGeneratorConfiguration()
+            $this->getConfigurationContexts()->getRelieseConfigurationContext()->getRelieseConfiguration()
         );
     }
 
@@ -46,7 +44,7 @@ class ModelGeneratorContext extends GeneratorContexts
     {
         $this->classDefinitionContext->setLastClassDefinition(
             $this->getModelGenerator()
-                 ->generateModelClass(
+                 ->generateClass(
                      $this->getBlueprintContexts()->getTableBlueprintContext()->getLastTableBlueprint()
                  )
         );
@@ -59,7 +57,7 @@ class ModelGeneratorContext extends GeneratorContexts
     {
         $this->classDefinitionContext->setLastAbstractClassDefinition(
             $this->getModelGenerator()
-                 ->generateModelAbstractClass(
+                 ->generateAbstractClass(
                      $this->getBlueprintContexts()->getTableBlueprintContext()->getLastTableBlueprint()
                  )
         );

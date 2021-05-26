@@ -12,6 +12,7 @@ use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Format\ClassFormatter;
 use TestCase;
+use function sprintf;
 
 /**
  * Class ClassFormatterTest
@@ -250,7 +251,7 @@ PHP;
 
         $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::stringType());
 
-        $aProperty->setValue('some value');
+        $aProperty->setDefaultValueStatement(new RawStatementDefinition("'some value'"));
 
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
         $classDefinition->addProperty($aProperty);
@@ -285,9 +286,12 @@ class OneClass
 
 PHP;
 
-        $aProperty = new ClassPropertyDefinition('aProperty', PhpTypeEnum::stringType());
+        $aProperty = new ClassPropertyDefinition(
+            'aProperty',
+            PhpTypeEnum::stringType()
+        );
 
-        $aProperty->setValue(56);
+        $aProperty->setDefaultValueStatement(new RawStatementDefinition("56"));
 
         $classDefinition = new ClassDefinition('OneClass', '\OneNamespace');
         $classDefinition->addProperty($aProperty);
