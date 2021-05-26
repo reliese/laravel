@@ -15,6 +15,7 @@ use Reliese\Command\DataMap\ModelDataMapGenerateCommand;
 use Reliese\Command\DataTransport\DataTransportGenerateCommand;
 use Reliese\Command\Model\ModelGenerateCommand;
 use Reliese\Command\Model\NewModelGenerateCommand;
+use Reliese\Command\Validator\DtoValidatorGenerateCommand;
 use Reliese\Configuration\RelieseConfigurationFactory;
 use Reliese\Support\Classify;
 use const DIRECTORY_SEPARATOR;
@@ -54,6 +55,7 @@ class RelieseServiceProvider extends ServiceProvider
                 DataTransportGenerateCommand::class,
                 DataAttributeGenerateCommand::class,
                 DataAccessGenerateCommand::class,
+                DtoValidatorGenerateCommand::class,
             ]);
         }
     }
