@@ -7,12 +7,14 @@ use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\ModelGeneratorConfiguration;
 use Reliese\Configuration\RelieseConfiguration;
+use Reliese\Generator\ClassGeneratorInterface;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\ObjectTypeDefinition;
+use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
 use Reliese\MetaCode\Format\ClassFormatter;
@@ -21,7 +23,7 @@ use Reliese\MetaCode\Tool\ClassNameTool;
 /**
  * Class ModelGenerator
  */
-class ModelGenerator
+class ModelGenerator implements ClassGeneratorInterface
 {
     const PROPERTY_TABLE = 'table';
 
@@ -46,7 +48,7 @@ class ModelGenerator
         $this->dataTypeMap = new MySqlDataTypeMap();
     }
 
-    public function generateModelClass(TableBlueprint $tableBlueprint): ClassDefinition
+    public function generateClass(TableBlueprint $tableBlueprint): ClassDefinition
     {
         $className = $this->getClassName($tableBlueprint);
 
@@ -63,7 +65,7 @@ class ModelGenerator
         return $modelClassDefinition;
     }
 
-    public function generateModelAbstractClass(TableBlueprint $tableBlueprint): ClassDefinition
+    public function generateAbstractClass(TableBlueprint $tableBlueprint): ClassDefinition
     {
         $abstractClassName = $this->getAbstractClassName($tableBlueprint);
 
@@ -269,7 +271,7 @@ class ModelGenerator
             VisibilityEnum::protectedEnum()
         );
 
-        $property->setValue($tableBlueprint->getName());
+        $property->setDefaultValueStatement(new RawStatementDefinition(sprintf("'%s'", $tableBlueprint->getName())));
 
         return $property;
     }

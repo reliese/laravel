@@ -133,6 +133,7 @@ class DataTransportGenerator
             $this->getAbstractClassName($tableBlueprint),
             $this->getAbstractClassNamespace($tableBlueprint)
         );
+        $dtoAbstractClassDefinition->setTableBlueprint($tableBlueprint);
 
         if ($this->dataTransportGeneratorConfiguration->getUseValueStateTracking()) {
             /*
@@ -186,6 +187,7 @@ class DataTransportGenerator
              * Use a property defined directly on the class
              */
             $columnClassProperty = (new ClassPropertyDefinition($propertyName, $phpTypeEnum))
+                ->setColumnBlueprint($columnBlueprint)
                 ->setIsBeforeChangeObservable(
                     $this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties()
                 )
@@ -216,9 +218,12 @@ class DataTransportGenerator
             $this->getClassName($tableBlueprint),
             $this->getClassNamespace($tableBlueprint)
         );
-        $dtoClassDefinition->setParentClass(
-            $this->generateAbstractDataTransportObjectClassDefinition($tableBlueprint)->getFullyQualifiedName()
-        );
+        $dtoClassDefinition
+            ->setTableBlueprint($tableBlueprint)
+            ->setParentClass(
+                $this->generateAbstractDataTransportObjectClassDefinition($tableBlueprint)->getFullyQualifiedName()
+            )
+        ;
 
         return $this->generatedDataTransportObjectClassDefinitions[$tableBlueprint->getUniqueName()]
             = $dtoClassDefinition;
@@ -292,6 +297,7 @@ class DataTransportGenerator
         );
 
         $fkDtoProperty
+            ->setForeignKeyBlueprint($foreignKeyBlueprint)
             ->setIsBeforeChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
             ->setIsAfterChangeObservable($this->dataTransportGeneratorConfiguration->getUseBeforeChangeObservableProperties())
             ->withSetter()
