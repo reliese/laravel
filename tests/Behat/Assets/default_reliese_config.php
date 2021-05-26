@@ -9,6 +9,7 @@ use Reliese\Configuration\DataAccessGeneratorConfiguration;
 use Reliese\Configuration\DataAttributeGeneratorConfiguration;
 use Reliese\Configuration\DataTransportCollectionGeneratorConfiguration;
 use Reliese\Configuration\ModelGeneratorConfiguration;
+use Reliese\Configuration\ValidatorGeneratorConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -585,5 +586,14 @@ return [
             'ParentClassPrefix' => 'Abstract',
         ],
         // endregion Data Map Generator Config
+
+        // region Validator Generator Config
+        ValidatorGeneratorConfiguration::class => [
+            'Path' => $appRoot.'/Validators',
+            'Namespace' => 'App\Validators',
+            'ClassSuffix' => 'Validator',
+            'ParentClassPrefix' => 'Abstract',
+        ],
+        // endregion Validator Generator Config
     ]
 ];
