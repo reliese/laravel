@@ -29,4 +29,9 @@ interface SchemaMemberInterface
      * @return SchemaMemberType
      */
     public function getSchemaMemberType() : SchemaMemberType;
+
+    /**
+     * @return SchemaBlueprint
+     */
+    public function getSchemaBlueprint(): SchemaBlueprint;
 }

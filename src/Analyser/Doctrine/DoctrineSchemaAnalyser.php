@@ -229,22 +229,10 @@ class DoctrineSchemaAnalyser
         Column $columnDefinition
     ): ColumnBlueprint
     {
-        $isNullable = !$columnDefinition->getNotnull();
-        $hasDefault = null === $columnDefinition->getDefault();
-
-        $columnBlueprint = new ColumnBlueprint(
+        return ColumnBlueprint::fromDoctrineColumnDefinition(
             $columnOwner,
-            $columnDefinition->getName(),
-            $columnDefinition->getType()->getName(),
-            $isNullable,
-            $columnDefinition->getLength() ?? -1,
-            $columnDefinition->getPrecision() ?? -1,
-            $columnDefinition->getScale() ?? -1,
-            $columnDefinition->getAutoincrement(),
-            $hasDefault
+            $columnDefinition
         );
-
-        return $columnBlueprint;
     }
 
     /**

@@ -68,11 +68,10 @@ class ColumnBlueprint
     private array $referencingForeignKeys;
 
     /**
-     * ColumnBlueprint constructor.
-     *
-     * @param ColumnOwnerInterface $tableBlueprint
-     * @param string $columnName
+     * @var bool
      */
+    private ?bool $isUnsigned = null;
+
 
     /**
      * ColumnBlueprint constructor.
@@ -108,6 +107,41 @@ class ColumnBlueprint
         $this->setNumericScale($numericScale);
         $this->setIsAutoincrement($isAutoincrement);
         $this->setHasDefault($hasDefault);
+    }
+
+    /**
+     * Factory method to simplify initialization from a Doctrine Column
+     *
+     * @param ColumnOwnerInterface         $columnOwner
+     * @param \Doctrine\DBAL\Schema\Column $columnDefinition
+     *
+     * @return static
+     */
+    public static function fromDoctrineColumnDefinition(
+        ColumnOwnerInterface $columnOwner,
+        \Doctrine\DBAL\Schema\Column $columnDefinition
+    ) {
+        $isNullable = !$columnDefinition->getNotnull();
+        $hasDefault = null === $columnDefinition->getDefault();
+
+        $columnBlueprint = new static(
+            $columnOwner,
+            $columnDefinition->getName(),
+            $columnDefinition->getType()->getName(),
+            $isNullable,
+            $columnDefinition->getLength() ?? -1,
+            $columnDefinition->getPrecision() ?? -1,
+            $columnDefinition->getScale() ?? -1,
+            $columnDefinition->getAutoincrement(),
+            $hasDefault
+        );
+
+        $columnBlueprint
+            ->setIsUnsigned($columnDefinition->getUnsigned())
+        ;
+
+
+        return $columnBlueprint;
     }
 
     /**
@@ -401,5 +435,42 @@ class ColumnBlueprint
         }
 
         return false;
+    }
+
+    public function hasCharacterLimit()
+    {
+        return $this->maximumCharacters > -1;
+    }
+
+    public function hasIsUnsigned():bool
+    {
+        return !is_null($this->isUnsigned);
+    }
+
+    /**
+     * @param bool $isUnsigned
+     *
+     * @return ColumnBlueprint
+     */
+    public function setIsUnsigned(bool $isUnsigned): ColumnBlueprint
+    {
+        $this->isUnsigned = $isUnsigned;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsUnsigned(): bool
+    {
+        return $this->isUnsigned;
+    }
+
+    /**
+     * @return ColumnOwnerInterface
+     */
+    public function getColumnOwner(): ColumnOwnerInterface
+    {
+        return $this->columnOwner;
     }
 }
