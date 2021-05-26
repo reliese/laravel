@@ -2,6 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\Blueprint\TableBlueprint;
 use Reliese\MetaCode\Enum\AbstractEnum;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use RuntimeException;
@@ -11,6 +12,8 @@ use RuntimeException;
  */
 class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 {
+    private ?TableBlueprint $tableBlueprint = null;
+
     /**
      * @var AbstractEnum
      */
@@ -432,6 +435,30 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         $this->getConstructorStatementsCollection()
             ->addStatementDefinition($statementDefinition);
         return $this;
+    }
+
+    /**
+     * @param TableBlueprint|null $tableBlueprint
+     *
+     * @return ClassDefinition
+     */
+    public function setTableBlueprint(?TableBlueprint $tableBlueprint): ClassDefinition
+    {
+        $this->tableBlueprint = $tableBlueprint;
+        return $this;
+    }
+
+    /**
+     * @return TableBlueprint|null
+     */
+    public function getTableBlueprint(): ?TableBlueprint
+    {
+        return $this->tableBlueprint;
+    }
+
+    public function hasTableBlueprint(): bool
+    {
+        return $this->tableBlueprint instanceof TableBlueprint;
     }
 
     /**

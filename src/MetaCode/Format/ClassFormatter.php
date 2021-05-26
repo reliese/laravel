@@ -3,6 +3,7 @@
 namespace Reliese\MetaCode\Format;
 
 use Illuminate\Support\Str;
+use Reliese\Configuration\RelieseConfiguration;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
@@ -16,8 +17,17 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
 /**
  * Class ClassFormatter
  */
-class ClassFormatter implements IndentationProviderInterface
+class ClassFormatter
 {
+    /**
+     * @var IndentationProviderInterface|null
+     */
+    private ?IndentationProviderInterface $indentationProvider;
+
+    public function __construct(IndentionProvider $indentationProvider) {
+        $this->indentationProvider = $indentationProvider;
+    }
+
     /**
      * @param ClassDefinition $classDefinition
      *
@@ -78,24 +88,6 @@ class ClassFormatter implements IndentationProviderInterface
         $lines[] = "\n}\n";
 
         return implode('', array_filter($lines));
-    }
-
-    /**
-     * @param int $depth
-     *
-     * @return string
-     */
-    public function getIndentation(int $depth): string
-    {
-        return str_repeat($this->getIndentationSymbol(), $depth);
-    }
-
-    /**
-     * @return string
-     */
-    public function getIndentationSymbol(): string
-    {
-        return '    ';
     }
 
     /**
@@ -162,7 +154,7 @@ class ClassFormatter implements IndentationProviderInterface
         }
 
 
-        return $this->getIndentation($depth) . 'use ' . $object . ';';
+        return $this->indentationProvider->getIndentation($depth) . 'use ' . $object . ';';
     }
 
     /**
@@ -176,21 +168,10 @@ class ClassFormatter implements IndentationProviderInterface
         $constants = [];
 
         foreach ($classDefinition->getConstants() as $constant) {
-            $constants[] = $this->formatConstant($constant, $depth + 1);
+            $constants[] = $constant->toPhpCode($this->indentationProvider, $depth + 1);
         }
 
         return implode("\n", $constants);
-    }
-
-    private function formatConstant(ClassConstantDefinition $constant, int $depth): string
-    {
-        return $this->getIndentation($depth)
-            . $constant->getVisibilityEnum()->toReservedWord()
-            . ' const '
-            . $constant->getName()
-            . ' = '
-            . var_export($constant->getValue(), true)
-            . ';';
     }
 
     /**
@@ -213,13 +194,13 @@ class ClassFormatter implements IndentationProviderInterface
     private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
     {
         $defaultValueString = '';
-        if ($property->hasValue()) {
-            $defaultValueString = ' = '. var_export($property->getValue(), true);
+        if ($property->hasDefaultValueStatement()) {
+            $defaultValueString = ' = '. $property->getDefaultValueStatement()->toPhpCode($this->indentationProvider, 0);
         } elseif ($property->getPhpTypeEnum()->isNullable()) {
             $defaultValueString = ' = null';
         }
 
-        return $this->getIndentation($depth)
+        return $this->indentationProvider->getIndentation($depth)
                 . $property->getVisibilityEnum()->toReservedWord()
                 . ' '
                 . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
@@ -273,7 +254,7 @@ class ClassFormatter implements IndentationProviderInterface
 
     private function formatMethod(ClassDefinition $classDefinition, ClassMethodDefinition $method, int $depth): string
     {
-        $signature = $this->getIndentation($depth);
+        $signature = $this->indentationProvider->getIndentation($depth);
 
         if ($method->getVisibilityEnum()) {
             $signature .= $method->getVisibilityEnum()->toReservedWord() . ' ';
@@ -286,10 +267,19 @@ class ClassFormatter implements IndentationProviderInterface
         $signature .= 'function ' . $method->getFunctionName() . '(';
 
         $parameters = [];
+        /** @var FunctionParameterDefinition $parameter */
         foreach ($method->getFunctionParameterDefinitions() as $parameter) {
             $hint = $this->shortenTypeHint($classDefinition, $parameter->getParameterType());
 
-            $parameters[] = $hint . ' $' . $parameter->getParameterName();
+            $parameterPhpCode = $hint . ' ';
+            if ($parameter->isOutputParameter()) {
+                $parameterPhpCode .= '&';
+            }
+            $parameterPhpCode .= '$' . $parameter->getParameterName();
+            if ($parameter->hasDefaultValueStatementDefinition()) {
+                $parameterPhpCode .= ' = '.$parameter->getDefaultValueStatementDefinition()->toPhpCode($this->indentationProvider, 0);
+            }
+            $parameters[] = $parameterPhpCode;
         }
 
         $signature .= implode(', ', $parameters);
@@ -306,16 +296,16 @@ class ClassFormatter implements IndentationProviderInterface
         }
         $signature .= "\n";
 
-        $signature .= $this->getIndentation($depth) . "{\n";
+        $signature .= $this->indentationProvider->getIndentation($depth) . "{\n";
 
         $blockDepth = $depth + 1;
         foreach ($method->getBlockStatements() as $statement) {
-            $signature .= $statement->toPhpCode($this, $blockDepth)
+            $signature .= $statement->toPhpCode($this->indentationProvider, $blockDepth)
                 . "\n";
         }
 
 
-        $signature .= $this->getIndentation($depth) . '}';
+        $signature .= $this->indentationProvider->getIndentation($depth) . '}';
 
         return $signature;
     }

@@ -3,6 +3,7 @@
 namespace Reliese\MetaCode\Definition;
 
 use Reliese\MetaCode\Format\IndentationProviderInterface;
+use function implode;
 /**
  * Class CommentBlockStatementDefinition
  */

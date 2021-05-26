@@ -3,6 +3,8 @@
 namespace Reliese\MetaCode\Definition;
 
 use Illuminate\Support\Str;
+use Reliese\Blueprint\ColumnBlueprint;
+use Reliese\Blueprint\ForeignKeyBlueprint;
 use Reliese\MetaCode\Enum\InstanceEnum;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
@@ -13,6 +15,14 @@ use Reliese\MetaCode\Tool\ClassNameTool;
  */
 class ClassPropertyDefinition
 {
+    protected ?ColumnBlueprint $columnBlueprint = null;
+    /**
+     * @var StatementDefinitionInterface|null
+     */
+    private ?StatementDefinitionInterface $defaultValueStatement = null;
+
+    private ?ForeignKeyBlueprint $foreignKeyBlueprint = null;
+
     /**
      * @var InstanceEnum|null
      */
@@ -76,20 +86,35 @@ class ClassPropertyDefinition
     /**
      * ClassPropertyDefinition constructor.
      *
-     * @param string              $variableName
-     * @param PhpTypeEnum         $phpTypeEnum
-     * @param VisibilityEnum|null $visibilityEnum
-     * @param InstanceEnum|null   $instanceEnum
+     * @param string                            $variableName
+     * @param PhpTypeEnum                       $phpTypeEnum
+     * @param VisibilityEnum|null               $visibilityEnum
+     * @param InstanceEnum|null                 $instanceEnum
      */
     public function __construct(string $variableName,
         PhpTypeEnum $phpTypeEnum,
         ?VisibilityEnum $visibilityEnum = null,
-        ?InstanceEnum $instanceEnum = null)
-    {
+        ?InstanceEnum $instanceEnum = null,
+    ) {
         $this->variableName = $variableName;
         $this->visibilityEnum = $visibilityEnum ?? VisibilityEnum::privateEnum();
         $this->instanceEnum = $instanceEnum ?? InstanceEnum::instanceEnum();
         $this->phpTypeEnum = $phpTypeEnum;
+    }
+
+    public function hasDefaultValueStatement(): bool {
+        return $this->defaultValueStatement instanceof StatementDefinitionInterface;
+    }
+
+    public function getDefaultValueStatement(): StatementDefinitionInterface
+    {
+        return $this->defaultValueStatement;
+    }
+
+    public function setDefaultValueStatement(StatementDefinitionInterface $defaultValueStatement): static
+    {
+        $this->defaultValueStatement = $defaultValueStatement;
+        return $this;
     }
 
     /**
@@ -291,33 +316,6 @@ class ClassPropertyDefinition
     }
 
     /**
-     * @return bool
-     */
-    public function hasValue(): bool
-    {
-        return !empty($this->getValue());
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValue(): mixed
-    {
-        return $this->value;
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function setValue(mixed $value): static
-    {
-        $this->value = $value;
-        return $this;
-    }
-
-    /**
      * @param StatementDefinitionInterface $statementDefinition
      *
      * @return $this
@@ -339,11 +337,65 @@ class ClassPropertyDefinition
     }
 
     /**
+     * @param ColumnBlueprint|null $columnBlueprint
+     *
+     * @return ClassPropertyDefinition
+     */
+    public function setColumnBlueprint(?ColumnBlueprint $columnBlueprint): ClassPropertyDefinition
+    {
+        $this->columnBlueprint = $columnBlueprint;
+        return $this;
+    }
+
+    /**
+     * @return ColumnBlueprint
+     */
+    public function getColumnBlueprint(): ColumnBlueprint
+    {
+        return $this->columnBlueprint;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasColumnBlueprint(): bool
+    {
+        return $this->columnBlueprint instanceof ColumnBlueprint;
+    }
+
+    /**
+     * @param ForeignKeyBlueprint|null $foreignKeyBlueprint
+     *
+     * @return ClassPropertyDefinition
+     */
+    public function setForeignKeyBlueprint(?ForeignKeyBlueprint $foreignKeyBlueprint): ClassPropertyDefinition
+    {
+        $this->foreignKeyBlueprint = $foreignKeyBlueprint;
+        return $this;
+    }
+
+    /**
+     * @return ForeignKeyBlueprint
+     */
+    public function getForeignKeyBlueprint(): ForeignKeyBlueprint
+    {
+        return $this->foreignKeyBlueprint;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasForeignKeyBlueprint(): bool
+    {
+        return $this->foreignKeyBlueprint instanceof ForeignKeyBlueprint;
+    }
+
+    /**
      * @return ClassMethodDefinition
      */
     protected function defaultGetterMethodDefinition(): ClassMethodDefinition
     {
-        $getterFunctionName = ClassNameTool::variableNameToGetterName($this->getVariableName());
+        $getterFunctionName = $this->getGetterMethodName();
         $getterFunctionType = $this->getPhpTypeEnum();
 
         $classMethod = new ClassMethodDefinition($getterFunctionName, $getterFunctionType);
@@ -357,8 +409,13 @@ class ClassPropertyDefinition
         return $classMethod;
     }
 
+    public function getGetterMethodName(): string
+    {
+        return ClassNameTool::variableNameToGetterName($this->getVariableName());
+    }
+
     public static function getPropertyNameConstantName(string $propertyName): string
     {
-        return ClassNameTool::identifierNameToConstantName($propertyName)."_PROPERTY";
+        return "PROPERTY_".ClassNameTool::identifierNameToConstantName($propertyName)."";
     }
 }

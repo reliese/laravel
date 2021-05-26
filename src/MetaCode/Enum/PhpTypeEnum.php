@@ -2,7 +2,16 @@
 
 namespace Reliese\MetaCode\Enum;
 
+use Illuminate\Support\Str;
+use Reliese\MetaCode\Definition\ObjectTypeDefinition;
+use Reliese\MetaCode\Tool\ClassNameTool;
 use RuntimeException;
+use function floatval;
+use function in_array;
+use function is_null;
+use function number_format;
+use function sprintf;
+use function trim;
 
 /**
  * Class PhpType
@@ -32,6 +41,8 @@ class PhpTypeEnum
 
     protected const NOT_DEFINED_TYPE_ID = 80;
 
+    const MIXED_TYPE_ID = 90;
+
     /**
      * @var PhpTypeEnum
      */
@@ -58,6 +69,18 @@ class PhpTypeEnum
     private static ?PhpTypeEnum $staticTypeInstance = null;
     private static ?PhpTypeEnum $nullableStaticTypeInstance = null;
 
+    private static ?PhpTypeEnum $mixedTypeInstance = null;
+
+    private static ?array $numericTypes = null;
+
+    public static function getNumericTypes() : array {
+        return static::$numericTypes ??= [
+            self::INT_TYPE_ID,
+            self::NULLABLE_INT_TYPE_ID,
+            self::FLOAT_TYPE_ID,
+            self::NULLABLE_FLOAT_TYPE_ID,
+        ];
+    }
     /**
      * Only used for Array Type
      * @var string|null 
@@ -94,6 +117,14 @@ class PhpTypeEnum
         return static::$notDefined = new static(static::NOT_DEFINED_TYPE_ID, true);
     }
 
+    public static function mixedType()
+    {
+        if (static::$mixedTypeInstance) {
+            return static::$mixedTypeInstance;
+        }
+        return static::$mixedTypeInstance = new static(static::MIXED_TYPE_ID, false);
+    }
+
     public function isDefined(): bool
     {
         return static::NOT_DEFINED_TYPE_ID !== $this->phpTypeId;
@@ -102,6 +133,11 @@ class PhpTypeEnum
     public function isNullable(): bool
     {
         return $this->isNullable;
+    }
+
+    public function isMixed(): bool
+    {
+        return static::MIXED_TYPE_ID === $this->phpTypeId;
     }
 
     public function isString(): bool
@@ -328,6 +364,10 @@ class PhpTypeEnum
 
     public function toDeclarationType() : string
     {
+        if (static::MIXED_TYPE_ID === $this->phpTypeId) {
+            return 'mixed';
+        }
+
         if (static::STRING_TYPE_ID === $this->phpTypeId) {
             return 'string';
         }
@@ -393,60 +433,64 @@ class PhpTypeEnum
 
     public function toAnnotationTypeString() : string
     {
-        if (static::isString()) {
+        if (static::isMixed()) {
+            return 'mixed';
+        }
+
+        if (static::STRING_TYPE_ID === $this->phpTypeId) {
             return 'string';
         }
 
-        if (static::isString()) {
-            return 'nullable string';
+        if (static::NULLABLE_STRING_TYPE_ID === $this->phpTypeId) {
+            return 'null|string';
         }
 
         if (static::INT_TYPE_ID === $this->phpTypeId) {
             return 'int';
         }
 
-        if (static::INT_TYPE_ID === $this->phpTypeId) {
-            return 'nullable int';
+        if (static::NULLABLE_INT_TYPE_ID === $this->phpTypeId) {
+            return 'null|int';
         }
 
         if (static::FLOAT_TYPE_ID === $this->phpTypeId) {
             return 'float';
         }
 
-        if (static::FLOAT_TYPE_ID === $this->phpTypeId) {
-            return 'nullable float';
+        if (static::NULLABLE_FLOAT_TYPE_ID === $this->phpTypeId) {
+            return 'null|float';
         }
 
         if (static::BOOL_TYPE_ID === $this->phpTypeId) {
             return 'bool';
         }
 
-        if (static::BOOL_TYPE_ID === $this->phpTypeId) {
-            return 'nullable bool';
+        if (static::NULLABLE_BOOL_TYPE_ID === $this->phpTypeId) {
+            return 'null|bool';
         }
 
         if (static::ARRAY_TYPE_ID === $this->phpTypeId) {
             return $this->containedTypeName.'[]';
         }
 
-        if (static::ARRAY_TYPE_ID === $this->phpTypeId) {
-            return 'nullable '.$this->containedTypeName.'[]';
+        if (static::NULLABLE_ARRAY_TYPE_ID === $this->phpTypeId) {
+            return 'null|'.$this->containedTypeName.'[]';
         }
 
         if (static::OBJECT_TYPE_ID === $this->phpTypeId) {
             return $this->fullyQualifiedObjectClassName;
         }
 
-        if (static::OBJECT_TYPE_ID === $this->phpTypeId) {
-            return 'nullable '.$this->fullyQualifiedObjectClassName;
+        if (static::NULLABLE_OBJECT_TYPE_ID === $this->phpTypeId) {
+            return 'null|'.$this->fullyQualifiedObjectClassName;
         }
 
         if (static::STATIC_TYPE_ID === $this->phpTypeId) {
             return 'static';
         }
 
-        if (static::STATIC_TYPE_ID === $this->phpTypeId) {
-            return 'nullable static';
+        if (static::NULLABLE_STATIC_TYPE_ID === $this->phpTypeId) {
+            return 'null|static';
         }
 
         if (static::NOT_DEFINED_TYPE_ID === $this->phpTypeId) {
@@ -456,18 +500,194 @@ class PhpTypeEnum
         throw new RuntimeException(__METHOD__." Died because ".__CLASS__." was misused.");
     }
 
-    public function __toString(): string
+    public function hasFullyQualifiedObjectClassName(): bool
     {
-        if (static::isString()) {
-            return 'string';
-        }
-
-        return __METHOD__.' failed';
+        return !empty($this->fullyQualifiedObjectClassName);
     }
 
     public function getFullyQualifiedObjectClassName(): ?string
     {
         return '\\'.trim($this->fullyQualifiedObjectClassName, '\\');
+    }
+
+    public function hasTypeTest(): bool
+    {
+        switch ($this->phpTypeId) {
+            case static::MIXED_TYPE_ID:
+            case static::NOT_DEFINED_TYPE_ID:
+                return false;
+
+            case static::STRING_TYPE_ID:
+            case static::NULLABLE_STRING_TYPE_ID:
+                return true;
+
+            case static::INT_TYPE_ID:
+            case static::NULLABLE_INT_TYPE_ID:
+                return true;
+
+            case static::FLOAT_TYPE_ID:
+            case static::NULLABLE_FLOAT_TYPE_ID:
+                return true;
+
+            case static::BOOL_TYPE_ID:
+            case static::NULLABLE_BOOL_TYPE_ID:
+                return true;
+
+            case static::ARRAY_TYPE_ID:
+            case static::NULLABLE_ARRAY_TYPE_ID:
+                return true;
+
+            case static::OBJECT_TYPE_ID:
+            case static::NULLABLE_OBJECT_TYPE_ID:
+                return true;
+
+            case static::STATIC_TYPE_ID:
+            case static::NULLABLE_STATIC_TYPE_ID:
+                return true;
+        }
+
+        return false;
+    }
+
+    public function toObjectTypeDefinition(): ObjectTypeDefinition
+    {
+        if (empty($this->fullyQualifiedObjectClassName)) {
+            throw new \RuntimeException(__METHOD__." failed because it was called on a non-object type.");
+        }
+        return new ObjectTypeDefinition($this->getFullyQualifiedObjectClassName());
+    }
+
+    public function toVariableTypeTest(string $valueStatement, bool $invertResult = false): string
+    {
+        switch ($this->phpTypeId) {
+            case static::MIXED_TYPE_ID:
+            case static::NOT_DEFINED_TYPE_ID:
+                throw new RuntimeException("variables of type 'mixed' cannot perform type tests");
+
+            case static::STRING_TYPE_ID:
+            case static::NULLABLE_STRING_TYPE_ID:
+                if ($invertResult) {
+                    return sprintf("!\\is_string(%s)", $valueStatement);
+                }
+                return sprintf("\\is_string(%s)", $valueStatement);
+
+            case static::INT_TYPE_ID:
+            case static::NULLABLE_INT_TYPE_ID:
+                if ($invertResult) {
+                    return sprintf("!\\is_int(%s)", $valueStatement);
+                }
+                return sprintf("\\is_int(%s)", $valueStatement);
+
+            case static::FLOAT_TYPE_ID:
+            case static::NULLABLE_FLOAT_TYPE_ID:
+                if ($invertResult) {
+                    return sprintf("!\\is_float(%s)", $valueStatement);
+                }
+                return sprintf("\\is_float(%s)", $valueStatement);
+
+            case static::BOOL_TYPE_ID:
+            case static::NULLABLE_BOOL_TYPE_ID:
+                if ($invertResult) {
+                    return sprintf("!\\is_bool(%s)", $valueStatement);
+                }
+                return sprintf("\\is_bool(%s)", $valueStatement);
+
+            case static::ARRAY_TYPE_ID:
+            case static::NULLABLE_ARRAY_TYPE_ID:
+                if ($invertResult) {
+                    return sprintf('!\is_array(%s)', $valueStatement);
+                }
+                return sprintf('\is_array(%s)', $valueStatement);
+
+            case static::OBJECT_TYPE_ID:
+            case static::NULLABLE_OBJECT_TYPE_ID:
+                $statement = sprintf(
+                    "%s instanceof %s",
+                    $valueStatement,
+                    ClassNameTool::fullyQualifiedClassNameToClassName($this->fullyQualifiedObjectClassName)
+                );
+                if ($invertResult) {
+                    return "!($statement)";
+                }
+                return $statement;
+
+            case static::STATIC_TYPE_ID:
+            case static::NULLABLE_STATIC_TYPE_ID:
+                $statement = sprintf("%s instanceof static", $valueStatement);
+                if ($invertResult) {
+                    return "!($statement)";
+                }
+                return $statement;
+        }
+
+        throw new RuntimeException(__METHOD__." Died because ".__CLASS__." was misused.");
+    }
+
+    public function toUpperSnakeCase(): string
+    {
+        switch ($this->phpTypeId) {
+            case static::MIXED_TYPE_ID:
+            case static::NOT_DEFINED_TYPE_ID:
+                return 'MIXED';
+
+            case static::STRING_TYPE_ID:
+            case static::NULLABLE_STRING_TYPE_ID:
+                return 'STRING';
+
+            case static::INT_TYPE_ID:
+            case static::NULLABLE_INT_TYPE_ID:
+                return 'INT';
+
+            case static::FLOAT_TYPE_ID:
+            case static::NULLABLE_FLOAT_TYPE_ID:
+                return 'FLOAT';
+
+            case static::BOOL_TYPE_ID:
+            case static::NULLABLE_BOOL_TYPE_ID:
+                return 'BOOL';
+
+            case static::ARRAY_TYPE_ID:
+            case static::NULLABLE_ARRAY_TYPE_ID:
+                return 'ARRAY';
+
+            case static::OBJECT_TYPE_ID:
+            case static::NULLABLE_OBJECT_TYPE_ID:
+                $className = ClassNameTool::fullyQualifiedClassNameToClassName($this->fullyQualifiedObjectClassName);
+                return Str::upper(Str::snake($className));
+
+            case static::STATIC_TYPE_ID:
+            case static::NULLABLE_STATIC_TYPE_ID:
+                return 'STATIC';
+
+            default:
+                throw new RuntimeException(__METHOD__." failed for PhpTypeId: {$this->phpTypeId}");
+        }
+    }
+
+    public function isNumeric(): bool
+    {
+        return in_array($this->phpTypeId, static::getNumericTypes());
+    }
+
+    public function toNumericCast(?string $value) : string
+    {
+        if (is_null($value)) {
+            return 'null';
+        }
+
+        switch ($this->phpTypeId) {
+
+            case static::INT_TYPE_ID:
+            case static::NULLABLE_INT_TYPE_ID:
+                return number_format($value, 0,'','');
+
+            case static::FLOAT_TYPE_ID:
+            case static::NULLABLE_FLOAT_TYPE_ID:
+                return sprintf('%f', $value);
+
+            default:
+                throw new \RuntimeException(__METHOD__." failed");
+        }
     }
 
     private function setContainedTypeName(string $containedTypeName) : PhpTypeEnum

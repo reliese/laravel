@@ -2,50 +2,60 @@
 
 namespace Reliese\MetaCode\Writers;
 
-use Reliese\MetaCode\Definition\CodeDefinitionInterface;
+use Reliese\Configuration\RelieseConfiguration;
+use Reliese\MetaCode\Definition\ClassDefinition;
+use Reliese\MetaCode\Format\CodeFormatter;
 
 class CodeWriter
 {
+    /**
+     * @var CodeFormatter
+     */
+    private CodeFormatter $codeFormatter;
+
+    /**
+     * @var RelieseConfiguration
+     */
+    private RelieseConfiguration $relieseConfiguration;
+
+    public function __construct(RelieseConfiguration $relieseConfiguration) {
+        $this->codeFormatter = new CodeFormatter($relieseConfiguration);
+    }
+
     public function createClassDefinition(
         string $fileName,
-        string $classSourceCode,
+        ClassDefinition $classDefinition,
     ) {
         if (\file_exists($fileName)) {
             return;
         }
 
-        $this->overwriteClassDefinition($fileName, $classSourceCode);
+        $this->overwriteFile(
+            $fileName,
+            $this->codeFormatter->getClassFormatter()->format($classDefinition)
+        );
     }
 
     public function overwriteClassDefinition(
         string $fileName,
-        string $classSourceCode,
+        ClassDefinition $classDefinition,
     ) {
-        $directory = dirname($fileName);
+        $this->overwriteFile(
+            $fileName,
+            $this->codeFormatter->getClassFormatter()->format($classDefinition)
+        );
+    }
+
+    protected function overwriteFile(
+        $filePath,
+        $fileContent,
+    ) {
+        $directory = dirname($filePath);
 
         if (!is_dir($directory)) {
             \mkdir($directory, 0755, true);
         }
 
-        file_put_contents($fileName, $classSourceCode);
-    }
-
-    private function writeClassFiles(
-        CodeDefinitionInterface $codeDefinition,
-        bool $overrideExisting
-    ): void
-    {
-        if (!is_dir($codeDefinition->getDirectory())) {
-            mkdir($codeDefinition->getDirectory(), 0777, true);
-        }
-
-        $filePath = $codeDefinition->getFilePath();
-
-        if (!$overrideExisting && file_exists($filePath)) {
-            // TODO: Log skipping
-            return;
-        }
-
-        file_put_contents($filePath, $classFormatter->format($codeDefinition));
+        file_put_contents($filePath, $fileContent);
     }
 }
