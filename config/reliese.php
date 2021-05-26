@@ -1,5 +1,6 @@
 <?php
 use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAssistant;
+use Reliese\Configuration\CodeFormattingConfiguration;
 use Reliese\Configuration\DatabaseAnalyserConfiguration;
 use Reliese\Configuration\DatabaseBlueprintConfiguration;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
@@ -8,6 +9,7 @@ use Reliese\Configuration\DataAccessGeneratorConfiguration;
 use Reliese\Configuration\DataAttributeGeneratorConfiguration;
 use Reliese\Configuration\DataTransportCollectionGeneratorConfiguration;
 use Reliese\Configuration\ModelGeneratorConfiguration;
+use Reliese\Configuration\ValidatorGeneratorConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,9 @@ $all = '/^.*$/';
 return [
     // The configuration profile to use unless a different one is specified on with the command line
     'default' => [
+        CodeFormattingConfiguration:: class => [
+          'IndentationSymbol' => '    ',
+        ],
         // region Database Analyser Configuration
         /*
         |--------------------------------------------------------------------------
@@ -551,7 +556,6 @@ return [
         // endregion Data Attribute Generator Config
 
         // region Data Transport Generator Config
-
         DataTransportObjectGeneratorConfiguration::class => [
             'Path' => app_path().'/DataTransportObjects',
             'Namespace' => 'App\DataTransportObjects',
@@ -584,5 +588,14 @@ return [
             'AccessorTraitPath' => app_path().'/DataMapAccessors/PrimaryDatabase',
         ],
         // endregion Data Map Generator Config
+
+        // region Validator Generator Config
+        ValidatorGeneratorConfiguration::class => [
+            'Path' => app_path().'/Validators',
+            'Namespace' => 'App\Validators',
+            'ClassSuffix' => 'Validator',
+            'ParentClassPrefix' => 'Abstract',
+        ],
+        // endregion Validator Generator Config
     ]
 ];

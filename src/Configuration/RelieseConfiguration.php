@@ -33,6 +33,11 @@ class RelieseConfiguration
     protected ModelGeneratorConfiguration $modelGeneratorConfiguration;
 
     /**
+     * @var CodeFormattingConfiguration
+     */
+    private CodeFormattingConfiguration $codeFormattingConfiguration;
+
+    /**
      * @var string
      */
     private string $configurationProfileName;
@@ -48,27 +53,38 @@ class RelieseConfiguration
     private DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration;
 
     /**
+     * @var ValidatorGeneratorConfiguration
+     */
+    private ValidatorGeneratorConfiguration $validatorGeneratorConfiguration;
+
+    /**
      * RelieseConfiguration constructor.
      *
-     * @param string $configurationProfileName
-     * @param ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration
-     * @param DataAccessGeneratorConfiguration $dataAccessGeneratorConfiguration
+     * @param string                                    $configurationProfileName
+     * @param CodeFormattingConfiguration               $codeFormattingConfiguration
+     * @param ModelDataMapGeneratorConfiguration        $modelDataMapGeneratorConfiguration
+     * @param DataAccessGeneratorConfiguration          $dataAccessGeneratorConfiguration
      * @param DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration
-     * @param DatabaseAnalyserConfiguration $databaseAnalyserConfiguration
-     * @param DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration
-     * @param DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
-     * @param ModelGeneratorConfiguration $modelGeneratorConfiguration
+     * @param DatabaseAnalyserConfiguration             $databaseAnalyserConfiguration
+     * @param DataAttributeGeneratorConfiguration       $dataAttributeGeneratorConfiguration
+     * @param DatabaseBlueprintConfiguration            $databaseBlueprintConfiguration
+     * @param ModelGeneratorConfiguration               $modelGeneratorConfiguration
+     * @param ValidatorGeneratorConfiguration           $validatorGeneratorConfiguration
      */
     public function __construct(string $configurationProfileName,
+        CodeFormattingConfiguration $codeFormattingConfiguration,
         ModelDataMapGeneratorConfiguration $modelDataMapGeneratorConfiguration,
         DataAccessGeneratorConfiguration $dataAccessGeneratorConfiguration,
         DataTransportObjectGeneratorConfiguration $dataTransportGeneratorConfiguration,
         DatabaseAnalyserConfiguration $databaseAnalyserConfiguration,
         DataAttributeGeneratorConfiguration $dataAttributeGeneratorConfiguration,
         DatabaseBlueprintConfiguration $databaseBlueprintConfiguration,
-        ModelGeneratorConfiguration $modelGeneratorConfiguration,)
+        ModelGeneratorConfiguration $modelGeneratorConfiguration,
+        ValidatorGeneratorConfiguration $validatorGeneratorConfiguration,
+    )
     {
         $this->configurationProfileName = $configurationProfileName;
+        $this->codeFormattingConfiguration = $codeFormattingConfiguration;
         $this->modelDataMapGeneratorConfiguration = $modelDataMapGeneratorConfiguration;
         $this->dataAccessGeneratorConfiguration = $dataAccessGeneratorConfiguration;
         $this->dataTransportGeneratorConfiguration = $dataTransportGeneratorConfiguration;
@@ -76,6 +92,7 @@ class RelieseConfiguration
         $this->databaseBlueprintConfiguration = $databaseBlueprintConfiguration;
         $this->modelGeneratorConfiguration = $modelGeneratorConfiguration;
         $this->dataAttributeGeneratorConfiguration = $dataAttributeGeneratorConfiguration;
+        $this->validatorGeneratorConfiguration = $validatorGeneratorConfiguration;
     }
 
     /**
@@ -137,5 +154,18 @@ class RelieseConfiguration
     public function getModelGeneratorConfiguration(): ModelGeneratorConfiguration
     {
         return $this->modelGeneratorConfiguration;
+    }
+
+    public function getValidatorGeneratorConfiguration()
+    {
+        return $this->validatorGeneratorConfiguration;
+    }
+
+    /**
+     * @return CodeFormattingConfiguration
+     */
+    public function getCodeFormattingConfiguration(): CodeFormattingConfiguration
+    {
+        return $this->codeFormattingConfiguration;
     }
 }

@@ -71,13 +71,15 @@ class RelieseConfigurationFactory
 
         return new RelieseConfiguration(
             $configurationProfileName,
+            $this->parseCodeFormattingConfiguration($configurationProfile),
             $this->getModelDataMapGeneratorConfiguration($configurationProfile),
             $this->getDataAccessGeneratorConfiguration($configurationProfile),
             $this->getDataTransportObjectGeneratorConfiguration($configurationProfile),
             $this->getDatabaseAnalyserConfiguration($configurationProfile),
             $this->getDataAttributeGeneratorConfiguration($configurationProfile),
             $this->getDatabaseBlueprintConfiguration($configurationProfile),
-            $this->getModelGeneratorConfiguration($configurationProfile)
+            $this->getModelGeneratorConfiguration($configurationProfile),
+            $this->getValidatorGeneratorConfiguration($configurationProfile),
         );
     }
 
@@ -146,6 +148,16 @@ class RelieseConfigurationFactory
         return new DatabaseBlueprintConfiguration($configurationProfile[$key]);
     }
 
+    protected function parseCodeFormattingConfiguration(array $configurationProfile): codeFormattingConfiguration
+    {
+        $key = CodeFormattingConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
+        }
+
+        return new CodeFormattingConfiguration($configurationProfile[$key]);
+    }
+
     /**
      * @param array $configurationProfile
      *
@@ -190,5 +202,20 @@ class RelieseConfigurationFactory
         }
 
         return new DataAccessGeneratorConfiguration($configurationProfile[$key]);
+    }
+
+    /**
+     * @param mixed $configurationProfile
+     *
+     * @return DataAccessGeneratorConfiguration
+     */
+    private function getValidatorGeneratorConfiguration(mixed $configurationProfile): ValidatorGeneratorConfiguration
+    {
+        $key = ValidatorGeneratorConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
+        }
+
+        return new ValidatorGeneratorConfiguration($configurationProfile[$key]);
     }
 }

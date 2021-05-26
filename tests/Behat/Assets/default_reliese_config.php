@@ -1,5 +1,6 @@
 <?php
 use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAssistant;
+use Reliese\Configuration\CodeFormattingConfiguration;
 use Reliese\Configuration\DatabaseAnalyserConfiguration;
 use Reliese\Configuration\DatabaseBlueprintConfiguration;
 use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
@@ -25,6 +26,9 @@ $all = '/^.*$/';
 return [
     // The configuration profile to use unless a different one is specified on with the command line
     'default' => [
+        CodeFormattingConfiguration:: class => [
+            'IndentationSymbol' => '    ',
+        ],
         // region Database Analyser Configuration
         /*
         |--------------------------------------------------------------------------
