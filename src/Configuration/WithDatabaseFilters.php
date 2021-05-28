@@ -2,25 +2,45 @@
 
 namespace Reliese\Configuration;
 
-use Reliese\Filter\SchemaFilter;
+use Reliese\Filter\DatabaseFilter;
 use const PHP_EOL;
 /**
  * Trait WithParseSchemaFilters
  */
-trait WithParseSchemaFilters
+trait WithDatabaseFilters
 {
-    protected function parseFilters(array &$configurationValues) : SchemaFilter
+    /**
+     * @return DatabaseFilter
+     */
+    public function getDatabaseFilters(): DatabaseFilter
+    {
+        return $this->databaseFilters;
+    }
+
+    /**
+     * @param DatabaseFilter $databaseFilters
+     *
+     * @return $this
+     */
+    public function setDatabaseFilters(DatabaseFilter $databaseFilters): static
+    {
+        $this->databaseFilters = $databaseFilters;
+        return $this;
+    }
+    protected ?DatabaseFilter $databaseFilters = null;
+
+    protected function parseDatabaseFilters(array &$configurationValues) : static
     {
         if (empty($configurationValues['Filters'])) {
-            return new SchemaFilter(true);
+            return $this->setDatabaseFilters(new DatabaseFilter(true));
         }
 
-        $result =  new SchemaFilter(
+        $result =  new DatabaseFilter(
             true === $configurationValues['Filters']['IncludeByDefault']
         );
 
         if (empty($configurationValues['Filters']['Except'])) {
-            return $result;
+            return $this->setDatabaseFilters($result);
         }
 
         foreach ($configurationValues['Filters']['Except'] as $exceptionCondition) {
@@ -33,6 +53,6 @@ trait WithParseSchemaFilters
             $result->addException($schemaMatchExpressions, $tableMatchExpressions, $columnMatchExpressions);
         }
 
-        return $result;
+        return $this->setDatabaseFilters($result);
     }
 }

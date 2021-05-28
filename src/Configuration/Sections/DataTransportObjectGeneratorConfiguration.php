@@ -1,31 +1,15 @@
 <?php
 
-namespace Reliese\Configuration;
+namespace Reliese\Configuration\Sections;;
 
+use Reliese\Configuration\ClassGeneratorConfigurationInterface;
+use Reliese\Configuration\WithClassGeneratorConfigurationMethods;
 /**
  * Class DataTransportGeneratorConfiguration
  */
-class DataTransportObjectGeneratorConfiguration
+class DataTransportObjectGeneratorConfiguration implements ClassGeneratorConfigurationInterface
 {
-    /**
-     * @var string
-     */
-    private string $classSuffix;
-
-    /**
-     * @var string
-     */
-    private string $namespace;
-
-    /**
-     * @var string
-     */
-    private string $parentClassPrefix;
-
-    /**
-     * @var string
-     */
-    private string $path;
+    use WithClassGeneratorConfigurationMethods;
 
     /**
      * DataTransportObjectGeneratorConfiguration constructor.
@@ -38,7 +22,10 @@ class DataTransportObjectGeneratorConfiguration
      */
     private bool $useAfterChangeObservableProperties = false;
 
-    private $useValueStateTracking;
+    /**
+     * @var bool
+     */
+    private bool $useValueStateTracking;
 
     /**
      * DataTransportGeneratorConfiguration constructor.
@@ -47,13 +34,11 @@ class DataTransportObjectGeneratorConfiguration
      */
     public function __construct(array $configuration)
     {
-        $this->path = $configuration['Path'];
-        $this->namespace = $configuration['Namespace'];
-        $this->classSuffix = $configuration['ClassSuffix'] ?? '';
-        $this->parentClassPrefix = $configuration['ParentClassPrefix'] ?? '';
-        $this->classSuffix = $configuration['ClassSuffix'];
-        $this->parentClassPrefix = $configuration['ParentClassPrefix'];
-        $this->useValueStateTracking = $configuration['UseValueStateTracking'] ?? false;
+        $this
+            ->parseClassGeneratorConfiguration($configuration)
+            ->setUseValueStateTracking($configuration['UseValueStateTracking'] ?? false)
+        ;
+
         if (\array_key_exists('ObservableProperties', $configuration)) {
             $observableConfig = $configuration['ObservableProperties'];
             if (\array_key_exists('BeforeChange', $observableConfig)) {
@@ -63,38 +48,6 @@ class DataTransportObjectGeneratorConfiguration
                 $this->useAfterChangeObservableProperties = true === $observableConfig['AfterChange'];
             }
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getClassSuffix(): mixed
-    {
-        return $this->classSuffix;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getParentClassPrefix(): mixed
-    {
-        return $this->parentClassPrefix;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return $this->path;
     }
 
     /**
@@ -113,8 +66,21 @@ class DataTransportObjectGeneratorConfiguration
         return $this->useBeforeChangeObservableProperties;
     }
 
+    /**
+     * @return bool
+     */
     public function getUseValueStateTracking(): bool
     {
         return $this->useValueStateTracking;
+    }
+
+    /**
+     * @param bool $useValueStateTracking
+     * @return $this
+     */
+    public function setUseValueStateTracking(bool $useValueStateTracking): static
+    {
+        $this->useValueStateTracking = $useValueStateTracking;
+        return $this;
     }
 }
