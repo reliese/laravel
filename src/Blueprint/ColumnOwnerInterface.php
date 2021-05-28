@@ -7,7 +7,7 @@ namespace Reliese\Blueprint;
  *
  * @package Reliese\Blueprint
  */
-interface ColumnOwnerInterface
+interface ColumnOwnerInterface extends SchemaMemberInterface
 {
     /**
      * @param ColumnBlueprint $columnBlueprint
@@ -30,11 +30,4 @@ interface ColumnOwnerInterface
      * @return string[]
      */
     public function getColumnNames(): array;
-
-    /**
-     * returns "Schema.[TableName |View Name]"
-     *
-     * @return string
-     */
-    public function getUniqueName(): string;
 }

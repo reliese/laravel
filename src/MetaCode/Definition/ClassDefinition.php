@@ -2,6 +2,8 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\AbstractEnum;
+use Reliese\MetaCode\Tool\ClassNameTool;
 use RuntimeException;
 
 /**
@@ -9,6 +11,11 @@ use RuntimeException;
  */
 class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 {
+    /**
+     * @var AbstractEnum
+     */
+    private ?AbstractEnum $abstractEnumType;
+
     /**
      * @var bool[] Array keys are fully qualified interface names
      */
@@ -18,6 +25,26 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      * @var string
      */
     private string $className;
+
+    /**
+     * @var string[]
+     */
+    private array $classComments = [];
+
+    /**
+     * @var ClassConstantDefinition[]
+     */
+    private array $constants = [];
+
+    /**
+     * @var ImportableInterface[]
+     */
+    private array $imports = [];
+
+    /**
+     * @var ClassMethodDefinition[]
+     */
+    private array $methods = [];
 
     /**
      * @var string
@@ -40,9 +67,9 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     private string $filePath;
 
     /**
-     * @var ImportableInterface[]
+     * @var ClassPropertyDefinition[]
      */
-    private array $imports = [];
+    private array $properties = [];
 
     /**
      * @var ClassTraitDefinition[]
@@ -50,40 +77,55 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     private array $traits = [];
 
     /**
-     * @var ClassConstantDefinition[]
+     * @param string $comment
+     *
+     * @return $this
      */
-    private array $constants = [];
+    public function addClassComment(string $comment): static
+    {
+        $this->classComments[] = $comment;
+        return $this;
+    }
 
     /**
-     * @var ClassPropertyDefinition[]
+     * @param ClassConstantDefinition $constant
+     *
+     * @return $this
      */
-    private array $properties = [];
-
-    /**
-     * @var ClassMethodDefinition[]
-     */
-    private array $methods = [];
+    public function addConstant(ClassConstantDefinition $constant): static
+    {
+        $this->constants[$constant->getName()] = $constant;
+        return $this;
+    }
 
     /**
      * ClassDefinition constructor.
      *
-     * @param string $name
-     * @param string $namespace
+     * @param string        $className
+     * @param string        $namespace
+     * @param ?AbstractEnum $abstractEnumType
      */
     public function __construct(
-        string $name,
-        string $namespace
+        string $className,
+        string $namespace,
+        ?AbstractEnum $abstractEnumType = null
     ) {
-        $this->className = $name;
+        $this->className = $className;
         $this->namespace = trim($namespace, '\\');
+        $this->constructorStatementsCollection = new StatementDefinitionCollection();
+        $this->abstractEnumType = $abstractEnumType ?? AbstractEnum::concreteEnum();
     }
 
     /**
      * @param string $fullyQualifiedInterfaceName
+     *
+     * @return $this
      */
-    public function addInterface(string $fullyQualifiedInterfaceName)
+    public function addInterface(string $fullyQualifiedInterfaceName): static
     {
+        $fullyQualifiedInterfaceName = ClassNameTool::globalClassFQN($fullyQualifiedInterfaceName);
         $this->interfaces[$fullyQualifiedInterfaceName] = true;
+        return $this;
     }
 
     /*
@@ -98,11 +140,30 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
-     * @param ClassMethodDefinition $classMethodDefinition
+     * @param ImportableInterface $import
+     *
+     * @return $this
      */
-    public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition)
+    public function addImport(ImportableInterface $import): static
+    {
+        // We'll assume this class is already imported to shorten references to itself
+        if (strcmp($import->getFullyQualifiedImportableName(), $this->getFullyQualifiedImportableName()) === 0) {
+            return $this;
+        }
+
+        $this->imports[$import->getImportableName()] = $import;
+        return $this;
+    }
+
+    /**
+     * @param ClassMethodDefinition $classMethodDefinition
+     *
+     * @return $this
+     */
+    public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition) : static
     {
         $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
+        return $this;
     }
 
     /**
@@ -119,13 +180,27 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
-     * @param string $fullyQualifiedClassName
+     * @param ClassPropertyDefinition $classPropertyDefinition
      *
      * @return $this
      */
-    public function setParentClass(string $fullyQualifiedClassName): ClassDefinition
+    public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition
     {
-        $this->parentClassName = $fullyQualifiedClassName;
+        $this->properties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
+
+        if ($classPropertyDefinition->getIsBeforeChangeObservable()
+            || $classPropertyDefinition->getIsAfterChangeObservable()) {
+
+            $this->addConstant(
+                new ClassConstantDefinition(
+                    ClassPropertyDefinition::getPropertyNameConstantName(
+                        $classPropertyDefinition->getVariableName()
+                    ),
+                    $classPropertyDefinition->getVariableName()
+                )
+            );
+        }
+
         return $this;
     }
 
@@ -134,15 +209,12 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     public function hasParentClass(): bool
     {
-        return !is_null($this->parentClassName);
+        return !empty($this->parentClassName);
     }
 
-    /**
-     * @return string
-     */
-    public function getParentClassName() : string
+    public function getClassComments(): array
     {
-        return $this->parentClassName;
+        return $this->classComments;
     }
 
     /**
@@ -152,6 +224,12 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     {
         return $this->className;
     }
+
+    /**
+     * @deprecated use getClassName instead
+     * @return string
+     */
+    public function getName(): string { return $this->getClassName(); }
 
     /**
      * @return string
@@ -170,14 +248,16 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
-     * @param ClassPropertyDefinition $classPropertyDefinition
-     *
-     * @return $this
+     * @return ClassConstantDefinition[]
      */
-    public function addProperty(ClassPropertyDefinition $classPropertyDefinition): ClassDefinition
+    public function getConstants(): array
     {
-        $this->properties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
-        return $this;
+        return $this->constants;
+    }
+
+    public function getFullyQualifiedImportableName(): string
+    {
+        return trim($this->getFullyQualifiedName(), '\\');
     }
 
     /**
@@ -192,14 +272,6 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         }
 
         return $this;
-    }
-
-    /**
-     * @return ClassPropertyDefinition[]
-     */
-    public function getProperties(): array
-    {
-        return $this->properties;
     }
 
     /**
@@ -234,18 +306,17 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this->methods;
     }
 
-    public function addConstant(ClassConstantDefinition $constant): static
+    public function getParentClassName(): string
     {
-        $this->constants[$constant->getName()] = $constant;
-        return $this;
+        return $this->parentClassName;
     }
 
     /**
-     * @return ClassConstantDefinition[]
+     * @return ClassPropertyDefinition[]
      */
-    public function getConstants(): array
+    public function getProperties(): array
     {
-        return $this->constants;
+        return $this->properties;
     }
 
     /**
@@ -274,6 +345,14 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
+     * @return string
+     */
+    public function getStructureType(): string
+    {
+        return 'class';
+    }
+
+    /**
      * @return ClassTraitDefinition[]
      */
     public function getTraits(): array
@@ -297,19 +376,9 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return false;
     }
 
-    /**
-     * @param ImportableInterface $import
-     *
-     * @return $this
-     */
-    public function addImport(ImportableInterface $import): static
+    public function setParentClass(string $fullyQualifiedClassName): ClassDefinition
     {
-        // We'll assume this class is already imported to shorten references to itself
-        if (strcmp($import->getFullyQualifiedImportableName(), $this->getFullyQualifiedImportableName()) === 0) {
-            return $this;
-        }
-
-        $this->imports[$import->getImportableName()] = $import;
+        $this->parentClassName = $fullyQualifiedClassName;
         return $this;
     }
 
@@ -351,6 +420,20 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return $this;
     }
 
+    private StatementDefinitionCollection $constructorStatementsCollection;
+
+    public function getConstructorStatementsCollection(): StatementDefinitionCollection
+    {
+        return $this->constructorStatementsCollection;
+    }
+
+    public function addConstructorStatement(StatementDefinitionInterface $statementDefinition): static
+    {
+        $this->getConstructorStatementsCollection()
+            ->addStatementDefinition($statementDefinition);
+        return $this;
+    }
+
     /**
      * @todo: Put this on a helper class
      *
@@ -370,14 +453,6 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function getImports(): array
     {
         return $this->imports;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFullyQualifiedImportableName(): string
-    {
-        return trim($this->getFullyQualifiedName(), '\\');
     }
 
     /**
@@ -413,5 +488,13 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function getFilePath(): string
     {
         return $this->filePath;
+    }
+
+    /**
+     * @return AbstractEnum
+     */
+    public function getAbstractEnumType(): AbstractEnum
+    {
+        return $this->abstractEnumType;
     }
 }

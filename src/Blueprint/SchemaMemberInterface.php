@@ -19,6 +19,11 @@ interface SchemaMemberInterface
     public function getName(): string;
 
     /**
+     * @return string
+     */
+    public function getUniqueName(): string;
+
+    /**
      * Returns an instance of SchemaMemberType
      *
      * @return SchemaMemberType

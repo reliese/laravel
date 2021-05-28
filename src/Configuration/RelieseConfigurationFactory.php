@@ -2,7 +2,6 @@
 
 namespace Reliese\Configuration;
 
-use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Reliese\PackagePaths;
 use function array_key_exists;
@@ -54,6 +53,11 @@ class RelieseConfigurationFactory
         $this->relieseConfigurationProfiles = $relieseConfigurationProfiles ?? include(PackagePaths::getExampleConfigFilePath());
     }
 
+    /**
+     * @param string $configurationProfileName
+     *
+     * @return RelieseConfiguration
+     */
     public function getRelieseConfiguration(string $configurationProfileName): RelieseConfiguration
     {
 // TODO: figure out how to make logging work w/ tests as well
@@ -67,36 +71,54 @@ class RelieseConfigurationFactory
 
         return new RelieseConfiguration(
             $configurationProfileName,
-            $this->getDataMapGeneratorConfiguration($configurationProfile),
-            $this->getDataTransportGeneratorConfiguration($configurationProfile),
+            $this->getModelDataMapGeneratorConfiguration($configurationProfile),
+            $this->getDataAccessGeneratorConfiguration($configurationProfile),
+            $this->getDataTransportObjectGeneratorConfiguration($configurationProfile),
             $this->getDatabaseAnalyserConfiguration($configurationProfile),
+            $this->getDataAttributeGeneratorConfiguration($configurationProfile),
             $this->getDatabaseBlueprintConfiguration($configurationProfile),
             $this->getModelGeneratorConfiguration($configurationProfile)
         );
     }
 
-    protected function getDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
+    /**
+     * @param array $configurationProfile
+     *
+     * @return DataAttributeGeneratorConfiguration
+     */
+    protected function getDataAttributeGeneratorConfiguration(array $configurationProfile): DataAttributeGeneratorConfiguration
     {
-        $key = ModelDataMapGeneratorConfiguration::class;
+        $key = DataAttributeGeneratorConfiguration::class;
 
         if (!array_key_exists($key, $configurationProfile)) {
             throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new ModelDataMapGeneratorConfiguration($configurationProfile[$key]);
+        return new DataAttributeGeneratorConfiguration($configurationProfile[$key]);
     }
 
-    protected function getDataTransportGeneratorConfiguration(array $configurationProfile): DataTransportGeneratorConfiguration
+    /**
+     * @param array $configurationProfile
+     *
+     * @return DataTransportObjectGeneratorConfiguration
+     */
+    protected function getDataTransportObjectGeneratorConfiguration(array $configurationProfile): DataTransportObjectGeneratorConfiguration
     {
-        $key = DataTransportGeneratorConfiguration::class;
+
+        $key = DataTransportObjectGeneratorConfiguration::class;
 
         if (!array_key_exists($key, $configurationProfile)) {
             throw new InvalidArgumentException("Unable to locate configuration block for \"{$key}\"");
         }
 
-        return new DataTransportGeneratorConfiguration($configurationProfile[$key]);
+        return new DataTransportObjectGeneratorConfiguration($configurationProfile[$key]);
     }
 
+    /**
+     * @param array $configurationProfile
+     *
+     * @return DatabaseAnalyserConfiguration
+     */
     protected function getDatabaseAnalyserConfiguration(array $configurationProfile): DatabaseAnalyserConfiguration
     {
         $key = DatabaseAnalyserConfiguration::class;
@@ -108,6 +130,11 @@ class RelieseConfigurationFactory
         return new DatabaseAnalyserConfiguration($configurationProfile[$key]);
     }
 
+    /**
+     * @param array $configurationProfile
+     *
+     * @return DatabaseBlueprintConfiguration
+     */
     protected function getDatabaseBlueprintConfiguration(array $configurationProfile): DatabaseBlueprintConfiguration
     {
         $key = DatabaseBlueprintConfiguration::class;
@@ -119,6 +146,26 @@ class RelieseConfigurationFactory
         return new DatabaseBlueprintConfiguration($configurationProfile[$key]);
     }
 
+    /**
+     * @param array $configurationProfile
+     *
+     * @return ModelDataMapGeneratorConfiguration
+     */
+    protected function getModelDataMapGeneratorConfiguration(array $configurationProfile): ModelDataMapGeneratorConfiguration
+    {
+        $key = ModelDataMapGeneratorConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
+        }
+
+        return new ModelDataMapGeneratorConfiguration($configurationProfile[$key]);
+    }
+
+    /**
+     * @param array $configurationProfile
+     *
+     * @return ModelGeneratorConfiguration
+     */
     protected function getModelGeneratorConfiguration(array $configurationProfile): ModelGeneratorConfiguration
     {
         $key = ModelGeneratorConfiguration::class;
@@ -128,5 +175,20 @@ class RelieseConfigurationFactory
         }
 
         return new ModelGeneratorConfiguration($configurationProfile[$key]);
+    }
+
+    /**
+     * @param mixed $configurationProfile
+     *
+     * @return DataAccessGeneratorConfiguration
+     */
+    private function getDataAccessGeneratorConfiguration(mixed $configurationProfile): DataAccessGeneratorConfiguration
+    {
+        $key = DataAccessGeneratorConfiguration::class;
+        if (!array_key_exists($key, $configurationProfile)) {
+            throw new InvalidArgumentException("Unable to locate configuration block for \"$key\"");
+        }
+
+        return new DataAccessGeneratorConfiguration($configurationProfile[$key]);
     }
 }

@@ -356,7 +356,7 @@ use DateTime;
  */
 class OneClass
 {
-    private ?DateTime \$aProperty;
+    private ?DateTime \$aProperty = null;
 }
 
 PHP;
@@ -393,8 +393,8 @@ use DateTime;
  */
 class OneClass
 {
-    private ?DateTime \$aProperty;
-    private ?DateTime \$anotherProperty;
+    private ?DateTime \$aProperty = null;
+    private ?DateTime \$anotherProperty = null;
 }
 
 PHP;
@@ -431,7 +431,7 @@ namespace OneNamespace;
  */
 class OneClass
 {
-    private ?string \$aProperty;
+    private ?string \$aProperty = null;
 }
 
 PHP;
@@ -807,7 +807,6 @@ class OneClass
     public function setOneProperty(string \$oneProperty): static
     {
         \$this->oneProperty = \$oneProperty;
-
         return \$this;
     }
 
@@ -831,6 +830,6 @@ PHP;
 
         $classOutput = $classFormatter->format($classDefinition);
 
-        $this->assertEquals($expectedClassOutput, $classOutput);
+        $this->assertEquals($expectedClassOutput, $classOutput, "\n $expectedClassOutput \n VERSUS \n $classOutput");
     }
 }

@@ -2,8 +2,11 @@
 
 namespace Reliese\Generator\Model;
 
+use Illuminate\Support\Str;
+use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\Configuration\ModelGeneratorConfiguration;
+use Reliese\Configuration\RelieseConfiguration;
 use Reliese\Generator\MySqlDataTypeMap;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
@@ -14,7 +17,6 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
 use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Class ModelGenerator
@@ -35,9 +37,9 @@ class ModelGenerator
      *
      * @param ModelGeneratorConfiguration $modelGeneratorConfiguration
      */
-    public function __construct(ModelGeneratorConfiguration $modelGeneratorConfiguration)
+    public function __construct(RelieseConfiguration $relieseConfiguration)
     {
-        $this->modelGeneratorConfiguration = $modelGeneratorConfiguration;
+        $this->modelGeneratorConfiguration = $relieseConfiguration->getModelGeneratorConfiguration();
         /*
          * TODO: inject a MySql / Postgress or other DataType mapping as needed
          */
@@ -134,6 +136,26 @@ class ModelGenerator
     public function getAbstractClassNamespace(TableBlueprint $tableBlueprint): string
     {
         return $this->getClassNamespace($tableBlueprint) .'\\Generated';
+    }
+
+    /**
+     * @param ColumnBlueprint $columnBlueprint
+     *
+     * @return ClassConstantDefinition
+     */
+    public function generateColumnConstantDefinition(ColumnBlueprint $columnBlueprint): ClassConstantDefinition
+    {
+        return new ClassConstantDefinition(
+            ClassNameTool::columnNameToConstantName($columnBlueprint->getColumnName()),
+            $columnBlueprint->getColumnName(),
+            VisibilityEnum::publicEnum()
+        );
+    }
+
+    public function getClassAsVariableName(TableBlueprint $tableBlueprint): string
+    {
+        $name = $this->getClassName($tableBlueprint);
+        return strtolower($name[0]).substr($name, 1);
     }
 
     /**

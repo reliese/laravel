@@ -71,4 +71,54 @@ abstract class ClassNameTool
     {
         return 'set'.str::studly($columnName);
     }
+
+    public static function dtoClassNameToVariableName(string $dtoClassName)
+    {
+        return \strtolower($dtoClassName[0]).\substr($dtoClassName, 1);
+    }
+
+    public static function variableNameToGetterName(string $variableName)
+    {
+        return 'get'.str::studly($variableName);
+    }
+
+    public static function variableNameToSetterName(string $variableName)
+    {
+        return 'set'.str::studly($variableName);
+    }
+
+    public static function fullyQualifiedClassNameToClassName(string $fullyQualifiedClassName): string
+    {
+        $parts = explode('\\', \ltrim($fullyQualifiedClassName, '\\'));
+        return trim(\array_pop($parts));
+    }
+
+    public static function fullyQualifiedClassNameToNamespace(string $fullyQualifiedClassName): string
+    {
+        $parts = explode('\\', \ltrim($fullyQualifiedClassName, '\\'));
+        \array_pop($parts);
+        $namespace = \implode('\\', $parts);
+        return \implode('\\', $parts);
+    }
+
+    public static function globalClassFQN(string $fullyQualifiedTypeName): string
+    {
+        return "\\".trim($fullyQualifiedTypeName, "\\");
+    }
+
+    public static function identifierNameToConstantName(string $identifierName): string
+    {
+        return \strtoupper(str::snake($identifierName));
+    }
+
+    public static function fkNameToVariableName(string $foreignKeyname): string
+    {
+        $name = str::studly($foreignKeyname);
+        return \strtolower($name[0]).\substr($foreignKeyname, 1);
+    }
+
+    public static function fullyQualifiedName(string $name)
+    {
+        return '\\'. ltrim($name, '\\');
+    }
 }

@@ -3,37 +3,27 @@
 namespace Reliese\Configuration;
 
 /**
- * Class ModelDataMapGeneratorConfiguration
+ * Class DataTransportCollectionGeneratorConfiguration
  */
-class ModelDataMapGeneratorConfiguration
+class DataTransportCollectionGeneratorConfiguration
 {
     /**
-     * @var mixed|string
-     */
-    private $accessorTraitNamespace;
-
-    /**
-     * @var mixed|string
-     */
-    private $accessorTraitPath;
-
-    /**
-     * @var mixed
+     * @var string
      */
     private string $classSuffix;
 
     /**
-     * @var string|mixed
+     * @var string
      */
     private string $namespace;
 
     /**
-     * @var mixed
+     * @var string
      */
     private string $parentClassPrefix;
 
     /**
-     * @var string|mixed
+     * @var string
      */
     private string $path;
 
@@ -48,8 +38,6 @@ class ModelDataMapGeneratorConfiguration
         $this->namespace = $configuration['Namespace'];
         $this->classSuffix = $configuration['ClassSuffix'] ?? '';
         $this->parentClassPrefix = $configuration['ParentClassPrefix'] ?? '';
-        $this->accessorTraitNamespace = $configuration['AccessorTraitNamespace'] ?? '';
-        $this->accessorTraitPath = $configuration['AccessorTraitPath'] ?? '';
     }
 
     /**
@@ -82,21 +70,5 @@ class ModelDataMapGeneratorConfiguration
     public function getPath(): string
     {
         return $this->path;
-    }
-
-    /**
-     * @return ?string
-     */
-    public function getAccessorTraitNamespace(): ?string
-    {
-        return $this->accessorTraitNamespace;
-    }
-
-    /**
-     * @return mixed|string
-     */
-    public function getAccessorTraitPath(): mixed
-    {
-        return $this->accessorTraitPath;
     }
 }

@@ -16,8 +16,13 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
 /**
  * Class ClassFormatter
  */
-class ClassFormatter
+class ClassFormatter implements IndentationProviderInterface
 {
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return string
+     */
     public function format(ClassDefinition $classDefinition): string
     {
         $depth = 0;
@@ -32,6 +37,7 @@ class ClassFormatter
         $body[] = $this->formatTraits($classDefinition, $depth);
         $body[] = $this->formatConstants($classDefinition, $depth);
         $body[] = $this->formatProperties($classDefinition, $depth);
+        $body[] = $this->formatConstructor($classDefinition, $depth);
         $body[] = $this->formatMethods($classDefinition, $depth);
 
         $lines[] = "<?php\n\n";
@@ -44,11 +50,17 @@ class ClassFormatter
         }
 
         $lines[] = "/**\n";
-        $lines[] = ' * Class ' . $classDefinition->getClassName() . "\n";
+        $lines[] = ' * ' . Str::studly($classDefinition->getStructureType()) . ' ' . $classDefinition->getName() . "\n";
         $lines[] = " * \n";
         $lines[] = " * Created by Reliese\n";
+        foreach ($classDefinition->getClassComments() as $line) {
+            $lines[] = " * \n * ".$line."\n";
+        }
         $lines[] = " */\n";
-        $lines[] = 'class ' . $classDefinition->getClassName();
+        $lines[] = $classDefinition->getAbstractEnumType()->toReservedWord(true)
+            . Str::lower($classDefinition->getStructureType())
+            . ' '
+            . $classDefinition->getClassName();
 
         if (!empty($parent)) {
             $lines[] = ' extends ' . $parent;
@@ -73,7 +85,7 @@ class ClassFormatter
      *
      * @return string
      */
-    private function getIndentation(int $depth): string
+    public function getIndentation(int $depth): string
     {
         return str_repeat($this->getIndentationSymbol(), $depth);
     }
@@ -81,7 +93,7 @@ class ClassFormatter
     /**
      * @return string
      */
-    private function getIndentationSymbol(): string
+    public function getIndentationSymbol(): string
     {
         return '    ';
     }
@@ -99,7 +111,9 @@ class ClassFormatter
                 );
             }
             if ($property->hasGetter()) {
-                $this->appendGetter($property, $classDefinition);
+                $classDefinition->addMethodDefinition(
+                    $property->getGetterMethodDefinition($classDefinition)
+                );
             }
         }
     }
@@ -198,19 +212,21 @@ class ClassFormatter
 
     private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
     {
-        $statement = $this->getIndentation($depth)
-            . $property->getVisibilityEnum()->toReservedWord()
-            . ' '
-            . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
-            . ' $'
-            . $property->getVariableName()
-        ;
-
+        $defaultValueString = '';
         if ($property->hasValue()) {
-            $statement .= ' = ' . var_export($property->getValue(), true);
+            $defaultValueString = ' = '. var_export($property->getValue(), true);
+        } elseif ($property->getPhpTypeEnum()->isNullable()) {
+            $defaultValueString = ' = null';
         }
 
-        return $statement . ';';
+        return $this->getIndentation($depth)
+                . $property->getVisibilityEnum()->toReservedWord()
+                . ' '
+                . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
+                . ' $'
+                . $property->getVariableName()
+                . $defaultValueString
+                . ';';
     }
 
     /**
@@ -239,19 +255,6 @@ class ClassFormatter
     }
 
     /**
-     * @param ClassPropertyDefinition $property
-     * @param ClassDefinition $classDefinition
-     */
-    private function appendGetter(ClassPropertyDefinition $property, ClassDefinition $classDefinition): void
-    {
-        $getter = new ClassMethodDefinition('get' . Str::studly($property->getVariableName()),
-            $property->getPhpTypeEnum());
-        $getter->appendBodyStatement(new RawStatementDefinition('return $this->' . $property->getVariableName() . ';'));
-
-        $classDefinition->addMethodDefinition($getter);
-    }
-
-    /**
      * @param ClassDefinition $classDefinition
      * @param int $depth
      *
@@ -272,12 +275,12 @@ class ClassFormatter
     {
         $signature = $this->getIndentation($depth);
 
-        if ($method->getAbstractEnum()->isAbstract()) {
-            $signature .= $method->getAbstractEnum()->toReservedWord() . ' ';
-        }
-
         if ($method->getVisibilityEnum()) {
             $signature .= $method->getVisibilityEnum()->toReservedWord() . ' ';
+        }
+
+        if ($method->getAbstractEnum()->isAbstract()) {
+            $signature .= $method->getAbstractEnum()->toReservedWord() . ' ';
         }
 
         $signature .= 'function ' . $method->getFunctionName() . '(';
@@ -291,16 +294,23 @@ class ClassFormatter
 
         $signature .= implode(', ', $parameters);
 
-        $signature .= '): ';
-        $signature .= $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
+        $signature .= ')';
+        if ($method->getReturnPhpTypeEnum()->isDefined()) {
+            /*
+             * This condition is required because constructors do not have return types
+             */
+            $signature .= ": ". $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
+        }
+        if ($method->getAbstractEnum()->isAbstract()) {
+            return $signature . ";\n";
+        }
         $signature .= "\n";
 
         $signature .= $this->getIndentation($depth) . "{\n";
 
         $blockDepth = $depth + 1;
         foreach ($method->getBlockStatements() as $statement) {
-            $signature .= $this->getIndentation($blockDepth)
-                . $statement->toPhpCode()
+            $signature .= $statement->toPhpCode($this, $blockDepth)
                 . "\n";
         }
 
@@ -356,5 +366,17 @@ class ClassFormatter
         }
 
         return $typeHint;
+    }
+
+    private function formatConstructor(ClassDefinition $classDefinition, int $depth): string
+    {
+        if (!$classDefinition->getConstructorStatementsCollection()->hasStatements()) {
+            return "";
+        }
+
+        $constructorMethodDefinition = new ClassMethodDefinition('__construct', PhpTypeEnum::notDefined());
+        $constructorMethodDefinition->appendBodyStatement($classDefinition->getConstructorStatementsCollection());
+
+        return $this->formatMethod($classDefinition, $constructorMethodDefinition, $depth+1);
     }
 }

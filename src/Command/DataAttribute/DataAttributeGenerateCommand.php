@@ -1,41 +1,38 @@
 <?php
 
-namespace Reliese\Command\Model;
+namespace Reliese\Command\DataAttribute;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use Reliese\Analyser\AnalyserFactory;
-use Reliese\Blueprint\BlueprintFactory;
 use Reliese\Coders\Model\Factory;
 use Reliese\Command\ConfigurationProfileOptionTrait;
-use Reliese\Configuration\ModelGeneratorConfiguration;
-use Reliese\Configuration\RelieseConfiguration;
 use Reliese\Configuration\RelieseConfigurationFactory;
-use Reliese\Generator\Model\ModelGenerator;
-use Reliese\MetaCode\Definition\ClassDefinition;
-use Reliese\MetaCode\Format\ClassFormatter;
-use Reliese\MetaCode\Writers\CodeWriter;
+use Reliese\Generator\DataAttribute\DataAttributeGenerator;
 
 /**
- * Class NewModelGenerateCommand
+ * Class DataAttributeGenerateCommand
  */
-class NewModelGenerateCommand extends Command
+class DataAttributeGenerateCommand extends Command
 {
     use ConfigurationProfileOptionTrait;
 
     /**
      * The name and signature of the console command.
-     * @see Keep in sync with \Reliese\Coders\Console\CodeModelsCommand::$signature
+     *
      * @var string
      */
-    protected $signature = null;
+    protected $signature = 'reliese:attribute:generate
+                            {--s|schema= : The name of the MySQL database}
+                            {--c|connection= : The name of the connection}
+                            {--t|table= : The name of the table}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Parse connection schema into models';
+    protected $description = 'Generate Blueprints from the specified connection, schema, and table then output them to specified path.';
 
     /**
      * @var \Reliese\Coders\Model\Factory
@@ -48,16 +45,6 @@ class NewModelGenerateCommand extends Command
     protected $config;
 
     /**
-     * @var ClassFormatter
-     */
-    private ClassFormatter $classFormatter;
-
-    /**
-     * @var CodeWriter
-     */
-    private CodeWriter $codeWriter;
-
-    /**
      * Create a new command instance.
      *
      * @param \Reliese\Coders\Model\Factory $models
@@ -65,16 +52,11 @@ class NewModelGenerateCommand extends Command
      */
     public function __construct(Factory $models, Repository $config)
     {
-        $this->signature = 'reliese:model:generate'.(self::$configurationProfileOptionDescription).'
-                            {--s|schema= : The name of the MySQL database}
-                            {--c|connection= : The name of the connection}
-                            {--t|table= : The name of the table}';
+        $this->signature .= self::$configurationProfileOptionDescription;
         parent::__construct();
 
         $this->models = $models;
         $this->config = $config;
-        $this->codeWriter = new CodeWriter();
-        $this->classFormatter = new ClassFormatter();
     }
 
     /**
@@ -82,7 +64,6 @@ class NewModelGenerateCommand extends Command
      *
      * @param AnalyserFactory $analyserFactory
      * @param RelieseConfigurationFactory $relieseConfigurationFactory
-     * @todo clean this method
      */
     public function handle(
         AnalyserFactory $analyserFactory,
@@ -107,48 +88,19 @@ class NewModelGenerateCommand extends Command
          */
         $databaseBlueprint = $databaseAnalyser->analyseDatabase($relieseConfiguration->getDatabaseBlueprintConfiguration());
 
-        // TODO: Apply Command Line options that override the configuration values
-        $modelGenerator = new ModelGenerator($relieseConfiguration);
+        /*
+         * Generate class files
+         */
+        $dataAttributeGenerator = new DataAttributeGenerator($relieseConfiguration);
 
         $schemaBlueprint = $databaseBlueprint->getSchemaBlueprint($schema);
-
-        if (!empty($table)) {
-            // Generate only for the specified table
-            $tableBlueprint = $schemaBlueprint->getTableBlueprint($table);
-            $this->writeClassFiles(
-                $modelGenerator,
-                $modelGenerator->generateModelClass($tableBlueprint),
-                $modelGenerator->generateModelAbstractClass($tableBlueprint)
-            );
-            return;
-        }
 
         /*
          * Display the data that would be used to perform code generation
          */
         foreach ($schemaBlueprint->getTableBlueprints() as $tableBlueprint) {
-            $this->writeClassFiles(
-                $modelGenerator,
-                $modelGenerator->generateModelClass($tableBlueprint),
-                $modelGenerator->generateModelAbstractClass($tableBlueprint)
-            );
+            $dataAttributeGenerator->fromColumnBlueprint($tableBlueprint);
         }
-    }
-
-    protected function writeClassFiles(
-        \Reliese\Generator\Model\ModelGenerator $modelGenerator,
-        ClassDefinition $modelClass,
-        ClassDefinition $abstractModelClass
-    ) {
-        $this->codeWriter->overwriteClassDefinition(
-            $modelGenerator->getAbstractModelClassFilePath($abstractModelClass),
-            $this->classFormatter->format($abstractModelClass)
-        );
-
-        $this->codeWriter->createClassDefinition(
-            $modelGenerator->getModelClassFilePath($modelClass),
-            $this->classFormatter->format($modelClass)
-        );
     }
 
     /**

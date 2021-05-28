@@ -7,7 +7,7 @@ namespace Reliese\MetaCode\Enum;
  */
 class AbstractEnum
 {
-    protected const CONCRETE_TYPE_ID = 0;
+    protected const CONCRETE_TYPE_ID = 10;
 
     protected const ABSTRACT_TYPE_ID = 20;
 
@@ -48,10 +48,10 @@ class AbstractEnum
         return static::$abstractEnumInstance = new static(static::CONCRETE_TYPE_ID);
     }
 
-    public function toReservedWord() : string
+    public function toReservedWord(bool $includeTrailingSpace = false) : string
     {
         if (static::isAbstract()) {
-            return 'abstract';
+            return 'abstract' . ($includeTrailingSpace ? ' ' : '');
         }
 
         if (static::isConcrete()) {
@@ -68,7 +68,7 @@ class AbstractEnum
         }
         
         if (static::isAbstract()) {
-            return 'static';
+            return 'abstract';
         }
 
         return 'UNKNOWN';
