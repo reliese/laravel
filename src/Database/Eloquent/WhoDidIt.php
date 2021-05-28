@@ -30,7 +30,7 @@ class WhoDidIt
     /**
      * @param \Illuminate\Database\Eloquent\Model $model
      */
-    public function creating($model)
+    public function creating(Eloquent $model)
     {
         $model->created_by = $this->doer();
     }
