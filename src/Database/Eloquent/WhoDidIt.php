@@ -28,19 +28,17 @@ class WhoDidIt
     }
 
     /**
-     * @param string $event
      * @param \Illuminate\Database\Eloquent\Model $model
      */
-    public function creating($event, Eloquent $model)
+    public function creating(Eloquent $model)
     {
         $model->created_by = $this->doer();
     }
 
     /**
-     * @param string $event
      * @param \Illuminate\Database\Eloquent\Model $model
      */
-    public function updating($event, Eloquent $model)
+    public function updating(Eloquent $model)
     {
         $model->udpated_by = $this->doer();
     }
