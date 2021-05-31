@@ -5,12 +5,12 @@ namespace Reliese\Analyser\Doctrine;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Connectors\ConnectionFactory;
-use Reliese\Configuration\RelieseConfiguration;
+use Reliese\Configuration\ConfigurationProfile;
 
 /**
  * Class MySqlDoctrineDatabaseAssistant
  */
-class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterface
+class MySqlDatabaseVendorAdapter implements DatabaseVendorAdapterInterface
 {
     /**
      * @var ConnectionInterface
@@ -33,7 +33,7 @@ class MySqlDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterfa
     private array $schemaConnections = [];
 
     public function __construct(
-        RelieseConfiguration $relieseConfiguration,
+        ConfigurationProfile $configurationProfile,
         ConnectionFactory $connectionFactory,
         ConnectionInterface $configuredConnection
     ) {

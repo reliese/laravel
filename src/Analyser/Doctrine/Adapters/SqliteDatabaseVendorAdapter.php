@@ -4,17 +4,17 @@ namespace Reliese\Analyser\Doctrine;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\ConnectionInterface;
-use Reliese\Configuration\RelieseConfiguration;
+use Reliese\Configuration\ConfigurationProfile;
 
 /**
  * Class SqliteDoctrineDatabaseAssistant
  */
-class SqliteDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterface
+class SqliteDatabaseVendorAdapter implements DatabaseVendorAdapterInterface
 {
     /**
-     * @var RelieseConfiguration
+     * @var ConfigurationProfile
      */
-    private RelieseConfiguration $relieseConfiguration;
+    private ConfigurationProfile $configurationProfile;
 
     /**
      * @var ConnectionInterface
@@ -29,14 +29,14 @@ class SqliteDoctrineDatabaseAssistant implements DoctrineDatabaseAssistantInterf
     /**
      * SqliteDoctrineDatabaseAssistant constructor.
      *
-     * @param RelieseConfiguration $relieseConfiguration
+     * @param ConfigurationProfile $configurationProfile
      * @param ConnectionInterface $configuredConnection
      */
     public function __construct(
-        RelieseConfiguration $relieseConfiguration,
+        ConfigurationProfile $configurationProfile,
         ConnectionInterface $configuredConnection
     ) {
-        $this->relieseConfiguration = $relieseConfiguration;
+        $this->configurationProfile = $configurationProfile;
         $this->configuredConnection = $configuredConnection;
     }
 

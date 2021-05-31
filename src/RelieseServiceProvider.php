@@ -16,8 +16,10 @@ use Reliese\Command\DataTransport\DataTransportGenerateCommand;
 use Reliese\Command\Model\ModelGenerateCommand;
 use Reliese\Command\Model\NewModelGenerateCommand;
 use Reliese\Command\Validator\DtoValidatorGenerateCommand;
-use Reliese\Configuration\RelieseConfigurationFactory;
+use Reliese\Configuration\ConfigurationProfile;
+use Reliese\Configuration\ConfigurationProfileFactory;
 use Reliese\Support\Classify;
+use function realpath;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -30,6 +32,15 @@ class RelieseServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
+    private bool $loadReliese = false;
+
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        $this->loadReliese = $app->environment('local') && $app->runningInConsole();
+    }
+
     /**
      * Bootstrap the application services.
      *
@@ -37,7 +48,10 @@ class RelieseServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ($this->app->runningInConsole()) {
+        if (!$this->loadReliese) {
+            return;
+        }
+
             $this->publishes([
                 \Reliese\PackagePaths::getExampleModelConfigFilePath() => config_path('models.php'),
             ], 'reliese-models');
@@ -49,7 +63,7 @@ class RelieseServiceProvider extends ServiceProvider
             $this->commands([
                 CodeModelsCommand::class,
                 ModelGenerateCommand::class,
-                NewModelGenerateCommand::class,
+//                NewModelGenerateCommand::class,
                 ShowBlueprintCommand::class,
                 ModelDataMapGenerateCommand::class,
                 DataTransportGenerateCommand::class,
@@ -57,7 +71,6 @@ class RelieseServiceProvider extends ServiceProvider
                 DataAccessGenerateCommand::class,
                 DtoValidatorGenerateCommand::class,
             ]);
-        }
     }
 
     /**
@@ -67,13 +80,29 @@ class RelieseServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(RelieseConfigurationFactory::class, function (Application $app) {
-            return new RelieseConfigurationFactory(
+        if (!$this->loadReliese) {
+            return;
+        }
+
+        $this->app->singleton(ConfigurationProfileFactory::class, function (Application $app) {
+            return new ConfigurationProfileFactory(
                 realpath($app->path()),
-                realpath($app->path().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config'),
                 $app->make('config')->get('reliese')
             );
         });
+
+        $this->app->bind(
+            ConfigurationProfile::class,
+            function(Application $app) {
+                /** @var ConfigurationProfileFactory $configurationProfileFactory */
+                $configurationProfileFactory = $app->get(ConfigurationProfileFactory::class);
+                if (!$configurationProfileFactory->hasActiveConfigurationProfile()) {
+                    throw new \RuntimeException("An active configuration profile has not been specified.");
+                }
+                return $configurationProfileFactory->getActiveConfigurationProfile();
+            },
+            true
+        );
 
         // legacy model factory
         $this->app->singleton(ModelFactory::class, function ($app) {
@@ -91,8 +120,13 @@ class RelieseServiceProvider extends ServiceProvider
      */
     public function provides()
     {
+        if (!$this->loadReliese) {
+            return [];
+        }
+
         return [
-            RelieseConfigurationFactory::class,
+            ConfigurationProfileFactory::class,
+            ConfigurationProfile::class,
             ModelFactory::class,
         ];
     }
