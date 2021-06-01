@@ -2,48 +2,76 @@
 
 namespace Reliese\Generator\Validator;
 
-use Reliese\Blueprint\TableBlueprint;
-use Reliese\Generator\ClassGeneratorInterface;
+use Reliese\Blueprint\ColumnOwnerInterface;
+use Reliese\Configuration\WithConfigurationProfile;
+use Reliese\Generator\ColumnBasedCodeGeneratorInterface;
+use Reliese\Generator\WithGeneratedClassDefinitions;
+use Reliese\Generator\WithGeneratedObjectTypeDefinitions;
+use Reliese\Generator\WithGetPhpFileDefinitions;
 use Reliese\MetaCode\Definition\ClassDefinition;
-use Reliese\MetaCode\Definition\ObjectTypeDefinition;
+
 /**
  * Class DtoValidatorClassGenerator
  */
-class DtoValidatorClassGenerator implements ClassGeneratorInterface
+class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
+    use WithConfigurationProfile;
+    use WithGeneratedClassDefinitions;
+    use WithGeneratedObjectTypeDefinitions;
+    use WithGetPhpFileDefinitions;
+    use WithDtoValidatorAbstractClassGenerator;
+
     /**
-     * @var ClassDefinition
+     * @return bool
      */
-    private ClassDefinition $abstractClassDefinition;
-
-    public function __construct(
-        ClassDefinition $abstractClassDefinition,
-    ) {
-        $this->abstractClassDefinition = $abstractClassDefinition;
+    protected function allowClassFileOverwrite(): bool
+    {
+        return false;
     }
 
-    public function getClassDefinition(): ClassDefinition
+    /**
+     * @return string
+     */
+    protected function getClassNamespace(): string
     {
-        $this->classDefinition = $this->generateClass();
+        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+            ->getClassNamespace();
     }
 
-    protected function generateClass(): ClassDefinition
+    /**
+     * @return string
+     */
+    protected function getClassPrefix(): string
     {
-        $classDefinition = new ClassDefinition(
-            $this->getClassName($tableBlueprint),
-            $this->getClassNamespace($tableBlueprint)
-        );
+        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+            ->getClassPrefix();
+    }
 
-        $classDefinition->setParentClass(
-            $this->getFullyQualifiedAbstractClassName($tableBlueprint)
-        );
+    /**
+     * @return string
+     */
+    protected function getClassSuffix(): string
+    {
+        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+            ->getClassSuffix();
+    }
+
+    /**
+     * @param ColumnOwnerInterface $columnOwner
+     *
+     * @return ClassDefinition
+     */
+    protected function generateClassDefinition(ColumnOwnerInterface $columnOwner): ClassDefinition
+    {
+        $classDefinition = new ClassDefinition($this->getObjectTypeDefinition($columnOwner));
+
+        $classDefinition
+            ->setOriginatingBlueprint($columnOwner)
+            ->setParentClass(
+                $this->getDtoValidatorAbstractClassGenerator()->getObjectTypeDefinition($columnOwner)
+            )
+        ;
 
         return $classDefinition;
-    }
-
-    public function getObjectTypeDefinition(): ObjectTypeDefinition
-    {
-        // TODO: Implement getObjectTypeDefinition() method.
-        throw new \Exception(__METHOD__ . " has not been implemented.");
     }
 }
