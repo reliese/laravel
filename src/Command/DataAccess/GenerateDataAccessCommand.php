@@ -3,19 +3,20 @@
 namespace Reliese\Command\DataAccess;
 
 use Reliese\Command\AbstractCodeGenerationCommand;
-use Reliese\Command\ConfigurationProfileOptionTrait;
+use Reliese\Generator\DataAccess\DataAccessAbstractClassGenerator;
+use Reliese\Generator\DataAccess\DataAccessClassGenerator;
 
 /**
- * Class DataAccessGenerateCommand
+ * Class GenerateDataAccessCommand
  */
-class DataAccessGenerateCommand extends AbstractCodeGenerationCommand
+class GenerateDataAccessCommand extends AbstractCodeGenerationCommand
 {
 
     protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            (app()->make(DataAccessClassGenerator::class)),
-            (app()->make(DataAccessAbstractClassGenerator::class)),
+            app(DataAccessAbstractClassGenerator::class),
+            app(DataAccessClassGenerator::class),
         ];
     }
 

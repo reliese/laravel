@@ -4,18 +4,20 @@
 namespace Reliese\Command\DataTransport;
 
 use Reliese\Command\AbstractCodeGenerationCommand;
+use Reliese\Generator\DataTransport\DataTransportObjectAbstractClassGenerator;
+use Reliese\Generator\DataTransport\DataTransportObjectClassGenerator;
 
 /**
- * Class DataTransportGenerateCommand
+ * Class GenerateDataTransportObjectsCommand
  */
-class DataTransportGenerateCommand extends AbstractCodeGenerationCommand
+class GenerateDataTransportObjectsCommand extends AbstractCodeGenerationCommand
 {
 
     protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            ($this->getApplication()->get(DataTransportObjectClassGenerator::class)),
-            ($this->getApplication()->get(DataTransportObjectAbstractClassGenerator::class)),
+            (app(DataTransportObjectAbstractClassGenerator::class)),
+            (app(DataTransportObjectClassGenerator::class)),
         ];
     }
 

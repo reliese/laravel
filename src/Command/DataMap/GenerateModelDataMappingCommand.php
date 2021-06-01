@@ -4,25 +4,28 @@
 namespace Reliese\Command\DataMap;
 
 use Reliese\Command\AbstractCodeGenerationCommand;
-use Reliese\Command\ConfigurationProfileOptionTrait;
+use Reliese\Generator\DataMap\ModelDataMapAbstractClassGenerator;
+use Reliese\Generator\DataMap\ModelDataMapAccessorGenerator;
+use Reliese\Generator\DataMap\ModelDataMapClassGenerator;
 
 /**
- * Class ModelDataMapGenerateCommand
+ * Class GenerateModelDataMappingCommand
  */
-class ModelDataMapGenerateDatabaseAnalysisCommand extends AbstractCodeGenerationCommand
+class GenerateModelDataMappingCommand extends AbstractCodeGenerationCommand
 {
 
     protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            ($this->getApplication()->get(ModelMapClassGenerator::class)),
-            ($this->getApplication()->get(ModelMapAbstractClassGenerator::class)),
+            (app(ModelDataMapAbstractClassGenerator::class)),
+            (app(ModelDataMapClassGenerator::class)),
+            (app(ModelDataMapAccessorGenerator::class)),
         ];
     }
 
     protected function getCommandName(): string
     {
-        return "generate:model-maps";
+        return "reliese:generate:model-maps";
     }
 
     protected function getCommandDescription(): string

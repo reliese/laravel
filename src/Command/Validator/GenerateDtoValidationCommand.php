@@ -4,24 +4,26 @@
 namespace Reliese\Command\Validator;
 
 use Reliese\Command\AbstractCodeGenerationCommand;
+use Reliese\Generator\DataTransport\DataTransportObjectAbstractClassGenerator;
+use Reliese\Generator\DataTransport\DataTransportObjectClassGenerator;
 
 /**
  * Class ValidatorCodeGenerationCommand
  */
-class ValidatorCodeGenerationDatabaseAnalysisCommandextends extends AbstractCodeGenerationCommand
+class GenerateDtoValidationCommand extends AbstractCodeGenerationCommand
 {
 
-    protected function initializeCodeGenerators(): array
+    protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            ($this->getApplication()->get(DataTransportObjectClassGenerator::class)),
-            ($this->getApplication()->get(DataTransportObjectAbstractClassGenerator::class)),
+            app(DataTransportObjectClassGenerator::class),
+            app(DataTransportObjectAbstractClassGenerator::class),
         ];
     }
 
     protected function getCommandName(): string
     {
-        return 'generate:dto-validation';
+        return 'reliese:generate:dto-validation';
     }
 
     protected function getCommandDescription(): string
@@ -187,9 +189,4 @@ class ValidatorCodeGenerationDatabaseAnalysisCommandextends extends AbstractCode
 //    {
 //        return $this->option('table');
 //    }
-    protected function initializeTableBasedCodeGenerators(): array
-    {
-        // TODO: Implement initializeTableBasedCodeGenerators() method.
-        throw new \Exception(__METHOD__ . " has not been implemented.");
-    }
 }
