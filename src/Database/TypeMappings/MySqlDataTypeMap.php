@@ -1,15 +1,15 @@
 <?php
 
-namespace Reliese\Generator;
+namespace Reliese\Database\TypeMappings;
 
 use DateTime;
-use Reliese\Database\DatabaseToPhpTypeMappingInterface;
+use Reliese\Database\PhpTypeMappingInterface;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 
 /**
  * Class DataTypeMap
  */
-class MySqlDataTypeMap implements DatabaseToPhpTypeMappingInterface
+class MySqlDataTypeMap implements PhpTypeMappingInterface
 {
     /**
      * @param string $dbTypeName

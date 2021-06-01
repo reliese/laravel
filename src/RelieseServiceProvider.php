@@ -3,24 +3,32 @@
 namespace Reliese;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
+use Reliese\Analyser\DatabaseAnalyserInterface;
+use Reliese\Analyser\Doctrine\DatabaseVendorAdapterInterface;
+use Reliese\Analyser\Doctrine\DoctrineDatabaseAnalyser;
 use Reliese\Coders\Console\CodeModelsCommand;
 use Reliese\Coders\Model\Config;
 use Reliese\Coders\Model\Factory as ModelFactory;
 use Reliese\Command\Blueprint\ShowBlueprintCommand;
-use Reliese\Command\DataAccess\DataAccessGenerateCommand;
+use Reliese\Command\DataAccess\GenerateDataAccessCommand;
 use Reliese\Command\DataAttribute\DataAttributeGenerateCommand;
-use Reliese\Command\DataMap\ModelDataMapGenerateCommand;
-use Reliese\Command\DataTransport\DataTransportGenerateCommand;
+use Reliese\Command\DataMap\GenerateModelDataMappingCommand;
+use Reliese\Command\DataTransport\GenerateDataTransportObjectsCommand;
 use Reliese\Command\Model\ModelGenerateCommand;
-use Reliese\Command\Model\NewModelGenerateCommand;
-use Reliese\Command\Validator\DtoValidatorGenerateCommand;
+use Reliese\Command\Validator\GenerateDtoValidationCommand;
 use Reliese\Configuration\ConfigurationProfile;
 use Reliese\Configuration\ConfigurationProfileFactory;
+use Reliese\Configuration\Sections\FileSystemConfiguration;
+use Reliese\Database\PhpTypeMappingInterface;
+use Reliese\Database\TypeMappings\MySqlDataTypeMap;
+use Reliese\MetaCode\Format\ClassFormatter;
+use Reliese\MetaCode\Format\CodeFormatter;
+use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\Support\Classify;
 use function realpath;
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Class RelieseServiceProvider
@@ -65,11 +73,11 @@ class RelieseServiceProvider extends ServiceProvider
                 ModelGenerateCommand::class,
 //                NewModelGenerateCommand::class,
                 ShowBlueprintCommand::class,
-                ModelDataMapGenerateCommand::class,
-                DataTransportGenerateCommand::class,
+                GenerateModelDataMappingCommand::class,
+                GenerateDataTransportObjectsCommand::class,
                 DataAttributeGenerateCommand::class,
-                DataAccessGenerateCommand::class,
-                DtoValidatorGenerateCommand::class,
+                GenerateDataAccessCommand::class,
+                GenerateDtoValidationCommand::class,
             ]);
     }
 
@@ -84,24 +92,110 @@ class RelieseServiceProvider extends ServiceProvider
             return;
         }
 
+        $getActiveConfigurationProfile = function(Application $app): ConfigurationProfile {
+            /**
+             * Gets the active configuration profile (based on commandline option '-p')
+             *
+             * @var ConfigurationProfileFactory $configurationProfileFactory
+             */
+            $configurationProfileFactory = $app->get(ConfigurationProfileFactory::class);
+            if (!$configurationProfileFactory->hasActiveConfigurationProfile()) {
+                throw new \RuntimeException("An active configuration profile has not been specified.");
+            }
+            return $configurationProfileFactory->getActiveConfigurationProfile();
+        };
+
+        $this->app->singleton(
+            FileSystemConfiguration::class,
+            function(Application $app) {
+                return new FileSystemConfiguration(
+                    [
+                        FileSystemConfiguration::APPLICATION_PATH => realpath($app->basePath('app')),
+                        FileSystemConfiguration::BASE_PATH => realpath($app->basePath()),
+                    ]
+                );
+            }
+        );
+
         $this->app->singleton(ConfigurationProfileFactory::class, function (Application $app) {
+            $configurations = $app->make('config')->get('reliese');
+
             return new ConfigurationProfileFactory(
-                realpath($app->path()),
-                $app->make('config')->get('reliese')
+                $app->make(FileSystemConfiguration::class),
+                $configurations
             );
         });
 
-        $this->app->bind(
-            ConfigurationProfile::class,
+        $this->app->bind(PhpTypeMappingInterface::class,
             function(Application $app) {
-                /** @var ConfigurationProfileFactory $configurationProfileFactory */
-                $configurationProfileFactory = $app->get(ConfigurationProfileFactory::class);
-                if (!$configurationProfileFactory->hasActiveConfigurationProfile()) {
-                    throw new \RuntimeException("An active configuration profile has not been specified.");
+
+                /** @var ConfigurationProfile $configurationProfile */
+                $configurationProfile = $app->make(ConfigurationProfile::class);
+
+                /** @var DatabaseManager $databaseManager */
+                $databaseManager = $app->get(DatabaseManager::class);
+
+                $connection = $databaseManager->connection($configurationProfile->getDatabaseAnalyserConfiguration()
+                    ->getConnectionName());
+
+                switch ($connection->getDriverName()) {
+                    case 'mysql':
+                        return $app->make(MySqlDataTypeMap::class);
+                    default:
+                        throw new \RuntimeException(
+                            sprintf(
+                                "PhpTypeMapping is not defined for database driver \"{%s}\"",
+                                $connection->getDriverName()
+                            )
+                        );
                 }
-                return $configurationProfileFactory->getActiveConfigurationProfile();
             },
             true
+        );
+
+        $this->app->bind(ConfigurationProfile::class, $getActiveConfigurationProfile, false);
+
+        $this->app->bind(
+            DatabaseVendorAdapterInterface::class,
+            function(Application $app) use ($getActiveConfigurationProfile) {
+                /*
+                 * Returns the Database Vendor Adapter based on the active configuration profile
+                 */
+                $configurationProfile = $getActiveConfigurationProfile($app);
+                return $app->make(
+                    $configurationProfile->getDatabaseAnalyserConfiguration()->getDatabaseVendorAdapterClass()
+                );
+            },
+            false
+        );
+
+        $this->app->bind(
+            DatabaseAnalyserInterface::class,
+            function(Application $app) {
+
+                return new DoctrineDatabaseAnalyser(
+                    $app->get(DatabaseManager::class),
+                    $app->make(ConfigurationProfile::class),
+                    $app->make(DatabaseVendorAdapterInterface::class)
+                );
+            },
+            true
+        );
+
+        $this->app->bind(
+            CodeFormatter::class,
+            function(Application $app) {
+                return new CodeFormatter($app->make(IndentationProvider::class));
+            },
+            false
+        );
+
+        $this->app->bind(
+            IndentationProvider::class,
+            function(Application $app) {
+                return IndentationProvider::fromConfig($app->make(ConfigurationProfile::class));
+            },
+            false
         );
 
         // legacy model factory
@@ -125,6 +219,7 @@ class RelieseServiceProvider extends ServiceProvider
         }
 
         return [
+            DatabaseAnalyserInterface::class,
             ConfigurationProfileFactory::class,
             ConfigurationProfile::class,
             ModelFactory::class,
