@@ -3,7 +3,7 @@
 namespace Reliese\Blueprint;
 
 use InvalidArgumentException;
-use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Reliese\Configuration\Sections\DatabaseBlueprintConfiguration;
 use RuntimeException;
 
 /**
