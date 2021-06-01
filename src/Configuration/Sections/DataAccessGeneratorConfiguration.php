@@ -1,6 +1,6 @@
 <?php
 
-namespace Reliese\Configuration\Sections;;
+namespace Reliese\Configuration\Sections;
 
 use Reliese\Configuration\ClassGeneratorConfigurationInterface;
 use Reliese\Configuration\WithClassGeneratorConfigurationMethods;

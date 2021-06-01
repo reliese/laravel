@@ -2,6 +2,7 @@
 
 namespace Reliese\Configuration;
 
+use Reliese\Configuration\Sections\FileSystemConfiguration;
 use function array_key_exists;
 /**
  * Class ConfigurationProfileFactory
@@ -20,13 +21,17 @@ class ConfigurationProfileFactory
     /**
      * ConfigurationProfileFactory constructor.
      *
-     * @param string $applicationPath
      * @param array  $configurationProfiles
      */
-    public function __construct(string $applicationPath, array $configurationProfiles)
-    {
-        $this->applicationPath = $applicationPath;
-        $this->parseConfigurationProfiles($configurationProfiles);
+    public function __construct(
+        FileSystemConfiguration $fileSystemConfiguration,
+        array $configurationProfiles
+    ) {
+        foreach ($configurationProfiles as $name => $configurationProfile) {
+            $this->addConfigurationProfile(
+                (new ConfigurationProfile($name, $configurationProfile))->setFileSystemConfiguration($fileSystemConfiguration)
+            );
+        }
     }
 
     /**
@@ -85,20 +90,6 @@ class ConfigurationProfileFactory
     public function hasConfigurationByProfileName(string $profileName): bool
     {
         return array_key_exists($profileName, $this->configurationProfiles);
-    }
-
-    /**
-     * @param array $configurationProfiles
-     *
-     * @return $this
-     */
-    public function parseConfigurationProfiles(array $configurationProfiles): static
-    {
-        foreach ($configurationProfiles as $name => $configurationProfile) {
-            $this->addConfigurationProfile(new ConfigurationProfile($name, $configurationProfile));
-        }
-
-        return $this;
     }
 
     /**

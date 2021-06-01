@@ -9,9 +9,9 @@ use Reliese\Configuration\WithClassGeneratorConfigurationMethods;
 use Reliese\Configuration\WithDatabaseFilters;
 use Reliese\Filter\DatabaseFilter;
 /**
- * Class ValidatorGeneratorConfiguration
+ * Class DtoResolverGeneratorConfiguration
  */
-class ValidatorGeneratorConfiguration implements ClassGeneratorConfigurationInterface,
+class DataTransportFieldResolutionGeneratorConfiguration implements ClassGeneratorConfigurationInterface,
     AccessorTraitGeneratorConfigurationInterface
 {
     use WithDatabaseFilters;

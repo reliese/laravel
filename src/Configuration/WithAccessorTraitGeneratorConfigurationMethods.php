@@ -10,6 +10,16 @@ use function call_user_func;
 trait WithAccessorTraitGeneratorConfigurationMethods
 {
     /**
+     * @var string
+     */
+    private string $accessorTraitPrefix;
+
+    /**
+     * @var string
+     */
+    private string $accessorTraitSuffix;
+
+    /**
      * @return string
      */
     public function getAccessorTraitNamespace(): string
@@ -36,6 +46,8 @@ trait WithAccessorTraitGeneratorConfigurationMethods
     {
         $requiredConfigurationKeys = [
             'AccessorTraitNamespace' => [$this, 'setAccessorTraitNamespace'],
+            'AccessorTraitPrefix' => [$this, 'setAccessorTraitPrefix'],
+            'AccessorTraitSuffix' => [$this, 'setAccessorTraitSuffix'],
         ];
 
         foreach ($requiredConfigurationKeys as $configurationKey => $delegate) {
@@ -44,6 +56,44 @@ trait WithAccessorTraitGeneratorConfigurationMethods
             }
             call_user_func($delegate, $configurationSection[$configurationKey]);
         }
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessorTraitPrefix(): string
+    {
+        return $this->accessorTraitPrefix;
+    }
+
+    /**
+     * @param string $accessorTraitPrefix
+     *
+     * @return $this
+     */
+    public function setAccessorTraitPrefix(string $accessorTraitPrefix): static
+    {
+        $this->accessorTraitPrefix = $accessorTraitPrefix;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessorTraitSuffix(): string
+    {
+        return $this->accessorTraitSuffix;
+    }
+
+    /**
+     * @param string $accessorTraitSuffix
+     *
+     * @return $this
+     */
+    public function setAccessorTraitSuffix(string $accessorTraitSuffix): static
+    {
+        $this->accessorTraitSuffix = $accessorTraitSuffix;
         return $this;
     }
 }

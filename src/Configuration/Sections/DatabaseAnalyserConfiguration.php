@@ -1,6 +1,6 @@
 <?php
 
-namespace Reliese\Configuration\Sections;;
+namespace Reliese\Configuration\Sections;
 
 use Reliese\Filter\DatabaseFilter;
 
@@ -65,7 +65,7 @@ class DatabaseAnalyserConfiguration
     /**
      * @return string
      */
-    public function getDoctrineDatabaseAssistantClass(): string
+    public function getDatabaseVendorAdapterClass(): string
     {
         return $this->doctrineDatabaseAssistantClass;
     }
@@ -93,7 +93,7 @@ class DatabaseAnalyserConfiguration
     public function toArray(): array
     {
         return [
-            static::DOCTRINE_DATABASE_ASSISTANT_CLASS => $this->getDoctrineDatabaseAssistantClass(),
+            static::DOCTRINE_DATABASE_ASSISTANT_CLASS => $this->getDatabaseVendorAdapterClass(),
             static::CONNECTION_NAME => $this->getConnectionName(),
         ];
     }
