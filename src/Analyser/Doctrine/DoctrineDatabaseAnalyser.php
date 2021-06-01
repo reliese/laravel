@@ -2,23 +2,37 @@
 
 namespace Reliese\Analyser\Doctrine;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\DatabaseManager;
 use Reliese\Analyser\DatabaseAnalyserInterface;
 use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\ForeignKeyBlueprint;
-use Reliese\Configuration\DatabaseBlueprintConfiguration;
-use function array_key_exists;
-use function json_encode;
+use Reliese\Configuration\ConfigurationProfile;
+use Reliese\Configuration\Sections\DatabaseBlueprintConfiguration;
 
 /**
- * Class MySqlDatabaseAnalyser
+ * Class DoctrineDatabaseAnalyser
  */
 class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
 {
     /**
-     * @var DoctrineDatabaseAssistantInterface
+     * @var ConfigurationProfile
      */
-    private DoctrineDatabaseAssistantInterface $doctrineDatabaseAssistant;
+    protected ConfigurationProfile $configurationProfile;
+
+    /**
+     * @var DatabaseBlueprintConfiguration
+     */
+    protected DatabaseBlueprintConfiguration $databaseBlueprintConfiguration;
+
+    /**
+     * @var DatabaseManager
+     */
+    protected DatabaseManager $databaseManager;
+
+    /**
+     * @var DatabaseVendorAdapterInterface
+     */
+    private DatabaseVendorAdapterInterface $databaseVendorAdapter;
 
     /**
      * @var DoctrineSchemaAnalyser[]
@@ -28,21 +42,27 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
     /**
      * MySqlDatabaseAnalyser constructor.
      *
-     * @param DoctrineDatabaseAssistantInterface $doctrineDatabaseAssistant
+     * @param DatabaseManager                $databaseManager
+     * @param ConfigurationProfile           $configurationProfile
+     * @param DatabaseVendorAdapterInterface $databaseVendorAdapter
      */
-    public function __construct(DoctrineDatabaseAssistantInterface $doctrineDatabaseAssistant)
-    {
-        $this->doctrineDatabaseAssistant = $doctrineDatabaseAssistant;
+    public function __construct(
+        DatabaseManager $databaseManager,
+        ConfigurationProfile $configurationProfile,
+        DatabaseVendorAdapterInterface $databaseVendorAdapter
+    ) {
+        $this->databaseVendorAdapter = $databaseVendorAdapter;
+        $this->databaseBlueprintConfiguration = $configurationProfile->getDatabaseBlueprintConfiguration();
+        $this->databaseManager = $databaseManager;
+        $this->configurationProfile = $configurationProfile;
     }
 
     /**
-     * @param DatabaseBlueprintConfiguration $databaseBlueprintConfiguration
-     *
      * @return DatabaseBlueprint
      */
-    public function analyseDatabase(DatabaseBlueprintConfiguration $databaseBlueprintConfiguration): DatabaseBlueprint
+    public function analyseDatabase(): DatabaseBlueprint
     {
-        $databaseBlueprint = new DatabaseBlueprint($databaseBlueprintConfiguration);
+        $databaseBlueprint = new DatabaseBlueprint($this->databaseBlueprintConfiguration);
         $schemaNames = $this->getSchemaNames();
 
         /*
@@ -54,13 +74,17 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
              *
              * Must be specifically included and NOT match an exclude filter
              */
-            if ($databaseBlueprintConfiguration->getSchemaFilter()->isExcludedSchema($schemaName)) {
+            if ($this->databaseBlueprintConfiguration->getDatabaseFilters()->isExcludedSchema($schemaName)) {
 // TODO: figure out how to make logging work w/ tests as well
 //                Log::debug("Skipping Schema \"$schemaName\"");
                 continue;
             }
 
-            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName, $databaseBlueprintConfiguration);
+            $schemaAnalyser = $this->getSchemaAnalyser(
+                $databaseBlueprint,
+                $schemaName,
+                $this->databaseBlueprintConfiguration
+            );
             $databaseBlueprint->addSchemaBlueprint(
                 // TODO: Add support for Views
                 $schemaAnalyser->analyseSchemaObjectStructures()
@@ -71,7 +95,11 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
          * Analyse foreign key constraint relationships which could potentially span schemas
          */
         foreach ($schemaNames as $schemaName) {
-            $schemaAnalyser = $this->getSchemaAnalyser($databaseBlueprint, $schemaName, $databaseBlueprintConfiguration);
+            $schemaAnalyser = $this->getSchemaAnalyser(
+                $databaseBlueprint,
+                $schemaName,
+                $this->databaseBlueprintConfiguration
+            );
 
             foreach ($schemaAnalyser->getTableDefinitions() as $tableName => $doctrineTableDefinition) {
 
@@ -155,7 +183,7 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
      */
     protected function getSchemaNames(): array
     {
-        return $this->doctrineDatabaseAssistant->getSchemaNames();
+        return $this->databaseVendorAdapter->getSchemaNames();
     }
 
     /**
@@ -174,8 +202,8 @@ class DoctrineDatabaseAnalyser implements DatabaseAnalyserInterface
             return $this->schemaAnalysers[$schemaName];
         }
 
-        $schemaSpecificConnection = $this->doctrineDatabaseAssistant->getConnection($schemaName);
-        $schemaSpecificDoctrineSchemaManager = $this->doctrineDatabaseAssistant->getDoctrineSchemaManager($schemaName);
+        $schemaSpecificConnection = $this->databaseVendorAdapter->getConnection($schemaName);
+        $schemaSpecificDoctrineSchemaManager = $this->databaseVendorAdapter->getDoctrineSchemaManager($schemaName);
 
         return $this->schemaAnalysers[$schemaName] = new DoctrineSchemaAnalyser(
             $schemaName,

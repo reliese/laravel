@@ -16,7 +16,7 @@ use Reliese\Blueprint\DatabaseBlueprint;
 use Reliese\Blueprint\IndexBlueprint;
 use Reliese\Blueprint\SchemaBlueprint;
 use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Reliese\Configuration\Sections\DatabaseBlueprintConfiguration;
 
 /**
  * Class DoctrineSchemaAnalyser
@@ -119,7 +119,7 @@ class DoctrineSchemaAnalyser
         if (!empty($tableDefinitions)) {
             foreach ($tableDefinitions as $tableDefinition) {
                 $isExcluded = $this->databaseBlueprintConfiguration
-                    ->getSchemaFilter()
+                    ->getDatabaseFilters()
                     ->isExcludedTable($this->getSchemaName(), $tableDefinition->getName())
                 ;
                 if ($isExcluded) {
@@ -204,7 +204,7 @@ class DoctrineSchemaAnalyser
         }
 
         foreach ($columnDefinitions as $columnDefinition) {
-            $isExcluded = $this->databaseBlueprintConfiguration->getSchemaFilter()->isExcludedColumn(
+            $isExcluded = $this->databaseBlueprintConfiguration->getDatabaseFilters()->isExcludedColumn(
                 $this->getSchemaName(),
                 $tableDefinition->getName(),
                 $columnDefinition->getName()

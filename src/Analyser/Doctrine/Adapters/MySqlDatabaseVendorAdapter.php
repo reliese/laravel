@@ -1,12 +1,12 @@
 <?php
 
-namespace Reliese\Analyser\Doctrine;
+namespace Reliese\Analyser\Doctrine\Adapters;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Connectors\ConnectionFactory;
+use Reliese\Analyser\Doctrine\DatabaseVendorAdapterInterface;
 use Reliese\Configuration\ConfigurationProfile;
-
 /**
  * Class MySqlDoctrineDatabaseAssistant
  */

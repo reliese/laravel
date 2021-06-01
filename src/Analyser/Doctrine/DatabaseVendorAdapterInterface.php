@@ -9,7 +9,7 @@ use Illuminate\Database\ConnectionInterface;
 /**
  * Interface DoctrineDatabaseAssistantInterface
  */
-interface DoctrineDatabaseAssistantInterface
+interface DatabaseVendorAdapterInterface
 {
     /**
      * @return string[]

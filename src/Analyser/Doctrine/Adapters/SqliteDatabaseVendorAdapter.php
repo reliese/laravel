@@ -1,6 +1,6 @@
 <?php
 
-namespace Reliese\Analyser\Doctrine;
+namespace Reliese\Analyser\Doctrine\Adapters;
 
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\ConnectionInterface;
