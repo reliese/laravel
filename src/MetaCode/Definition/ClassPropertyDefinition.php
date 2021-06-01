@@ -8,12 +8,13 @@ use Reliese\Blueprint\ForeignKeyBlueprint;
 use Reliese\MetaCode\Enum\InstanceEnum;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
+use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\MetaCode\Tool\ClassNameTool;
 
 /**
  * Class ClassPropertyDefinition
  */
-class ClassPropertyDefinition
+class ClassPropertyDefinition implements StatementDefinitionInterface
 {
     protected ?ColumnBlueprint $columnBlueprint = null;
     /**
@@ -416,6 +417,25 @@ class ClassPropertyDefinition
 
     public static function getPropertyNameConstantName(string $propertyName): string
     {
-        return "PROPERTY_".ClassNameTool::identifierNameToConstantName($propertyName)."";
+        return "".ClassNameTool::identifierNameToConstantName($propertyName)."_PROPERTY";
+    }
+
+    public function toPhpCode(IndentationProvider $indentationProvider): string
+    {
+        $defaultValueString = '';
+        if ($this->hasDefaultValueStatement()) {
+            $defaultValueString = ' = '. $this->getDefaultValueStatement()->toPhpCode(IndentationProvider::NoIndentation());
+        } elseif ($this->getPhpTypeEnum()->isNullable()) {
+            $defaultValueString = ' = null';
+        }
+
+        return $indentationProvider->getIndentation()
+            . $this->getVisibilityEnum()->toReservedWord()
+            . ' '
+            . $this->getPhpTypeEnum()->toTypeHint()
+            . ' $'
+            . $this->getVariableName()
+            . $defaultValueString
+            . ';';
     }
 }

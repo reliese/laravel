@@ -3,6 +3,7 @@
 namespace Reliese\MetaCode\Tool;
 
 use Illuminate\Support\Str;
+use function strpos;
 /**
  * Class ClassNameTool
  */
@@ -72,9 +73,9 @@ abstract class ClassNameTool
         return 'set'.str::studly($columnName);
     }
 
-    public static function dtoClassNameToVariableName(string $dtoClassName)
+    public static function classNameToVariableName(string $className)
     {
-        return \strtolower($dtoClassName[0]).\substr($dtoClassName, 1);
+        return \strtolower($className[0]).\substr($className, 1);
     }
 
     public static function variableNameToGetterName(string $variableName)

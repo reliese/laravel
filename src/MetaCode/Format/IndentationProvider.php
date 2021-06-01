@@ -13,7 +13,7 @@ class IndentationProvider
 
     private int $indentationDepth;
 
-    protected function __construct($indentationSymbol, $indentationDepth)
+    protected function __construct(string $indentationSymbol, int $indentationDepth)
     {
         $this->indentationSymbol = $indentationSymbol;
         $this->indentationDepth = $indentationDepth;
@@ -25,14 +25,23 @@ class IndentationProvider
         return new static($configurationProfile->getCodeFormattingConfiguration()->getIndentationSymbol(), 0);
     }
 
+    public static function NoIndentation(): static
+    {
+        return new static('', 0);
+    }
+
     /**
-     * @param int $depth
+     * @param int $indentationDepthOverride
      *
      * @return string
      */
-    public function getIndentation(int $depth): string
+    public function getIndentation(int $indentationDepthOverride = -1): string
     {
-        return str_repeat($this->getIndentationSymbol(), $depth);
+        if ($indentationDepthOverride > -1) {
+            return str_repeat($this->getIndentationSymbol(), $indentationDepthOverride);
+        }
+
+        return str_repeat($this->getIndentationSymbol(), $this->getIndentationDepth());
     }
 
     /**

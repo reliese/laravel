@@ -4,7 +4,7 @@ namespace Reliese\MetaCode\Definition;
 
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 use function is_float;
 use function is_int;
 use function sprintf;
@@ -81,9 +81,9 @@ class ClassConstantDefinition implements StatementDefinitionInterface
         return 'static::'.$this->getName();
     }
 
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string
+    public function toPhpCode(IndentationProvider $indentationProvider): string
     {
-        $statement = $indentationProvider->getIndentation($blockDepth).$this->getVisibilityEnum()->toReservedWord()
+        $statement = $indentationProvider->getIndentation().$this->getVisibilityEnum()->toReservedWord()
         . ' const '
         . $this->getName()
         . ' = ';
@@ -94,7 +94,7 @@ class ClassConstantDefinition implements StatementDefinitionInterface
             $statement .= var_export($this->getValue(), true);
         }
 
-        return $statement;
+        return $statement.';';
     }
 
     /**

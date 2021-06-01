@@ -2,7 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 /**
  * Class RawStatementDefinition
  */
@@ -15,8 +15,8 @@ class RawStatementDefinition implements StatementDefinitionInterface
         $this->rawPhpCode = trim($rawPhpCode);
     }
 
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string
+    public function toPhpCode(IndentationProvider $indentationProvider): string
     {
-        return $indentationProvider->getIndentation($blockDepth).$this->rawPhpCode;
+        return $indentationProvider->getIndentation().$this->rawPhpCode;
     }
 }

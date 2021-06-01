@@ -557,6 +557,14 @@ class PhpTypeEnum
         return new ObjectTypeDefinition($this->getFullyQualifiedObjectClassName());
     }
 
+    public function toTypeHint(): string
+    {
+        if ($this->isImportable()) {
+            return ($this->isNullable() ? '?' : '') . $this->toObjectTypeDefinition()->getImportableName();
+        }
+        return $this->toDeclarationType();
+    }
+
     public function toVariableTypeTest(string $valueStatement, bool $invertResult = false): string
     {
         switch ($this->phpTypeId) {
@@ -688,6 +696,11 @@ class PhpTypeEnum
             default:
                 throw new \RuntimeException(__METHOD__." failed");
         }
+    }
+
+    public function isImportable()
+    {
+        return $this->isObject() || $this->isNullableObject();
     }
 
     private function setContainedTypeName(string $containedTypeName) : PhpTypeEnum

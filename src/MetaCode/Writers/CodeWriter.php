@@ -2,38 +2,35 @@
 
 namespace Reliese\MetaCode\Writers;
 
-use Reliese\Configuration\RelieseConfiguration;
+use Reliese\Configuration\ConfigurationProfile;
 use Reliese\MetaCode\Definition\ClassDefinition;
+use Reliese\MetaCode\Definition\PhpFileDefinition;
 use Reliese\MetaCode\Format\CodeFormatter;
+use Symfony\Component\Console\Output\OutputInterface;
+use function file_exists;
 
 class CodeWriter
 {
     /**
      * @var CodeFormatter
      */
-    private CodeFormatter $codeFormatter;
+    protected CodeFormatter $codeFormatter;
 
     /**
-     * @var RelieseConfiguration
+     * @var OutputInterface
      */
-    private RelieseConfiguration $relieseConfiguration;
+    protected OutputInterface $output;
 
-    public function __construct(RelieseConfiguration $relieseConfiguration) {
-        $this->codeFormatter = new CodeFormatter($relieseConfiguration);
-    }
-
-    public function createClassDefinition(
-        string $fileName,
-        ClassDefinition $classDefinition,
-    ) {
-        if (\file_exists($fileName)) {
-            return;
-        }
-
-        $this->overwriteFile(
-            $fileName,
-            $this->codeFormatter->getClassFormatter()->format($classDefinition)
-        );
+    /**
+     * CodeWriter constructor.
+     *
+     * @param CodeFormatter   $codeFormatter
+     * @param OutputInterface $output
+     */
+    public function __construct(CodeFormatter $codeFormatter, OutputInterface $output)
+    {
+        $this->codeFormatter = $codeFormatter;
+        $this->output = $output;
     }
 
     public function overwriteClassDefinition(
@@ -46,6 +43,18 @@ class CodeWriter
         );
     }
 
+    public function writePhpFile(PhpFileDefinition $phpFileDefinition)
+    {
+        $filePath = $phpFileDefinition->getFilePath();
+
+        if (!file_exists($filePath) || $phpFileDefinition->getOverwriteExistingFile()) {
+            $phpCode = $this->codeFormatter->formatStatementCollection($phpFileDefinition);
+            $this->overwriteFile($filePath, $phpCode);
+        } else {
+            $this->output->write("Existing file not modified: \"$filePath\"");
+        }
+    }
+
     protected function overwriteFile(
         $filePath,
         $fileContent,
@@ -56,6 +65,10 @@ class CodeWriter
             \mkdir($directory, 0755, true);
         }
 
-        file_put_contents($filePath, $fileContent);
+        if (false === file_put_contents($filePath, $fileContent)) {
+            $this->output->write("ERROR: Failed to write file: \"$filePath\"");
+        } else {
+            $this->output->write("Generated file: \"$filePath\"");
+        }
     }
 }

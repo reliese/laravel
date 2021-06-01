@@ -2,17 +2,16 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 
 interface StatementDefinitionInterface
 {
     /**
      * Factors in formatting for code indentation
      *
-     * @param IndentationProviderInterface $indentationProvider
-     * @param int                          $blockDepth
+     * @param IndentationProvider $indentationProvider
      *
      * @return string
      */
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string;
+    public function toPhpCode(IndentationProvider $indentationProvider): string;
 }

@@ -2,17 +2,28 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Blueprint\TableBlueprint;
 use Reliese\MetaCode\Enum\AbstractEnum;
+use Reliese\MetaCode\Format\ClassFormatter;
+use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use RuntimeException;
+use function debug_backtrace;
+use function PHPUnit\Framework\stringContains;
+use function strpos;
 
 /**
  * Class ClassDefinition
  */
-class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
+class ClassDefinition implements ImportableInterface, CodeDefinitionInterface, StatementDefinitionInterface
 {
-    private ?TableBlueprint $tableBlueprint = null;
+    /**
+     * @var ObjectTypeDefinition
+     */
+    protected ObjectTypeDefinition $objectTypeDefinition;
+
+    private ?TableBlueprint $originatingBlueprint = null;
 
     /**
      * @var AbstractEnum
@@ -23,11 +34,6 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      * @var bool[] Array keys are fully qualified interface names
      */
     private array $interfaces = [];
-
-    /**
-     * @var string
-     */
-    private string $className;
 
     /**
      * @var string[]
@@ -58,6 +64,8 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      * @var string|null
      */
     private ?string $parentClassName = null;
+
+    private ?ObjectTypeDefinition $parentObjectTypeDefinition = null;
 
     /**
      * @var string
@@ -104,19 +112,16 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     /**
      * ClassDefinition constructor.
      *
-     * @param string        $className
-     * @param string        $namespace
-     * @param ?AbstractEnum $abstractEnumType
+     * @param ObjectTypeDefinition $objectTypeDefinition
+     * @param ?AbstractEnum        $abstractEnumType
      */
     public function __construct(
-        string $className,
-        string $namespace,
+        ObjectTypeDefinition $objectTypeDefinition,
         ?AbstractEnum $abstractEnumType = null
     ) {
-        $this->className = $className;
-        $this->namespace = trim($namespace, '\\');
         $this->constructorStatementsCollection = new StatementDefinitionCollection();
         $this->abstractEnumType = $abstractEnumType ?? AbstractEnum::concreteEnum();
+        $this->objectTypeDefinition = $objectTypeDefinition;
     }
 
     /**
@@ -191,6 +196,12 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     {
         $this->properties[$classPropertyDefinition->getVariableName()] = $classPropertyDefinition;
 
+        if ($classPropertyDefinition->getPhpTypeEnum()->isImportable()) {
+            $this->addImport(
+                $classPropertyDefinition->getPhpTypeEnum()->toObjectTypeDefinition()
+            );
+        }
+
         if ($classPropertyDefinition->getIsBeforeChangeObservable()
             || $classPropertyDefinition->getIsAfterChangeObservable()) {
 
@@ -212,7 +223,7 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     public function hasParentClass(): bool
     {
-        return !empty($this->parentClassName);
+        return $this->parentObjectTypeDefinition instanceof ObjectTypeDefinition;
     }
 
     public function getClassComments(): array
@@ -225,7 +236,7 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     public function getClassName(): string
     {
-        return $this->className;
+        return $this->objectTypeDefinition->getImportableName();
     }
 
     /**
@@ -239,15 +250,15 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
      */
     public function getFullyQualifiedName(): string
     {
-        return '\\'.$this->getNamespace().'\\'.$this->getClassName();
+        return '\\'.$this->getClassNamespace().'\\'.$this->getClassName();
     }
 
     /**
      * @return string
      */
-    public function getNamespace(): string
+    public function getClassNamespace(): string
     {
-        return $this->namespace;
+        return $this->objectTypeDefinition->getClassNamespace();
     }
 
     /**
@@ -311,7 +322,15 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
 
     public function getParentClassName(): string
     {
-        return $this->parentClassName;
+        return $this->parentObjectTypeDefinition->getImportableName();
+    }
+
+    /**
+     * @return ObjectTypeDefinition|null
+     */
+    public function getParentObjectTypeDefinition(): ?ObjectTypeDefinition
+    {
+        return $this->parentObjectTypeDefinition;
     }
 
     /**
@@ -330,6 +349,7 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function addTrait(ClassTraitDefinition $trait): static
     {
         $this->traits[$trait->getTraitName()] = $trait;
+        $this->addImport($trait);
         return $this;
     }
 
@@ -379,9 +399,15 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
         return false;
     }
 
-    public function setParentClass(string $fullyQualifiedClassName): ClassDefinition
+    public function setParentClass(ObjectTypeDefinition|string $value): ClassDefinition
     {
-        $this->parentClassName = $fullyQualifiedClassName;
+        if (!($value instanceof ObjectTypeDefinition)) {
+            $value = new ObjectTypeDefinition($value);;
+        }
+
+        $this->parentObjectTypeDefinition = $value;
+        $this->addImport($value);
+
         return $this;
     }
 
@@ -438,27 +464,27 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     }
 
     /**
-     * @param TableBlueprint|null $tableBlueprint
+     * @param ColumnOwnerInterface|null $originatingBlueprint
      *
      * @return ClassDefinition
      */
-    public function setTableBlueprint(?TableBlueprint $tableBlueprint): ClassDefinition
+    public function setOriginatingBlueprint(?ColumnOwnerInterface $originatingBlueprint): ClassDefinition
     {
-        $this->tableBlueprint = $tableBlueprint;
+        $this->originatingBlueprint = $originatingBlueprint;
         return $this;
     }
 
     /**
-     * @return TableBlueprint|null
+     * @return ColumnOwnerInterface|null
      */
-    public function getTableBlueprint(): ?TableBlueprint
+    public function getOriginatingBlueprint(): ?ColumnOwnerInterface
     {
-        return $this->tableBlueprint;
+        return $this->originatingBlueprint;
     }
 
-    public function hasTableBlueprint(): bool
+    public function hasOriginatingBlueprint(): bool
     {
-        return $this->tableBlueprint instanceof TableBlueprint;
+        return $this->originatingBlueprint instanceof TableBlueprint;
     }
 
     /**
@@ -523,5 +549,10 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface
     public function getAbstractEnumType(): AbstractEnum
     {
         return $this->abstractEnumType;
+    }
+
+    public function toPhpCode(IndentationProvider $indentationProvider): string
+    {
+        return (new ClassFormatter($indentationProvider))->format($this);
     }
 }

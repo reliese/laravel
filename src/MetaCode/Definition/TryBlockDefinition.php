@@ -3,7 +3,7 @@
 namespace Reliese\MetaCode\Definition;
 
 use Illuminate\Support\Str;
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use function sprintf;
 /**

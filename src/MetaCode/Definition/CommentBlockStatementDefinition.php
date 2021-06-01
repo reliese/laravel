@@ -2,7 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 use function implode;
 /**
  * Class CommentBlockStatementDefinition
@@ -20,17 +20,17 @@ class CommentBlockStatementDefinition implements StatementDefinitionInterface
         return $this;
     }
 
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string
+    public function toPhpCode(IndentationProvider $indentationProvider): string
     {
         if (empty($this->text)) {
             return "";
         }
 
-        $statements[] = $indentationProvider->getIndentation($blockDepth)."/**";
+        $statements[] = $indentationProvider->getIndentation()."/**";
         foreach ($this->text as $line) {
-            $statements[] = $indentationProvider->getIndentation($blockDepth).' * '.$line;
+            $statements[] = $indentationProvider->getIndentation().' * '.$line;
         }
-        $statements[] = $indentationProvider->getIndentation($blockDepth)." */";
+        $statements[] = $indentationProvider->getIndentation()." */";
         return \implode("\n", $statements);
     }
 }

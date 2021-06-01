@@ -3,8 +3,6 @@
 namespace Reliese\MetaCode\Format;
 
 use Illuminate\Support\Str;
-use Reliese\Configuration\RelieseConfiguration;
-use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
@@ -20,11 +18,11 @@ use Reliese\MetaCode\Enum\PhpTypeEnum;
 class ClassFormatter
 {
     /**
-     * @var IndentationProviderInterface|null
+     * @var IndentationProvider|null
      */
-    private ?IndentationProviderInterface $indentationProvider;
+    private ?IndentationProvider $indentationProvider;
 
-    public function __construct(IndentionProvider $indentationProvider) {
+    public function __construct(IndentationProvider $indentationProvider) {
         $this->indentationProvider = $indentationProvider;
     }
 
@@ -35,7 +33,6 @@ class ClassFormatter
      */
     public function format(ClassDefinition $classDefinition): string
     {
-        $depth = 0;
         $lines = [];
 
         $this->prepareGettersAndSetters($classDefinition);
@@ -44,14 +41,13 @@ class ClassFormatter
 
         $body = [];
 
-        $body[] = $this->formatTraits($classDefinition, $depth);
-        $body[] = $this->formatConstants($classDefinition, $depth);
-        $body[] = $this->formatProperties($classDefinition, $depth);
-        $body[] = $this->formatConstructor($classDefinition, $depth);
-        $body[] = $this->formatMethods($classDefinition, $depth);
+        $body[] = $this->formatTraits($classDefinition);
+        $body[] = $this->formatConstants($classDefinition);
+        $body[] = $this->formatProperties($classDefinition);
+        $body[] = $this->formatConstructor($classDefinition);
+        $body[] = $this->formatMethods($classDefinition);
 
-        $lines[] = "<?php\n\n";
-        $lines[] = 'namespace ' . $classDefinition->getNamespace() . ";\n\n";
+        $lines[] = 'namespace ' . $classDefinition->getClassNamespace() . ";\n\n";
 
         $imports = $this->formatImports($classDefinition);
 
@@ -117,58 +113,53 @@ class ClassFormatter
      */
     private function formatParentClass(ClassDefinition $classDefinition): string
     {
-        $parent = '';
-
-        if ($classDefinition->hasParentClass()) {
-            $phpType = PhpTypeEnum::objectOfType($classDefinition->getParentClassName());
-            $parent = $this->shortenTypeHint($classDefinition, $phpType);
+        if (!$classDefinition->hasParentClass()) {
+            return '';
         }
 
-        return $parent;
+        return $classDefinition->getParentObjectTypeDefinition()->getImportableName();
     }
 
     /**
      * @param ClassDefinition $classDefinition
-     * @param int $depth
      *
      * @return string
      */
-    private function formatTraits(ClassDefinition $classDefinition, int $depth): string
+    private function formatTraits(ClassDefinition $classDefinition): string
     {
-        $constants = [];
+        $traits = [];
 
         foreach ($classDefinition->getTraits() as $trait) {
-            $constants[] = $this->formatTrait($classDefinition, $trait, $depth + 1);
+            $traits[] = rtrim($trait->toPhpCode($this->indentationProvider->increment()));
         }
 
-        return implode("\n", $constants);
+        return implode("\n", $traits);
     }
 
-    private function formatTrait(ClassDefinition $classDefinition, ClassTraitDefinition $trait, int $depth): string
-    {
-        $object = $trait->getFullyQualifiedName();
-
-        if (!$classDefinition->willCollideImport($trait)) {
-            $classDefinition->addImport($trait);
-            $object = $trait->getTraitName();
-        }
-
-
-        return $this->indentationProvider->getIndentation($depth) . 'use ' . $object . ';';
-    }
+//    private function formatTrait(ClassDefinition $classDefinition, ClassTraitDefinition $trait, int $depth): string
+//    {
+//        $object = $trait->getFullyQualifiedName();
+//
+//        if (!$classDefinition->willCollideImport($trait)) {
+//            $classDefinition->addImport($trait);
+//            $object = $trait->getTraitName();
+//        }
+//
+//
+//        return $this->indentationProvider->getIndentation($depth) . 'use ' . $object . ';';
+//    }
 
     /**
      * @param ClassDefinition $classDefinition
-     * @param int $depth
      *
      * @return string
      */
-    private function formatConstants(ClassDefinition $classDefinition, int $depth): string
+    private function formatConstants(ClassDefinition $classDefinition): string
     {
         $constants = [];
 
         foreach ($classDefinition->getConstants() as $constant) {
-            $constants[] = $constant->toPhpCode($this->indentationProvider, $depth + 1);
+            $constants[] = rtrim($constant->toPhpCode($this->indentationProvider->increment()));
         }
 
         return implode("\n", $constants);
@@ -176,39 +167,38 @@ class ClassFormatter
 
     /**
      * @param ClassDefinition $classDefinition
-     * @param int $depth
      *
      * @return string
      */
-    private function formatProperties(ClassDefinition $classDefinition, int $depth): string
+    private function formatProperties(ClassDefinition $classDefinition): string
     {
         $properties = [];
 
         foreach ($classDefinition->getProperties() as $property) {
-            $properties[] = $this->formatProperty($classDefinition, $property, $depth + 1);
+            $properties[] = rtrim($property->toPhpCode($this->indentationProvider->increment()));
         }
 
         return implode("\n", $properties);
     }
 
-    private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
-    {
-        $defaultValueString = '';
-        if ($property->hasDefaultValueStatement()) {
-            $defaultValueString = ' = '. $property->getDefaultValueStatement()->toPhpCode($this->indentationProvider, 0);
-        } elseif ($property->getPhpTypeEnum()->isNullable()) {
-            $defaultValueString = ' = null';
-        }
-
-        return $this->indentationProvider->getIndentation($depth)
-                . $property->getVisibilityEnum()->toReservedWord()
-                . ' '
-                . $this->shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
-                . ' $'
-                . $property->getVariableName()
-                . $defaultValueString
-                . ';';
-    }
+//    private function formatProperty(ClassDefinition $classDefinition, ClassPropertyDefinition $property, int $depth): string
+//    {
+//        $defaultValueString = '';
+//        if ($property->hasDefaultValueStatement()) {
+//            $defaultValueString = ' = '. $property->getDefaultValueStatement()->toPhpCode(IndentationProvider::NoIndentation());
+//        } elseif ($property->getPhpTypeEnum()->isNullable()) {
+//            $defaultValueString = ' = null';
+//        }
+//
+//        return $this->indentationProvider->getIndentation()
+//                . $property->getVisibilityEnum()->toReservedWord()
+//                . ' '
+//                . static::shortenTypeHint($classDefinition, $property->getPhpTypeEnum())
+//                . ' $'
+//                . $property->getVariableName()
+//                . $defaultValueString
+//                . ';';
+//    }
 
     /**
      * @param ClassPropertyDefinition $property
@@ -237,78 +227,78 @@ class ClassFormatter
 
     /**
      * @param ClassDefinition $classDefinition
-     * @param int $depth
      *
      * @return string
      */
-    private function formatMethods(ClassDefinition $classDefinition, int $depth): string
+    private function formatMethods(ClassDefinition $classDefinition): string
     {
         $methods = [];
 
         foreach ($classDefinition->getMethods() as $method) {
-            $methods[] = $this->formatMethod($classDefinition, $method, $depth + 1);
+            $methods[] = $method->toPhpCode($this->indentationProvider->increment());
         }
 
         return implode("\n\n", $methods);
     }
 
-    private function formatMethod(ClassDefinition $classDefinition, ClassMethodDefinition $method, int $depth): string
-    {
-        $signature = $this->indentationProvider->getIndentation($depth);
-
-        if ($method->getVisibilityEnum()) {
-            $signature .= $method->getVisibilityEnum()->toReservedWord() . ' ';
-        }
-
-        if ($method->getAbstractEnum()->isAbstract()) {
-            $signature .= $method->getAbstractEnum()->toReservedWord() . ' ';
-        }
-
-        $signature .= 'function ' . $method->getFunctionName() . '(';
-
-        $parameters = [];
-        /** @var FunctionParameterDefinition $parameter */
-        foreach ($method->getFunctionParameterDefinitions() as $parameter) {
-            $hint = $this->shortenTypeHint($classDefinition, $parameter->getParameterType());
-
-            $parameterPhpCode = $hint . ' ';
-            if ($parameter->isOutputParameter()) {
-                $parameterPhpCode .= '&';
-            }
-            $parameterPhpCode .= '$' . $parameter->getParameterName();
-            if ($parameter->hasDefaultValueStatementDefinition()) {
-                $parameterPhpCode .= ' = '.$parameter->getDefaultValueStatementDefinition()->toPhpCode($this->indentationProvider, 0);
-            }
-            $parameters[] = $parameterPhpCode;
-        }
-
-        $signature .= implode(', ', $parameters);
-
-        $signature .= ')';
-        if ($method->getReturnPhpTypeEnum()->isDefined()) {
-            /*
-             * This condition is required because constructors do not have return types
-             */
-            $signature .= ": ". $this->shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
-        }
-        if ($method->getAbstractEnum()->isAbstract()) {
-            return $signature . ";\n";
-        }
-        $signature .= "\n";
-
-        $signature .= $this->indentationProvider->getIndentation($depth) . "{\n";
-
-        $blockDepth = $depth + 1;
-        foreach ($method->getBlockStatements() as $statement) {
-            $signature .= $statement->toPhpCode($this->indentationProvider, $blockDepth)
-                . "\n";
-        }
-
-
-        $signature .= $this->indentationProvider->getIndentation($depth) . '}';
-
-        return $signature;
-    }
+//    private function formatMethod(ClassDefinition $classDefinition, ClassMethodDefinition $method): string
+//    {
+//        $indentationProvider = $this->indentationProvider->increment();
+//        $signature = $indentationProvider->getIndentation();
+//
+//        if ($method->getVisibilityEnum()) {
+//            $signature .= $method->getVisibilityEnum()->toReservedWord() . ' ';
+//        }
+//
+//        if ($method->getAbstractEnum()->isAbstract()) {
+//            $signature .= $method->getAbstractEnum()->toReservedWord() . ' ';
+//        }
+//
+//        $signature .= 'function ' . $method->getFunctionName() . '(';
+//
+//        $parameters = [];
+//        /** @var FunctionParameterDefinition $parameter */
+//        foreach ($method->getFunctionParameterDefinitions() as $parameter) {
+//            $hint = static::shortenTypeHint($classDefinition, $parameter->getParameterType());
+//
+//            $parameterPhpCode = $hint . ' ';
+//            if ($parameter->isOutputParameter()) {
+//                $parameterPhpCode .= '&';
+//            }
+//            $parameterPhpCode .= '$' . $parameter->getParameterName();
+//            if ($parameter->hasDefaultValueStatementDefinition()) {
+//                $parameterPhpCode .= ' = '.$parameter->getDefaultValueStatementDefinition()
+//                        ->toPhpCode(IndentationProvider::NoIndentation());
+//            }
+//            $parameters[] = $parameterPhpCode;
+//        }
+//
+//        $signature .= implode(', ', $parameters);
+//
+//        $signature .= ')';
+//        if ($method->getReturnPhpTypeEnum()->isDefined()) {
+//            /*
+//             * This condition is required because constructors do not have return types
+//             */
+//            $signature .= ": ". static::shortenTypeHint($classDefinition, $method->getReturnPhpTypeEnum());
+//        }
+//        if ($method->getAbstractEnum()->isAbstract()) {
+//            return $signature . ";\n";
+//        }
+//        $signature .= "\n";
+//
+//        $signature .= $indentationProvider->getIndentation() . "{\n";
+//
+//        foreach ($method->getBlockStatements() as $statement) {
+//            $signature .= $statement->toPhpCode($indentationProvider->increment())
+//                . "\n";
+//        }
+//
+//
+//        $signature .= $indentationProvider->getIndentation() . '}';
+//
+//        return $signature;
+//    }
 
     /**
      * @param ClassDefinition $classDefinition
@@ -332,7 +322,7 @@ class ClassFormatter
      *
      * @return string
      */
-    private function shortenTypeHint(ClassDefinition $classDefinition, PhpTypeEnum $phpType): string
+    private static function shortenTypeHint(ClassDefinition $classDefinition, PhpTypeEnum $phpType): string
     {
         $typeHint = $phpType->toDeclarationType();
 
@@ -358,7 +348,7 @@ class ClassFormatter
         return $typeHint;
     }
 
-    private function formatConstructor(ClassDefinition $classDefinition, int $depth): string
+    private function formatConstructor(ClassDefinition $classDefinition): string
     {
         if (!$classDefinition->getConstructorStatementsCollection()->hasStatements()) {
             return "";
@@ -367,6 +357,6 @@ class ClassFormatter
         $constructorMethodDefinition = new ClassMethodDefinition('__construct', PhpTypeEnum::notDefined());
         $constructorMethodDefinition->appendBodyStatement($classDefinition->getConstructorStatementsCollection());
 
-        return $this->formatMethod($classDefinition, $constructorMethodDefinition, $depth+1);
+        return $constructorMethodDefinition->toPhpCode($this->indentationProvider->increment());
     }
 }

@@ -4,6 +4,7 @@
 namespace Reliese\MetaCode\Definition;
 
 
+use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\MetaCode\Tool\ClassNameTool;
 class ClassTraitDefinition implements ImportableInterface
 {
@@ -33,7 +34,7 @@ class ClassTraitDefinition implements ImportableInterface
     /**
      * @return string
      */
-    public function getNamespace(): string
+    public function getClassNamespace(): string
     {
         return $this->namespace;
     }
@@ -44,7 +45,7 @@ class ClassTraitDefinition implements ImportableInterface
     public function getFullyQualifiedName(): string
     {
         return '\\' . implode('\\', array_filter([
-            $this->getNamespace(),
+            $this->getClassNamespace(),
             $this->getTraitName()
         ]));
     }
@@ -75,5 +76,15 @@ class ClassTraitDefinition implements ImportableInterface
         $compareTo = '\\' . trim($traitFullyQualifiedName, '\\');
 
         return $this->getFullyQualifiedName() == $compareTo;
+    }
+
+    /**
+     * @param IndentationProvider $indentationProvider
+     *
+     * @return string
+     */
+    public function toPhpCode(IndentationProvider $indentationProvider)
+    {
+        return sprintf("%suse %s;", $indentationProvider->getIndentation(), $this->getImportableName());
     }
 }

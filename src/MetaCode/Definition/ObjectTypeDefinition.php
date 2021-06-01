@@ -45,7 +45,7 @@ class ObjectTypeDefinition implements ImportableInterface
      */
     public function getFullyQualifiedImportableName(): string
     {
-        return implode('\\', array_filter([$this->getNamespace(), $this->getImportableName()]));
+        return implode('\\', array_filter([$this->getClassNamespace(), $this->getImportableName()]));
     }
 
     /**
@@ -59,7 +59,7 @@ class ObjectTypeDefinition implements ImportableInterface
     /**
      * @return string
      */
-    public function getNamespace(): string
+    public function getClassNamespace(): string
     {
         return $this->typeNamespace;
     }

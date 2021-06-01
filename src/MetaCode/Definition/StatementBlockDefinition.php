@@ -2,9 +2,8 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Illuminate\Support\Str;
-use Reliese\MetaCode\Format\IndentationProviderInterface;
-use Reliese\MetaCode\Format\IndentionProvider;
+use Reliese\MetaCode\Format\IndentationProvider;
+
 /**
  * Class StatementBlockDefinition
  */
@@ -48,24 +47,24 @@ class StatementBlockDefinition implements StatementDefinitionInterface, Statemen
     /**
      * @return string
      */
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string
+    public function toPhpCode(IndentationProvider $indentationProvider): string
     {
         $prefixStatement = "";
         $suffixStatement = "";
 
         if ($this->blockPrefixStatement instanceof StatementDefinitionInterface) {
-            $prefixStatement = $this->blockPrefixStatement->toPhpCode($indentationProvider, $blockDepth)." ";
+            $prefixStatement = $this->blockPrefixStatement->toPhpCode($indentationProvider)." ";
         }
 
         if ($this->blockSuffixStatement instanceof StatementBlockDefinition) {
-            $suffixStatement = " ".ltrim($this->blockSuffixStatement->toPhpCode($indentationProvider, $blockDepth));
+            $suffixStatement = " ".ltrim($this->blockSuffixStatement->toPhpCode($indentationProvider));
         }
 
         return \sprintf(
             "%s{\n%s\n%s}%s\n",
             $prefixStatement,
-            $this->statementDefinitionCollection->toPhpCode($indentationProvider, $blockDepth + 1),
-            $indentationProvider->getIndentation($blockDepth),
+            $this->statementDefinitionCollection->toPhpCode($indentationProvider->increment()),
+            $indentationProvider->getIndentation(),
             $suffixStatement
         );
     }

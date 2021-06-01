@@ -2,7 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 /**
  * Class StatementDefinitionCollection
  */
@@ -27,11 +27,11 @@ class StatementDefinitionCollection implements StatementDefinitionInterface, Sta
     /**
      * @return string
      */
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string
+    public function toPhpCode(IndentationProvider $indentationProvider): string
     {
         $statements = [];
         foreach ($this->statementDefinitions as $statementDefinition) {
-            $statements[] = $statementDefinition->toPhpCode($indentationProvider, $blockDepth);
+            $statements[] = $statementDefinition->toPhpCode($indentationProvider);
         }
         return \implode("\n", $statements);
     }

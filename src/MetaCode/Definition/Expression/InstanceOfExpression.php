@@ -4,7 +4,7 @@ namespace Reliese\MetaCode\Definition\Expression;
 
 use Reliese\MetaCode\Definition\ObjectTypeDefinition;
 use Reliese\MetaCode\Definition\StatementDefinitionInterface;
-use Reliese\MetaCode\Format\IndentationProviderInterface;
+use Reliese\MetaCode\Format\IndentationProvider;
 use function sprintf;
 /**
  * Class InstanceOfExpression
@@ -34,9 +34,9 @@ class InstanceOfExpression implements StatementDefinitionInterface
         $this->invertResult = $invertResult;
     }
 
-    public function toPhpCode(IndentationProviderInterface $indentationProvider, int $blockDepth): string
+    public function toPhpCode(IndentationProvider $indentationProvider): string
     {
-        $result = $indentationProvider->getIndentation($blockDepth)
+        $result = $indentationProvider->getIndentation()
             . sprintf ("%s instanceof %s", $this->valueExpresion, $this->objectTypeDefinition);
 
         if ($this->invertResult) {
