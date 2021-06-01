@@ -14,8 +14,8 @@ use Reliese\Generator\DataTransport\WithDataTransportObjectAbstractClassGenerato
 use Reliese\Generator\DataTransport\WithDataTransportObjectClassGenerator;
 use Reliese\Generator\Model\WithModelAbstractClassGenerator;
 use Reliese\Generator\Model\WithModelClassGenerator;
-use Reliese\Generator\WithGeneratedClassDefinitions;
-use Reliese\Generator\WithGeneratedObjectTypeDefinitions;
+use Reliese\Generator\WithGetClassDefinition;
+use Reliese\Generator\WithGetObjectTypeDefinition;
 use Reliese\Generator\WithGetPhpFileDefinitions;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
@@ -40,8 +40,8 @@ use function sprintf;
 class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
     use WithConfigurationProfile;
-    use WithGeneratedClassDefinitions;
-    use WithGeneratedObjectTypeDefinitions;
+    use WithGetClassDefinition;
+    use WithGetObjectTypeDefinition;
     use WithGetPhpFileDefinitions;
     use WithPhpTypeMap;
     use WithModelAbstractClassGenerator;

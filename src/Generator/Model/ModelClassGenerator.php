@@ -6,8 +6,8 @@ use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Configuration\WithConfigurationProfile;
 use Reliese\Generator\ColumnBasedCodeGeneratorInterface;
 use Reliese\Generator\Model\ModelAbstractClassGenerator;
-use Reliese\Generator\WithGeneratedClassDefinitions;
-use Reliese\Generator\WithGeneratedObjectTypeDefinitions;
+use Reliese\Generator\WithGetClassDefinition;
+use Reliese\Generator\WithGetObjectTypeDefinition;
 use Reliese\Generator\WithGetPhpFileDefinitions;
 use Reliese\MetaCode\Definition\ClassDefinition;
 /**
@@ -16,8 +16,8 @@ use Reliese\MetaCode\Definition\ClassDefinition;
 class ModelClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
     use WithConfigurationProfile;
-    use WithGeneratedClassDefinitions;
-    use WithGeneratedObjectTypeDefinitions;
+    use WithGetClassDefinition;
+    use WithGetObjectTypeDefinition;
     use WithGetPhpFileDefinitions;
     use WithModelAbstractClassGenerator;
 

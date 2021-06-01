@@ -1,29 +1,40 @@
 <?php
 
-namespace Reliese\Generator\Validator;
+namespace Reliese\Generator\DataAccess;
 
 use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Configuration\WithConfigurationProfile;
 use Reliese\Generator\ColumnBasedCodeGeneratorInterface;
+use Reliese\Generator\DataAccess\DataAccessAbstractClassGenerator;
 use Reliese\Generator\WithGetClassDefinition;
 use Reliese\Generator\WithGetObjectTypeDefinition;
 use Reliese\Generator\WithGetPhpFileDefinitions;
 use Reliese\MetaCode\Definition\ClassDefinition;
-
 /**
- * Class DtoValidatorClassGenerator
+ * Class DataAccessClassGenerator
  */
-class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
+class DataAccessClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
     use WithConfigurationProfile;
     use WithGetClassDefinition;
     use WithGetObjectTypeDefinition;
     use WithGetPhpFileDefinitions;
-    use WithDtoValidatorAbstractClassGenerator;
 
     /**
-     * @return bool
+     * @var DataAccessAbstractClassGenerator
      */
+    protected DataAccessAbstractClassGenerator $abstractClassGenerator;
+
+    /**
+     * DataAccessClassGenerator constructor.
+     *
+     * @param DataAccessAbstractClassGenerator $abstractClassGenerator
+     */
+    public function __construct(DataAccessAbstractClassGenerator $abstractClassGenerator)
+    {
+        $this->abstractClassGenerator = $abstractClassGenerator;
+    }
+
     protected function allowClassFileOverwrite(): bool
     {
         return false;
@@ -34,7 +45,7 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassNamespace(): string
     {
-        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
             ->getClassNamespace();
     }
 
@@ -43,7 +54,7 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassPrefix(): string
     {
-        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
             ->getClassPrefix();
     }
 
@@ -52,15 +63,10 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassSuffix(): string
     {
-        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
             ->getClassSuffix();
     }
 
-    /**
-     * @param ColumnOwnerInterface $columnOwner
-     *
-     * @return ClassDefinition
-     */
     protected function generateClassDefinition(ColumnOwnerInterface $columnOwner): ClassDefinition
     {
         $classDefinition = new ClassDefinition($this->getObjectTypeDefinition($columnOwner));
@@ -68,7 +74,7 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
         $classDefinition
             ->setOriginatingBlueprint($columnOwner)
             ->setParentClass(
-                $this->getDtoValidatorAbstractClassGenerator()->getObjectTypeDefinition($columnOwner)
+                $this->abstractClassGenerator->getObjectTypeDefinition($columnOwner)
             )
         ;
 

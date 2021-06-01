@@ -1,25 +1,29 @@
 <?php
 
-namespace Reliese\Generator\Validator;
+namespace Reliese\Generator\DataMap;
 
 use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Configuration\WithConfigurationProfile;
+use Reliese\Database\WithPhpTypeMap;
 use Reliese\Generator\ColumnBasedCodeGeneratorInterface;
+use Reliese\Generator\Model\WithModelClassGenerator;
 use Reliese\Generator\WithGetClassDefinition;
 use Reliese\Generator\WithGetObjectTypeDefinition;
 use Reliese\Generator\WithGetPhpFileDefinitions;
 use Reliese\MetaCode\Definition\ClassDefinition;
 
 /**
- * Class DtoValidatorClassGenerator
+ * Class ModelDataMapClassGenerator
  */
-class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
+class ModelDataMapClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
     use WithConfigurationProfile;
     use WithGetClassDefinition;
     use WithGetObjectTypeDefinition;
     use WithGetPhpFileDefinitions;
-    use WithDtoValidatorAbstractClassGenerator;
+    use WithPhpTypeMap;
+    use WithModelClassGenerator;
+    use WithModelDataMapAbstractClassGenerator;
 
     /**
      * @return bool
@@ -34,7 +38,7 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassNamespace(): string
     {
-        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getModelDataMapGeneratorConfiguration()
             ->getClassNamespace();
     }
 
@@ -43,7 +47,7 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassPrefix(): string
     {
-        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getModelDataMapGeneratorConfiguration()
             ->getClassPrefix();
     }
 
@@ -52,15 +56,10 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassSuffix(): string
     {
-        return $this->getConfigurationProfile()->getValidatorGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getModelDataMapGeneratorConfiguration()
             ->getClassSuffix();
     }
 
-    /**
-     * @param ColumnOwnerInterface $columnOwner
-     *
-     * @return ClassDefinition
-     */
     protected function generateClassDefinition(ColumnOwnerInterface $columnOwner): ClassDefinition
     {
         $classDefinition = new ClassDefinition($this->getObjectTypeDefinition($columnOwner));
@@ -68,7 +67,7 @@ class DtoValidatorClassGenerator implements ColumnBasedCodeGeneratorInterface
         $classDefinition
             ->setOriginatingBlueprint($columnOwner)
             ->setParentClass(
-                $this->getDtoValidatorAbstractClassGenerator()->getObjectTypeDefinition($columnOwner)
+                $this->getModelDataMapAbstractClassGenerator()->getObjectTypeDefinition($columnOwner)
             )
         ;
 

@@ -1,8 +1,7 @@
 <?php
 
-namespace Reliese\Generator\Model;
+namespace Reliese\Generator\DataTransport;
 
-use Reliese\Blueprint\ColumnBlueprint;
 use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Configuration\WithConfigurationProfile;
 use Reliese\Database\WithPhpTypeMap;
@@ -10,23 +9,20 @@ use Reliese\Generator\ColumnBasedCodeGeneratorInterface;
 use Reliese\Generator\WithGetClassDefinition;
 use Reliese\Generator\WithGetObjectTypeDefinition;
 use Reliese\Generator\WithGetPhpFileDefinitions;
-use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassPropertyDefinition;
-use Reliese\MetaCode\Enum\AbstractEnum;
-use Reliese\MetaCode\Enum\VisibilityEnum;
-use Reliese\MetaCode\Tool\ClassNameTool;
+
 /**
- * Class ModelAbstractClassGenerator
+ * Class DataTransportCollectionAbstractClassGenerator
  */
-class ModelAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
+class DataTransportCollectionAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
     use WithConfigurationProfile;
     use WithGetClassDefinition;
     use WithGetObjectTypeDefinition;
     use WithGetPhpFileDefinitions;
     use WithPhpTypeMap;
-    use WithModelClassGenerator;
+    use WithDataTransportCollectionClassGenerator;
 
     /** @var ClassPropertyDefinition[] */
     private array $generatedForeignKeyDtoPropertyDefinitions = [];
@@ -41,7 +37,7 @@ class ModelAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassNamespace(): string
     {
-        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getDataTransportCollectionGeneratorConfiguration()
             ->getGeneratedClassNamespace();
     }
 
@@ -50,7 +46,7 @@ class ModelAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassPrefix(): string
     {
-        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getDataTransportCollectionGeneratorConfiguration()
             ->getGeneratedClassPrefix();
     }
 
@@ -59,32 +55,13 @@ class ModelAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
      */
     protected function getClassSuffix(): string
     {
-        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
+        return $this->getConfigurationProfile()->getDataTransportCollectionGeneratorConfiguration()
             ->getGeneratedClassSuffix();
     }
 
     protected function generateClassDefinition(ColumnOwnerInterface $columnOwner): ClassDefinition
     {
-        $abstractClassDefinition = new ClassDefinition(
-            $this->getObjectTypeDefinition($columnOwner),
-            AbstractEnum::abstractEnum()
-        );
-
-
-        return $abstractClassDefinition;
-    }
-
-    /**
-     * @param ColumnBlueprint $columnBlueprint
-     *
-     * @return ClassConstantDefinition
-     */
-    public function generateColumnConstantDefinition(ColumnBlueprint $columnBlueprint): ClassConstantDefinition
-    {
-        return new ClassConstantDefinition(
-            ClassNameTool::columnNameToConstantName($columnBlueprint->getColumnName()),
-            $columnBlueprint->getColumnName(),
-            VisibilityEnum::publicEnum()
-        );
+        // TODO: Implement generateClassDefinition() method.
+        throw new \Exception(__METHOD__ . " has not been implemented.");
     }
 }

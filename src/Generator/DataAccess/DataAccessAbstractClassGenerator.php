@@ -2,30 +2,26 @@
 
 namespace Reliese\Generator\DataAccess;
 
-use app\DataStores\MySql\MySqlErrorTypes;
-use app\DataTransport\Objects\PrimaryDatabase\AccountDto;
-use App\Models\PrimaryDatabase\Account;
-use app\Patterns\Log\LogException;
-use app\Patterns\Log\LogMessage;
-use app\Patterns\MethodResponses\CreateMethodResponse;
-use app\Patterns\MethodResponses\FetchMethodResponse;
-use app\Patterns\MethodResponses\GetMethodResponse;
-use app\Patterns\MethodResponses\UpdateMethodResponse;
+use Exception;
 use Illuminate\Support\Str;
 use Reliese\Blueprint\ColumnBlueprint;
-use Reliese\Blueprint\DatabaseBlueprint;
+use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Blueprint\IndexBlueprint;
-use Reliese\Blueprint\TableBlueprint;
-use Reliese\Configuration\DataAccessGeneratorConfiguration;
-use Reliese\Configuration\RelieseConfiguration;
-use Reliese\Generator\DataAttribute\DataAttributeGenerator;
-use Reliese\Generator\DataMap\ModelDataMapGenerator;
-use Reliese\Generator\DataTransport\DataTransportObjectGenerator;
-use Reliese\Generator\Model\ModelGenerator;
-use Reliese\Generator\MySqlDataTypeMap;
+use Reliese\Configuration\WithConfigurationProfile;
+use Reliese\Database\WithPhpTypeMap;
+use Reliese\Generator\ColumnBasedCodeGeneratorInterface;
+use Reliese\Generator\DataMap\WithModelDataMapClassAccessorGenerator;
+use Reliese\Generator\DataMap\WithModelDataMapClassGenerator;
+use Reliese\Generator\DataTransport\WithDataTransportObjectClassGenerator;
+use Reliese\Generator\Model\WithModelAbstractClassGenerator;
+use Reliese\Generator\Model\WithModelClassGenerator;
+use Reliese\Generator\WithGetClassDefinition;
+use Reliese\Generator\WithGetObjectTypeDefinition;
+use Reliese\Generator\WithGetPhpFileDefinitions;
 use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
 use Reliese\MetaCode\Definition\ClassMethodDefinition;
+use Reliese\MetaCode\Definition\ClassPropertyDefinition;
 use Reliese\MetaCode\Definition\ClassTraitDefinition;
 use Reliese\MetaCode\Definition\CommentBlockStatementDefinition;
 use Reliese\MetaCode\Definition\FunctionParameterDefinition;
@@ -38,191 +34,196 @@ use Reliese\MetaCode\Enum\AbstractEnum;
 use Reliese\MetaCode\Enum\InstanceEnum;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
-use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Tool\ClassNameTool;
+use Symfony\Component\Translation\TranslatableMessage;
 
 /**
- * Class DataAccessGenerator
+ * Class DataAccessAbstractClassGenerator
  */
-class DataAccessGenerator
+class DataAccessAbstractClassGenerator implements ColumnBasedCodeGeneratorInterface
 {
-    /**
-     * @var DataAccessGeneratorConfiguration
-     */
-    private DataAccessGeneratorConfiguration $dataAccessGeneratorConfiguration;
+    use WithConfigurationProfile;
+    use WithGetClassDefinition;
+    use WithGetObjectTypeDefinition;
+    use WithGetPhpFileDefinitions;
+    use WithPhpTypeMap;
+    use WithModelAbstractClassGenerator;
+    use WithModelClassGenerator;
+    use WithModelDataMapClassGenerator;
+    use WithModelDataMapClassAccessorGenerator;
+    use WithDataTransportObjectClassGenerator;
 
-    /**
-     * @var DataAttributeGenerator
-     */
-    private DataAttributeGenerator $dataAttributeGenerator;
+    /** @var ClassPropertyDefinition[] */
+    private array $generatedForeignKeyDtoPropertyDefinitions = [];
 
-    /**
-     * @var DataTransportObjectGenerator
-     */
-    private DataTransportObjectGenerator $dataTransportObjectGenerator;
-
-    /**
-     * @var MySqlDataTypeMap
-     */
-    private MySqlDataTypeMap $dataTypeMap;
-
-    /**
-     * @var DatabaseBlueprint
-     */
-    private DatabaseBlueprint $databaseBlueprint;
-
-    /**
-     * @var ModelDataMapGenerator
-     */
-    private ModelDataMapGenerator $modelDataMapGenerator;
-
-    /**
-     * @var ModelGenerator
-     */
-    private ModelGenerator $modelGenerator;
-
-    /**
-     * DataAccessGenerator constructor.
-     *
-     * @param RelieseConfiguration $relieseConfiguration
-     */
-    public function __construct(RelieseConfiguration $relieseConfiguration)
+    protected function allowClassFileOverwrite(): bool
     {
-        $this->dataAccessGeneratorConfiguration = $relieseConfiguration->getDataAccessGeneratorConfiguration();
-        /*
-         * TODO: inject a MySql / Postgress or other DataType mapping as needed
-         */
-        $this->dataTypeMap = new MySqlDataTypeMap();
-        $this->modelGenerator = new ModelGenerator($relieseConfiguration);
-        $this->dataTransportObjectGenerator = new DataTransportObjectGenerator($relieseConfiguration);
-        $this->modelDataMapGenerator = new ModelDataMapGenerator($relieseConfiguration);
+        return true;
     }
 
     /**
-     * @param TableBlueprint $tableBlueprint
+     * @return string
      */
-    public function fromTableBlueprint(TableBlueprint $tableBlueprint)
+    protected function getClassNamespace(): string
     {
-        $classDefinition = $this->generateClassDefinition($tableBlueprint);
-        $abstractClassDefinition = $this->generateAbstractClassDefinition($tableBlueprint);
-
-        /*
-         * TODO: Add generic methods like "get by id"
-         */
-
-        /*
-         * Write the Class Files
-         */
-        $this->writeClassFiles($classDefinition, $abstractClassDefinition);
+        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
+            ->getGeneratedClassNamespace();
     }
 
-    public function generateClassDefinition(TableBlueprint $tableBlueprint): ClassDefinition
+    /**
+     * @return string
+     */
+    protected function getClassPrefix(): string
     {
-        $abstractClassDefinition = $this->generateAbstractClassDefinition($tableBlueprint);
-
-        $className = $this->getClassName($tableBlueprint);
-        $namespace = $this->getClassNamespace($tableBlueprint);
-        $classDefinition = new ClassDefinition($className, $namespace);
-        $classDefinition->setParentClass($abstractClassDefinition->getFullyQualifiedName());
-
-        return $classDefinition;
+        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
+            ->getGeneratedClassPrefix();
     }
 
-    public function generateAbstractClassDefinition(TableBlueprint $tableBlueprint): ClassDefinition
+    /**
+     * @return string
+     */
+    protected function getClassSuffix(): string
     {
-        $abstractClassName = $this->getAbstractClassName($tableBlueprint);
-        $abstractNamespace = $this->getAbstractClassNamespace($tableBlueprint);
-        $abstractClassDefinition = new ClassDefinition($abstractClassName,
-            $abstractNamespace,
-            AbstractEnum::abstractEnum());
+        return $this->getConfigurationProfile()->getDataAccessGeneratorConfiguration()
+            ->getGeneratedClassSuffix();
+    }
 
-        $modelObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelGenerator->getFullyQualifiedClassName($tableBlueprint));
+    protected function generateClassDefinition(ColumnOwnerInterface $columnOwner): ClassDefinition
+    {
+        $abstractClassDefinition = new ClassDefinition(
+            $this->getObjectTypeDefinition($columnOwner),
+            AbstractEnum::abstractEnum()
+        );
+
+        $modelObjectTypeDefinition = $this->getModelClassGenerator()->getObjectTypeDefinition($columnOwner);
 
         $abstractClassDefinition
             # include the With<ModelType>DataMap trait
-            ->addTrait(new ClassTraitDefinition($this->modelDataMapGenerator->generateModelDataMapAccessorTrait($this->modelDataMapGenerator->getFullyQualifiedClassName($tableBlueprint))
+            ->addTrait(
+                new ClassTraitDefinition(
+                    $this->getModelDataMapClassAccessorGenerator()->generateModelDataMapAccessorTrait(
+                        $this->getModelDataMapClassGenerator()->getObjectTypeDefinition($columnOwner)
+                            ->getFullyQualifiedName()
+                    )
                 ->getFullyQualifiedName()))
             ->addConstant(new ClassConstantDefinition($this->getMapFromFailedConstantName($modelObjectTypeDefinition),
                 $this->getMapFromFailedConstantName($modelObjectTypeDefinition),
-                VisibilityEnum::protectedEnum()),)
+                VisibilityEnum::protectedEnum()))
             ->addConstant(new ClassConstantDefinition($this->getMapToFailedConstantName($modelObjectTypeDefinition),
                 $this->getMapToFailedConstantName($modelObjectTypeDefinition),
                 VisibilityEnum::protectedEnum()))
         ;
 
-        $this->addFetchByUniqueColumnMethods($tableBlueprint, $abstractClassDefinition);
+        $this->addFetchByUniqueColumnMethods($columnOwner, $abstractClassDefinition);
 
-        $abstractClassDefinition->addMethodDefinition($this->generateCreateMethod($tableBlueprint,
-            $abstractClassDefinition));
+        $abstractClassDefinition->addMethodDefinition(
+            $this->generateCreateMethod($columnOwner, $abstractClassDefinition));
 
-        $abstractClassDefinition->addMethodDefinition($this->generateUpdateMethod($tableBlueprint,
-            $abstractClassDefinition));
+        $abstractClassDefinition->addMethodDefinition(
+            $this->generateUpdateMethod($columnOwner, $abstractClassDefinition));
 
         return $abstractClassDefinition;
     }
 
     /**
-     * @param TableBlueprint $tableBlueprint
+     * @param ObjectTypeDefinition $modelObjectTypeDefinition
      *
      * @return string
      */
-    public function getFullyQualifiedClassName(TableBlueprint $tableBlueprint): string
+    private function getMapToFailedConstantName(ObjectTypeDefinition $modelObjectTypeDefinition): string
     {
-        return $this->getClassNamespace($tableBlueprint) . '\\' . $this->getClassName($tableBlueprint);
+        return sprintf('%s_MAP_TO_DTO_FAILED',
+            Str::upper($modelObjectTypeDefinition->getImportableName()));
     }
 
-    public function getClassNamespace(TableBlueprint $tableBlueprint): string
+    /**
+     * @param ObjectTypeDefinition $modelObjectTypeDefinition
+     *
+     * @return string
+     */
+    private function getMapFromFailedConstantName(ObjectTypeDefinition $modelObjectTypeDefinition): string
     {
-        return $this->dataAccessGeneratorConfiguration->getNamespace();
+        return sprintf('%s_MAP_FROM_DTO_FAILED',
+            Str::upper($modelObjectTypeDefinition->getImportableName()));
     }
 
-    public function getClassName(TableBlueprint $tableBlueprint): string
-    {
-        return ClassNameTool::snakeCaseToClassName($this->dataAccessGeneratorConfiguration->getClassPrefix(),
-            $tableBlueprint->getName(),
-            $this->dataAccessGeneratorConfiguration->getClassSuffix());
+
+    /**
+     * Calls \Reliese\Generator\DataAccess\DataAccessGenerator::generateFetchByUniqueColumnMethodDefinition foreach
+     * unique column
+     *
+     * @param ColumnOwnerInterface  $columnOwner
+     * @param ClassDefinition $abstractClassDefinition
+     */
+    private function addFetchByUniqueColumnMethods(
+        ColumnOwnerInterface $columnOwner,
+        ClassDefinition $abstractClassDefinition
+    ) {
+        $uniqueColumnGroups = $columnOwner->getUniqueColumnGroups();
+
+        foreach ($uniqueColumnGroups as $uniqueColumnGroup) {
+            if (1 < count($uniqueColumnGroup)) {
+                continue;
+            }
+
+            $uniqueColumn = array_pop($uniqueColumnGroup);
+
+            $abstractClassDefinition->addMethodDefinition(
+                $this->generateFetchByUniqueColumnMethodDefinition(
+                    $abstractClassDefinition,
+                    $columnOwner,
+                    $uniqueColumn
+                )
+            );
+        }
     }
 
-    public function getFetchByUniqueColumnFunctionName(ColumnBlueprint $uniqueColumn): string
-    {
-        return "fetchBy" . Str::studly($uniqueColumn->getColumnName());
-    }
+    /**
+     * @param ColumnOwnerInterface $columnOwner
+     * @param ClassDefinition      $classDefinition
+     *
+     * @return ClassMethodDefinition
+     */
+    private function generateCreateMethod(
+        ColumnOwnerInterface $columnOwner,
+        ClassDefinition $classDefinition
+    ): ClassMethodDefinition {
+echo "\n\n".__METHOD__."\n\n";
+        $modelObjectTypeDefinition = $this->getModelClassGenerator()->getObjectTypeDefinition($columnOwner);
 
-    private function generateCreateMethod(TableBlueprint $tableBlueprint,
-        ClassDefinition $classDefinition): ClassMethodDefinition
-    {
-        $modelObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelGenerator->getFullyQualifiedClassName($tableBlueprint));
         $mySqlErrorTypesObjectTypeDefinition = new ObjectTypeDefinition('\app\DataStores\MySql\MySqlErrorTypes');
+
         $queryExceptionTypeDefinition = new ObjectTypeDefinition('\Illuminate\Database\QueryException');
+
         $logMessageObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogMessage');
+
         $logExceptionObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogException');
+
         $returnTypeObjectTypeDefinition
             = new ObjectTypeDefinition('\app\Patterns\MethodResponses\CreateMethodResponse');
+
         $dtoTypeObjectTypeDefinition
-            = new ObjectTypeDefinition($this->dataTransportObjectGenerator->getFullyQualifiedClassName($tableBlueprint));
-        $modelTypeObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelGenerator->getFullyQualifiedClassName($tableBlueprint));
+            = $this->getDataTransportObjectClassGenerator()->getObjectTypeDefinition($columnOwner);
+
         $modelDataMapTraitObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelDataMapGenerator->generateModelDataMapAccessorTrait($this->modelDataMapGenerator->getFullyQualifiedClassName($tableBlueprint))
-            ->getFullyQualifiedName());
-        $classDefinition->addImport($modelObjectTypeDefinition)
+            = $this->getModelDataMapClassAccessorGenerator()->getObjectTypeDefinition($columnOwner);
+
+        $classDefinition
+            ->addImport($modelObjectTypeDefinition)
             ->addImport($mySqlErrorTypesObjectTypeDefinition)
             ->addImport($logMessageObjectTypeDefinition)
             ->addImport($logExceptionObjectTypeDefinition)
             ->addImport($returnTypeObjectTypeDefinition)
             ->addImport($dtoTypeObjectTypeDefinition)
-            ->addImport($modelTypeObjectTypeDefinition)
             ->addImport($modelDataMapTraitObjectTypeDefinition)
         ;
 
         $functionName = "create";
         $returnType = PhpTypeEnum::objectOfType($returnTypeObjectTypeDefinition->getFullyQualifiedName());
-        $modelVariableName = $this->modelGenerator->getClassAsVariableName($tableBlueprint);
+        $modelVariableName = ClassNameTool::classNameToVariableName($modelObjectTypeDefinition->getImportableName());
 
         $methodFailedConstantName = sprintf('%s_CREATE_FAILED',
-            Str::upper($modelTypeObjectTypeDefinition->getImportableName()));
+            Str::upper($modelObjectTypeDefinition->getImportableName()));
         $classDefinition->addConstant(new ClassConstantDefinition($methodFailedConstantName,
             $methodFailedConstantName,
             VisibilityEnum::protectedEnum()));
@@ -239,10 +240,10 @@ class DataAccessGenerator
                 $mySqlErrorTypesObjectTypeDefinition->getImportableName(),
                 $exceptionVariableName))))->addStatementDefinition($foreachBlock
                 = (new StatementBlockDefinition(new RawStatementDefinition(sprintf("foreach (\$%s->errorInfo as \$value)",
-                $exceptionVariableName,))))))
+                $exceptionVariableName))))))
         ;
 
-        foreach ($tableBlueprint->getUniqueIndexes(false) as $uniqueIndexBlueprint) {
+        foreach ($columnOwner->getUniqueIndexes(false) as $uniqueIndexBlueprint) {
             $validationMessageMethod = $this->getUniqueKeyViolationValidationMessageMethod($classDefinition,
                 $uniqueIndexBlueprint);
 
@@ -267,28 +268,28 @@ class DataAccessGenerator
         $classMethodDefinition->appendBodyStatement(// new model statement
             new RawStatementDefinition(sprintf("\$%s = new %s();",
                 $modelVariableName,
-                $modelTypeObjectTypeDefinition->getImportableName())))
+                $modelObjectTypeDefinition->getImportableName())))
             ->appendBodyStatement((new StatementBlockDefinition(new RawStatementDefinition(sprintf("if (!\$this->%s()->from%s(\$%s, \$%s))",
-                $this->modelDataMapGenerator->getModelMapAccessorTraitMethodName($tableBlueprint),
+                $this->getModelDataMapClassAccessorGenerator()->getModelMapAccessorTraitMethodName($columnOwner),
                 $dtoTypeObjectTypeDefinition->getImportableName(),
                 $modelVariableName,
                 $dtoParameterDefinition->getParameterName()))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::error([new %s(static::%s), new %s(static::%s)]);",
                 $returnTypeObjectTypeDefinition->getImportableName(),
                 $logMessageObjectTypeDefinition->getImportableName(),
-                $this->getMapFromFailedConstantName($modelTypeObjectTypeDefinition),
+                $this->getMapFromFailedConstantName($modelObjectTypeDefinition),
                 $logMessageObjectTypeDefinition->getImportableName(),
                 $methodFailedConstantName))))
             // try save block
             ->appendBodyStatement(
                 $this->getSaveModelTryBlock($modelVariableName,
-                $returnTypeObjectTypeDefinition,
-                $logMessageObjectTypeDefinition,
-                $methodFailedConstantName,
-                $queryExceptionTypeDefinition,
-                $exceptionVariableName,
-                $catchBlockStatements))
+                    $returnTypeObjectTypeDefinition,
+                    $logMessageObjectTypeDefinition,
+                    $methodFailedConstantName,
+                    $queryExceptionTypeDefinition,
+                    $exceptionVariableName,
+                    $catchBlockStatements))
             // after try block, map model to dto
-            ->appendBodyStatement($this->getMapToDtoStatementBlock($tableBlueprint,
+            ->appendBodyStatement($this->getMapToDtoStatementBlock($columnOwner,
                 $dtoTypeObjectTypeDefinition,
                 $modelVariableName,
                 $dtoParameterDefinition,
@@ -302,40 +303,45 @@ class DataAccessGenerator
         return $classMethodDefinition;
     }
 
-    private function generateUpdateMethod(TableBlueprint $tableBlueprint,
-        ClassDefinition $classDefinition): ClassMethodDefinition
+    private function generateUpdateMethod(
+        ColumnOwnerInterface $columnOwner,
+        ClassDefinition $classDefinition
+    ): ClassMethodDefinition
     {
-        $modelObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelGenerator->getFullyQualifiedClassName($tableBlueprint));
+        $modelObjectTypeDefinition = $this->getModelClassGenerator()->getObjectTypeDefinition($columnOwner);
+
         $mySqlErrorTypesObjectTypeDefinition = new ObjectTypeDefinition('\app\DataStores\MySql\MySqlErrorTypes');
+
         $queryExceptionTypeDefinition = new ObjectTypeDefinition('\Illuminate\Database\QueryException');
+
         $logMessageObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogMessage');
+
         $logExceptionObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogException');
+
         $returnTypeObjectTypeDefinition
             = new ObjectTypeDefinition('\app\Patterns\MethodResponses\UpdateMethodResponse');
+
         $dtoTypeObjectTypeDefinition
-            = new ObjectTypeDefinition($this->dataTransportObjectGenerator->getFullyQualifiedClassName($tableBlueprint));
-        $modelTypeObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelGenerator->getFullyQualifiedClassName($tableBlueprint));
-        $modelDataMapTraitObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelDataMapGenerator->generateModelDataMapAccessorTrait($this->modelDataMapGenerator->getFullyQualifiedClassName($tableBlueprint))
-            ->getFullyQualifiedName());
-        $classDefinition->addImport($modelObjectTypeDefinition)
+            = $this->getDataTransportObjectClassGenerator()->getObjectTypeDefinition($columnOwner);
+
+        $modelDataMapTraitObjectTypeDefinition = $this->getModelDataMapClassAccessorGenerator()->getObjectTypeDefinition($columnOwner);
+
+        $classDefinition
+            ->addImport($modelObjectTypeDefinition)
             ->addImport($mySqlErrorTypesObjectTypeDefinition)
             ->addImport($logMessageObjectTypeDefinition)
             ->addImport($logExceptionObjectTypeDefinition)
             ->addImport($returnTypeObjectTypeDefinition)
             ->addImport($dtoTypeObjectTypeDefinition)
-            ->addImport($modelTypeObjectTypeDefinition)
             ->addImport($modelDataMapTraitObjectTypeDefinition)
         ;
 
         $functionName = "update";
         $returnType = PhpTypeEnum::objectOfType($returnTypeObjectTypeDefinition->getFullyQualifiedName());
-        $modelVariableName = $this->modelGenerator->getClassAsVariableName($tableBlueprint);
+        $modelVariableName = ClassNameTool::classNameToVariableName($modelObjectTypeDefinition->getImportableName());
 
         $methodFailedConstantName = sprintf('%s_UPDATE_FAILED',
-            Str::upper($modelTypeObjectTypeDefinition->getImportableName()));
+            Str::upper($modelObjectTypeDefinition->getImportableName()));
         $classDefinition->addConstant(new ClassConstantDefinition($methodFailedConstantName,
             $methodFailedConstantName,
             VisibilityEnum::protectedEnum()));
@@ -352,10 +358,10 @@ class DataAccessGenerator
                 $mySqlErrorTypesObjectTypeDefinition->getImportableName(),
                 $exceptionVariableName))))->addStatementDefinition($foreachBlock
                 = (new StatementBlockDefinition(new RawStatementDefinition(sprintf("foreach (\$%s->errorInfo as \$value)",
-                $exceptionVariableName,))))))
+                $exceptionVariableName))))))
         ;
 
-        foreach ($tableBlueprint->getUniqueIndexes(false) as $uniqueIndexBlueprint) {
+        foreach ($columnOwner->getUniqueIndexes(false) as $uniqueIndexBlueprint) {
             $validationMessageMethod = $this->getUniqueKeyViolationValidationMessageMethod($classDefinition,
                 $uniqueIndexBlueprint);
 
@@ -380,9 +386,9 @@ class DataAccessGenerator
         $findModelTryBlock->addStatementDefinition(// find model statement
             new RawStatementDefinition(sprintf("\$%s = %s::find(\$%s->getId());",
                 $modelVariableName,
-                $modelTypeObjectTypeDefinition->getImportableName(),
+                $modelObjectTypeDefinition->getImportableName(),
                 $dtoParameterDefinition->getParameterName())))
-            ->addCatchStatements(PhpTypeEnum::objectOfType(\Exception::class),
+            ->addCatchStatements(PhpTypeEnum::objectOfType(Exception::class),
                 $exceptionVariableName,
                 (new StatementDefinitionCollection())->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::error([new LogMessage(static::%s), new LogException(\$%s),]);",
                     $returnTypeObjectTypeDefinition->getImportableName(),
@@ -400,16 +406,16 @@ class DataAccessGenerator
                         sprintf(
                             "if (!\$%s->save())",
                             $modelVariableName))))
-                ->addStatementDefinition(
-                    new RawStatementDefinition(
-                        sprintf(
-                            "return %s::error([new %s(static::%s)]);",
-                            $returnTypeObjectTypeDefinition->getImportableName(),
-                            $logMessageObjectTypeDefinition->getImportableName(),
-                            $methodFailedConstantName
-                        )))
+                    ->addStatementDefinition(
+                        new RawStatementDefinition(
+                            sprintf(
+                                "return %s::error([new %s(static::%s)]);",
+                                $returnTypeObjectTypeDefinition->getImportableName(),
+                                $logMessageObjectTypeDefinition->getImportableName(),
+                                $methodFailedConstantName
+                            )))
             );
-            // if (!$model->save())
+        // if (!$model->save())
         /*
          * Build Class Method definition
          */
@@ -421,13 +427,13 @@ class DataAccessGenerator
             ->appendBodyStatement($this->getModelNotFoundStatementBlock($modelVariableName,
                 $returnTypeObjectTypeDefinition))
             // Add map DTO to Model block
-            ->appendBodyStatement($this->getMapFromDtoStatementBlock($tableBlueprint,
+            ->appendBodyStatement($this->getMapFromDtoStatementBlock($columnOwner,
                 $dtoTypeObjectTypeDefinition,
                 $modelVariableName,
                 $dtoParameterDefinition,
                 $returnTypeObjectTypeDefinition,
                 $logMessageObjectTypeDefinition,
-                $modelTypeObjectTypeDefinition,
+                $modelObjectTypeDefinition,
                 $methodFailedConstantName))
             // try save block
             ->appendBodyStatement(
@@ -439,7 +445,7 @@ class DataAccessGenerator
                     $exceptionVariableName,
                     $catchBlockStatements))
             // after try block, map model to dto
-            ->appendBodyStatement($this->getMapToDtoStatementBlock($tableBlueprint,
+            ->appendBodyStatement($this->getMapToDtoStatementBlock($columnOwner,
                 $dtoTypeObjectTypeDefinition,
                 $modelVariableName,
                 $dtoParameterDefinition,
@@ -453,31 +459,17 @@ class DataAccessGenerator
         return $classMethodDefinition;
     }
 
-    /**
-     * Calls \Reliese\Generator\DataAccess\DataAccessGenerator::generateFetchByUniqueColumnMethodDefinition foreach
-     * unique column
-     *
-     * @param TableBlueprint  $tableBlueprint
-     * @param ClassDefinition $abstractClassDefinition
-     *
-     * @return array
-     */
-    private function addFetchByUniqueColumnMethods(TableBlueprint $tableBlueprint,
-        ClassDefinition $abstractClassDefinition)
+    private function getDtoFunctionParameterDefinition(ObjectTypeDefinition $dtoTypeObjectTypeDefinition): FunctionParameterDefinition
     {
-        $uniqueColumnGroups = $tableBlueprint->getUniqueColumnGroups();
-
-        foreach ($uniqueColumnGroups as $uniqueColumnGroup) {
-            if (1 < count($uniqueColumnGroup)) {
-                continue;
-            }
-
-            $uniqueColumn = array_pop($uniqueColumnGroup);
-
-            $abstractClassDefinition->addMethodDefinition($this->generateFetchByUniqueColumnMethodDefinition($abstractClassDefinition,
-                $tableBlueprint,
-                $uniqueColumn));
-        }
+        return new FunctionParameterDefinition(
+            $this->getDtoVariableName($dtoTypeObjectTypeDefinition),
+            PhpTypeEnum::objectOfType($dtoTypeObjectTypeDefinition->getFullyQualifiedName())
+        );
+    }
+    private function getDtoVariableName(ObjectTypeDefinition $dtoTypeObjectTypeDefinition): string
+    {
+        $name = $dtoTypeObjectTypeDefinition->getImportableName();
+        return strtolower($name[0]) . substr($name, 1);
     }
 
     /**
@@ -502,26 +494,32 @@ class DataAccessGenerator
      * </code>
      *
      * @param ClassDefinition $classDefinition
-     * @param TableBlueprint  $tableBlueprint
+     * @param ColumnOwnerInterface  $columnOwner
      * @param ColumnBlueprint $uniqueColumn
      *
      * @return ClassMethodDefinition
      */
     private function generateFetchByUniqueColumnMethodDefinition(ClassDefinition $classDefinition,
-        TableBlueprint $tableBlueprint,
-        ColumnBlueprint $uniqueColumn): ClassMethodDefinition
+        ColumnOwnerInterface $columnOwner,
+        ColumnBlueprint $uniqueColumn
+    ): ClassMethodDefinition
     {
         $logMessageObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogMessage');
+
         $logExceptionObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogException');
+
         $returnTypeObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\MethodResponses\FetchMethodResponse');
+
         $dtoTypeObjectTypeDefinition
-            = new ObjectTypeDefinition($this->dataTransportObjectGenerator->getFullyQualifiedClassName($tableBlueprint));
-        $modelObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelGenerator->getFullyQualifiedClassName($tableBlueprint));
+            = $this->getDataTransportObjectClassGenerator()->getObjectTypeDefinition($columnOwner);
+
+        $modelObjectTypeDefinition = $this->getModelClassGenerator()->getObjectTypeDefinition($columnOwner);
+
         $modelDataMapTraitObjectTypeDefinition
-            = new ObjectTypeDefinition($this->modelDataMapGenerator->generateModelDataMapAccessorTrait($this->modelDataMapGenerator->getFullyQualifiedClassName($tableBlueprint))
-            ->getFullyQualifiedName());
-        $classDefinition->addImport($logMessageObjectTypeDefinition)
+            = $this->getModelDataMapClassAccessorGenerator()->getObjectTypeDefinition($columnOwner);
+
+        $classDefinition
+            ->addImport($logMessageObjectTypeDefinition)
             ->addImport($logExceptionObjectTypeDefinition)
             ->addImport($returnTypeObjectTypeDefinition)
             ->addImport($dtoTypeObjectTypeDefinition)
@@ -531,7 +529,7 @@ class DataAccessGenerator
 
         $columnCamelName = Str::studly($uniqueColumn->getColumnName());
 
-        $modelVariableName = $this->modelGenerator->getClassAsVariableName($tableBlueprint);
+        $modelVariableName = ClassNameTool::classNameToVariableName($modelObjectTypeDefinition->getImportableName());
 
         $dtoParameterDefinition = $this->getDtoFunctionParameterDefinition($dtoTypeObjectTypeDefinition);
 
@@ -551,7 +549,8 @@ class DataAccessGenerator
 
         $exceptionVariableName = 'exception';
 
-        $columnConstantDefinition = $this->modelGenerator->generateColumnConstantDefinition($uniqueColumn);
+        $columnConstantDefinition = $this->getModelAbstractClassGenerator()
+            ->generateColumnConstantDefinition($uniqueColumn);
         $classMethodDefinition->appendBodyStatement((new TryBlockDefinition())->addStatementDefinition(# include the Eloquent query to fetch the model by the unique column value
             new RawStatementDefinition(sprintf("\$%s = %s::where(%s::%s, \$%s->get%s())->first();",
                 $modelVariableName,
@@ -560,7 +559,7 @@ class DataAccessGenerator
                 $columnConstantDefinition->getName(),
                 $dtoParameterDefinition->getParameterName(),
                 $columnCamelName)))
-            ->addCatchStatements(PhpTypeEnum::objectOfType(\Exception::class),
+            ->addCatchStatements(PhpTypeEnum::objectOfType(Exception::class),
                 $exceptionVariableName,
                 (new StatementDefinitionCollection())->addStatementDefinition(new RawStatementDefinition(sprintf("return FetchMethodResponse::error([new LogMessage(static::%s), new LogException(\$%s),]);",
                     $methodFailedConstantName,
@@ -569,7 +568,7 @@ class DataAccessGenerator
             ->appendBodyStatement($this->getModelNotFoundStatementBlock($modelVariableName,
                 $returnTypeObjectTypeDefinition))
             # include the conditional check to determine if it was mapped successfully
-            ->appendBodyStatement($this->getMapToDtoStatementBlock($tableBlueprint,
+            ->appendBodyStatement($this->getMapToDtoStatementBlock($columnOwner,
                 $dtoTypeObjectTypeDefinition,
                 $modelVariableName,
                 $dtoParameterDefinition,
@@ -581,78 +580,20 @@ class DataAccessGenerator
         return $classMethodDefinition;
     }
 
-    private function getAbstractClassName(TableBlueprint $tableBlueprint): string
-    {
-        return $this->dataAccessGeneratorConfiguration->getParentClassPrefix() . $this->getClassName($tableBlueprint);
-    }
-
-    private function getAbstractClassNamespace(TableBlueprint $tableBlueprint): string
-    {
-        return $this->getClassNamespace($tableBlueprint) . '\\Generated';
-    }
-
     /**
-     * @param ClassDefinition $classDefinition
-     * @param ClassDefinition $abstractClassDefinition
+     * @param ColumnBlueprint $uniqueColumn
+     *
+     * @return string
      */
-    private function writeClassFiles(ClassDefinition $classDefinition,
-        ClassDefinition $abstractClassDefinition,): void
+    public function getFetchByUniqueColumnFunctionName(ColumnBlueprint $uniqueColumn): string
     {
-        $classFormatter = new ClassFormatter();
-
-        $dtoClassPhpCode = $classFormatter->format($classDefinition);
-        $abstractDtoPhpCode = $classFormatter->format($abstractClassDefinition);
-        //        echo "\n---Class---\n$dtoClassPhpCode\n\n\n---Base Class---\n$abstractDtoPhpCode\n\n";
-
-        $dtoClassFolder = $this->dataAccessGeneratorConfiguration->getPath();
-        $abstractDtoClassFolder = $dtoClassFolder . DIRECTORY_SEPARATOR . 'Generated';
-        if (!is_dir($dtoClassFolder)) {
-            \mkdir($dtoClassFolder, 0755, true);
-        }
-        if (!is_dir($abstractDtoClassFolder)) {
-            \mkdir($abstractDtoClassFolder, 0755, true);
-        }
-
-        $dtoFilePath = $dtoClassFolder . DIRECTORY_SEPARATOR . $classDefinition->getName() . '.php';
-        $abstractDtoFilePath = $abstractDtoClassFolder
-            . DIRECTORY_SEPARATOR
-            . $abstractClassDefinition->getName()
-            . '.php';
-
-        if (!\file_exists($dtoFilePath)) {
-            \file_put_contents($dtoFilePath, $dtoClassPhpCode);
-        }
-        \file_put_contents($abstractDtoFilePath, $abstractDtoPhpCode);
-    }
-
-    private function getMapToFailedConstantName(ObjectTypeDefinition $modelObjectTypeDefinition)
-    {
-        return sprintf('%s_MAP_TO_DTO_FAILED',
-            Str::upper($modelObjectTypeDefinition->getImportableName()));
-    }
-
-    private function getMapFromFailedConstantName(ObjectTypeDefinition $modelObjectTypeDefinition)
-    {
-        return sprintf('%s_MAP_FROM_DTO_FAILED',
-            Str::upper($modelObjectTypeDefinition->getImportableName()));
-    }
-
-    private function getDtoFunctionParameterDefinition(ObjectTypeDefinition $dtoTypeObjectTypeDefinition): FunctionParameterDefinition
-    {
-        return new FunctionParameterDefinition($this->getDtoVariableName($dtoTypeObjectTypeDefinition),
-            PhpTypeEnum::objectOfType($dtoTypeObjectTypeDefinition->getFullyQualifiedName()));
-    }
-
-    private function getDtoVariableName(ObjectTypeDefinition $dtoTypeObjectTypeDefinition): string
-    {
-        $name = $dtoTypeObjectTypeDefinition->getImportableName();
-        return strtolower($name[0]) . substr($name, 1);
+        return "fetchBy" . Str::studly($uniqueColumn->getColumnName());
     }
 
     private function getUniqueKeyViolationValidationMessageMethod(ClassDefinition $classDefinition,
         IndexBlueprint $indexBlueprint): ClassMethodDefinition
     {
-        $returnType = new ObjectTypeDefinition(\Symfony\Component\Translation\TranslatableMessage::class);
+        $returnType = new ObjectTypeDefinition(TranslatableMessage::class);
         $classDefinition->addImport($returnType);
 
         $functionName = sprintf("getUniqueKeyValidationMessageFor%s",
@@ -664,88 +605,6 @@ class DataAccessGenerator
             VisibilityEnum::protectedEnum(),
             InstanceEnum::instanceEnum(),
             AbstractEnum::abstractEnum());
-    }
-
-    /**
-     * @param TableBlueprint              $tableBlueprint
-     * @param ObjectTypeDefinition        $dtoTypeObjectTypeDefinition
-     * @param string                      $modelVariableName
-     * @param FunctionParameterDefinition $dtoParameterDefinition
-     * @param string                      $mapToFailedConstantName
-     * @param ObjectTypeDefinition        $returnObjectTypeDefinition
-     *
-     * @return StatementBlockDefinition
-     */
-    private function getMapToDtoStatementBlock(TableBlueprint $tableBlueprint,
-        ObjectTypeDefinition $dtoTypeObjectTypeDefinition,
-        string $modelVariableName,
-        FunctionParameterDefinition $dtoParameterDefinition,
-        string $mapToFailedConstantName,
-        ObjectTypeDefinition $returnObjectTypeDefinition): StatementBlockDefinition
-    {
-        return (new StatementBlockDefinition(new RawStatementDefinition(sprintf(//    "if (!$this->accountMap->toAccountDto($accountModel, $accountDto))"
-            "if (!\$this->%s()->to%s(\$%s, \$%s))",
-            $this->modelDataMapGenerator->getModelMapAccessorTraitMethodName($tableBlueprint),
-            $dtoTypeObjectTypeDefinition->getImportableName(),
-            $modelVariableName,
-            $dtoParameterDefinition->getParameterName()))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::error([new LogMessage(self::%s)]);",
-            $returnObjectTypeDefinition->getImportableName(),
-            $mapToFailedConstantName)));
-    }
-
-    /**
-     * Example statement block output
-     * <code>
-     * if (!$this->getPersonMap()->fromPersonDto($person, $personDto)) {
-     *   return UpdateMethodResponse::error(
-     *     [new LogMessage(static::PERSON_MAP_FROM_DTO_FAILED), new LogMessage(static::PERSON_UPDATE_FAILED)]);
-     * }
-     * </code>
-     *
-     * @param TableBlueprint              $tableBlueprint
-     * @param ObjectTypeDefinition        $dtoTypeObjectTypeDefinition
-     * @param string                      $modelVariableName
-     * @param FunctionParameterDefinition $dtoParameterDefinition
-     * @param ObjectTypeDefinition        $returnTypeObjectTypeDefinition
-     * @param ObjectTypeDefinition        $logMessageObjectTypeDefinition
-     * @param ObjectTypeDefinition        $modelTypeObjectTypeDefinition
-     * @param string                      $methodFailedConstantName
-     *
-     * @return StatementBlockDefinition
-     */
-    private function getMapFromDtoStatementBlock(TableBlueprint $tableBlueprint,
-        ObjectTypeDefinition $dtoTypeObjectTypeDefinition,
-        string $modelVariableName,
-        FunctionParameterDefinition $dtoParameterDefinition,
-        ObjectTypeDefinition $returnTypeObjectTypeDefinition,
-        ObjectTypeDefinition $logMessageObjectTypeDefinition,
-        ObjectTypeDefinition $modelTypeObjectTypeDefinition,
-        string $methodFailedConstantName): StatementBlockDefinition
-    {
-        return (new StatementBlockDefinition(new RawStatementDefinition(sprintf("if (!\$this->%s()->from%s(\$%s, \$%s))",
-            $this->modelDataMapGenerator->getModelMapAccessorTraitMethodName($tableBlueprint),
-            $dtoTypeObjectTypeDefinition->getImportableName(),
-            $modelVariableName,
-            $dtoParameterDefinition->getParameterName()))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::error([new %s(static::%s), new %s(static::%s)]);",
-            $returnTypeObjectTypeDefinition->getImportableName(),
-            $logMessageObjectTypeDefinition->getImportableName(),
-            $this->getMapFromFailedConstantName($modelTypeObjectTypeDefinition),
-            $logMessageObjectTypeDefinition->getImportableName(),
-            $methodFailedConstantName)));
-    }
-
-    /**
-     * @param string               $modelVariableName
-     * @param ObjectTypeDefinition $returnTypeObjectTypeDefinition
-     *
-     * @return StatementBlockDefinition
-     */
-    private function getModelNotFoundStatementBlock(string $modelVariableName,
-        ObjectTypeDefinition $returnTypeObjectTypeDefinition): StatementBlockDefinition
-    {
-        return (new StatementBlockDefinition(new RawStatementDefinition(sprintf("if (!\$%s)",
-            $modelVariableName))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::notFound();",
-            $returnTypeObjectTypeDefinition->getImportableName())));
     }
 
     /**
@@ -779,5 +638,89 @@ class DataAccessGenerator
                 $exceptionVariableName,
                 $catchBlockStatements)
             ;
-}
+    }
+
+    /**
+     * @param ColumnOwnerInterface        $columnOwner
+     * @param ObjectTypeDefinition        $dtoTypeObjectTypeDefinition
+     * @param string                      $modelVariableName
+     * @param FunctionParameterDefinition $dtoParameterDefinition
+     * @param string                      $mapToFailedConstantName
+     * @param ObjectTypeDefinition        $returnObjectTypeDefinition
+     *
+     * @return StatementBlockDefinition
+     */
+    private function getMapToDtoStatementBlock(ColumnOwnerInterface $columnOwner,
+        ObjectTypeDefinition $dtoTypeObjectTypeDefinition,
+        string $modelVariableName,
+        FunctionParameterDefinition $dtoParameterDefinition,
+        string $mapToFailedConstantName,
+        ObjectTypeDefinition $returnObjectTypeDefinition): StatementBlockDefinition
+    {
+        //"if (!$this->accountMap->toAccountDto($accountModel, $accountDto))"
+        return (new StatementBlockDefinition(new RawStatementDefinition(sprintf(
+            "if (!\$this->%s()->to%s(\$%s, \$%s))",
+            $this->getModelDataMapClassAccessorGenerator()->getModelMapAccessorTraitMethodName($columnOwner),
+            $dtoTypeObjectTypeDefinition->getImportableName(),
+            $modelVariableName,
+            $dtoParameterDefinition->getParameterName()))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::error([new LogMessage(self::%s)]);",
+            $returnObjectTypeDefinition->getImportableName(),
+            $mapToFailedConstantName)));
+    }
+
+    /**
+     * @param string               $modelVariableName
+     * @param ObjectTypeDefinition $returnTypeObjectTypeDefinition
+     *
+     * @return StatementBlockDefinition
+     */
+    private function getModelNotFoundStatementBlock(string $modelVariableName,
+        ObjectTypeDefinition $returnTypeObjectTypeDefinition): StatementBlockDefinition
+    {
+        return (new StatementBlockDefinition(new RawStatementDefinition(sprintf("if (!\$%s)",
+            $modelVariableName))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::notFound();",
+            $returnTypeObjectTypeDefinition->getImportableName())));
+    }
+
+    /**
+     * Example statement block output
+     * <code>
+     * if (!$this->getPersonMap()->fromPersonDto($person, $personDto)) {
+     *   return UpdateMethodResponse::error(
+     *     [new LogMessage(static::PERSON_MAP_FROM_DTO_FAILED), new LogMessage(static::PERSON_UPDATE_FAILED)]);
+     * }
+     * </code>
+     *
+     * @param ColumnOwnerInterface        $columnOwner
+     * @param ObjectTypeDefinition        $dtoTypeObjectTypeDefinition
+     * @param string                      $modelVariableName
+     * @param FunctionParameterDefinition $dtoParameterDefinition
+     * @param ObjectTypeDefinition        $returnTypeObjectTypeDefinition
+     * @param ObjectTypeDefinition        $logMessageObjectTypeDefinition
+     * @param ObjectTypeDefinition        $modelTypeObjectTypeDefinition
+     * @param string                      $methodFailedConstantName
+     *
+     * @return StatementBlockDefinition
+     */
+    private function getMapFromDtoStatementBlock(ColumnOwnerInterface $columnOwner,
+        ObjectTypeDefinition $dtoTypeObjectTypeDefinition,
+        string $modelVariableName,
+        FunctionParameterDefinition $dtoParameterDefinition,
+        ObjectTypeDefinition $returnTypeObjectTypeDefinition,
+        ObjectTypeDefinition $logMessageObjectTypeDefinition,
+        ObjectTypeDefinition $modelTypeObjectTypeDefinition,
+        string $methodFailedConstantName): StatementBlockDefinition
+    {
+        return (new StatementBlockDefinition(new RawStatementDefinition(sprintf("if (!\$this->%s()->from%s(\$%s, \$%s))",
+            $this->getModelDataMapClassAccessorGenerator()->getModelMapAccessorTraitMethodName($columnOwner),
+            $dtoTypeObjectTypeDefinition->getImportableName(),
+            $modelVariableName,
+            $dtoParameterDefinition->getParameterName()))))->addStatementDefinition(new RawStatementDefinition(sprintf("return %s::error([new %s(static::%s), new %s(static::%s)]);",
+            $returnTypeObjectTypeDefinition->getImportableName(),
+            $logMessageObjectTypeDefinition->getImportableName(),
+            $this->getMapFromFailedConstantName($modelTypeObjectTypeDefinition),
+            $logMessageObjectTypeDefinition->getImportableName(),
+            $methodFailedConstantName)));
+    }
+
 }
