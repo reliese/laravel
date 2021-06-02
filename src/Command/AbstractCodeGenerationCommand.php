@@ -39,9 +39,6 @@ abstract class AbstractCodeGenerationCommand extends AbstractDatabaseAnalysisCom
 
             /** @var ColumnBasedCodeGeneratorInterface $codeGenerator */
             foreach ($codeGenerators as $codeGenerator) {
-
-                echo sprintf("calling %s->getPhpFileDefinition for table %s\n", get_class($codeGenerator),
-                    $tableBlueprint->getUniqueName());
                 $phpFileDefinition = $codeGenerator->getPhpFileDefinition($tableBlueprint);
                 $codeWriter->writePhpFile($phpFileDefinition);
             }
