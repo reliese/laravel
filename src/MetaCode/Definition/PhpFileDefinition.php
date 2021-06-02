@@ -44,6 +44,6 @@ class PhpFileDefinition extends StatementDefinitionCollection implements Stateme
 
     public function toPhpCode(IndentationProvider $indentationProvider): string
     {
-        return "<?php\n".parent::toPhpCode($indentationProvider);
+        return "<?php\n\n".parent::toPhpCode($indentationProvider);
     }
 }
