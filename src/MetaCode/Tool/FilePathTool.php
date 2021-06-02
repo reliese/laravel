@@ -44,7 +44,6 @@ abstract class FilePathTool
         $i = -1;
         foreach ($filePathParts as $part) {
             $i++;
-            echo "$i: '$part'\n";
         }
 
         $filePath = implode(DIRECTORY_SEPARATOR,$filePathParts).'.php';

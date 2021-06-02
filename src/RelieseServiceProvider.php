@@ -28,6 +28,8 @@ use Reliese\MetaCode\Format\ClassFormatter;
 use Reliese\MetaCode\Format\CodeFormatter;
 use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\Support\Classify;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use function realpath;
 
 /**
@@ -196,6 +198,13 @@ class RelieseServiceProvider extends ServiceProvider
                 return IndentationProvider::fromConfig($app->make(ConfigurationProfile::class));
             },
             false
+        );
+
+        $this->app->singleton(
+            OutputInterface::class,
+            function(Application $app) {
+                return new ConsoleOutput();
+            }
         );
 
         // legacy model factory

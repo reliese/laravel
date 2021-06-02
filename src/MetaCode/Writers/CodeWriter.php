@@ -51,7 +51,7 @@ class CodeWriter
             $phpCode = $this->codeFormatter->formatStatementCollection($phpFileDefinition);
             $this->overwriteFile($filePath, $phpCode);
         } else {
-            $this->output->write("Existing file not modified: \"$filePath\"");
+            $this->output->write("Existing file not modified:\n\t\"$filePath\"\n");
         }
     }
 
@@ -59,6 +59,12 @@ class CodeWriter
         $filePath,
         $fileContent,
     ) {
+        if (file_exists($filePath)) {
+            $verb = "Overwrote";
+        } else {
+            $verb = "Generated";
+        }
+
         $directory = dirname($filePath);
 
         if (!is_dir($directory)) {
@@ -68,7 +74,7 @@ class CodeWriter
         if (false === file_put_contents($filePath, $fileContent)) {
             $this->output->write("ERROR: Failed to write file: \"$filePath\"");
         } else {
-            $this->output->write("Generated file: \"$filePath\"");
+            $this->output->write("$verb file:\n\t\"$filePath\"\n");
         }
     }
 }
