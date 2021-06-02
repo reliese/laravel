@@ -188,7 +188,7 @@ class DataAccessAbstractClassGenerator implements ColumnBasedCodeGeneratorInterf
         ColumnOwnerInterface $columnOwner,
         ClassDefinition $classDefinition
     ): ClassMethodDefinition {
-echo "\n\n".__METHOD__."\n\n";
+
         $modelObjectTypeDefinition = $this->getModelClassGenerator()->getObjectTypeDefinition($columnOwner);
 
         $mySqlErrorTypesObjectTypeDefinition = new ObjectTypeDefinition('\app\DataStores\MySql\MySqlErrorTypes');
