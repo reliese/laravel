@@ -14,7 +14,6 @@ use Reliese\Coders\Model\Config;
 use Reliese\Coders\Model\Factory as ModelFactory;
 use Reliese\Command\Blueprint\ShowBlueprintCommand;
 use Reliese\Command\DataAccess\GenerateDataAccessCommand;
-use Reliese\Command\DataAttribute\DataAttributeGenerateCommand;
 use Reliese\Command\DataMap\GenerateModelDataMappingCommand;
 use Reliese\Command\DataTransport\GenerateDataTransportObjectsCommand;
 use Reliese\Command\Model\ModelGenerateCommand;
@@ -77,7 +76,6 @@ class RelieseServiceProvider extends ServiceProvider
                 ShowBlueprintCommand::class,
                 GenerateModelDataMappingCommand::class,
                 GenerateDataTransportObjectsCommand::class,
-                DataAttributeGenerateCommand::class,
                 GenerateDataAccessCommand::class,
                 GenerateDtoValidationCommand::class,
             ]);
