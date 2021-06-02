@@ -52,7 +52,7 @@ class ModelDataMapAccessorGenerator implements ColumnBasedCodeGeneratorInterface
 
     protected function allowClassFileOverwrite(): bool
     {
-        return false;
+        return true;
     }
 
     /**
