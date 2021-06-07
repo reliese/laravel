@@ -53,7 +53,7 @@ trait WithGetPhpFileDefinitions
             $this->allowClassFileOverwrite()
         );
 
-        $phpFileDefinition->addStatementDefinition($this->generateClassDefinition($columnOwner));
+        $phpFileDefinition->addStatementDefinition($this->getClassDefinition($columnOwner));
 
         return $phpFileDefinition;
     }

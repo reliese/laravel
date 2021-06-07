@@ -174,21 +174,37 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
                 continue;
             }
 
-            $dtoValidatorAbstractClassDefinition->addMethodDefinition($this->generateRequireDtoPropertyMethod($dtoValidatorAbstractClassDefinition,
-                $dtoClassDefinition,
-                $dtoPropertyDefinition));
+            $dtoValidatorAbstractClassDefinition->addMethodDefinition(
+                $this->generateRequireDtoPropertyMethod(
+                    $dtoValidatorAbstractClassDefinition,
+                    $dtoClassDefinition,
+                    $dtoPropertyDefinition
+                )
+            );
 
-            $dtoValidatorAbstractClassDefinition->addMethodDefinition($this->generateValidateDtoPropertyMethod($dtoValidatorAbstractClassDefinition,
-                $dtoClassDefinition,
-                $dtoPropertyDefinition));
+            $dtoValidatorAbstractClassDefinition->addMethodDefinition(
+                $this->generateValidateDtoPropertyMethod(
+                    $dtoValidatorAbstractClassDefinition,
+                    $dtoClassDefinition,
+                    $dtoPropertyDefinition
+                )
+            );
 
-            $dtoValidatorAbstractClassDefinition->addMethodDefinition($this->generateRequireValueMethod($dtoValidatorAbstractClassDefinition,
-                $dtoClassDefinition,
-                $dtoPropertyDefinition));
+            $dtoValidatorAbstractClassDefinition->addMethodDefinition(
+                $this->generateRequireValueMethod(
+                    $dtoValidatorAbstractClassDefinition,
+                    $dtoClassDefinition,
+                    $dtoPropertyDefinition
+                )
+            );
 
-            $dtoValidatorAbstractClassDefinition->addMethodDefinition($this->generateValidateValueMethod($dtoValidatorAbstractClassDefinition,
-                $dtoClassDefinition,
-                $dtoPropertyDefinition));
+            $dtoValidatorAbstractClassDefinition->addMethodDefinition(
+                $this->generateValidateValueMethod(
+                    $dtoValidatorAbstractClassDefinition,
+                    $dtoClassDefinition,
+                    $dtoPropertyDefinition
+                )
+            );
         }
     }
 
@@ -256,6 +272,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         $returnPhpEnumType = $this->getRequireMethodResponsePhpTypeEnum();
 
         $dtoValidatorAbstractClassDefinition
+            ->addImport($this->getValidateMethodResponseObjectTypeDefinition())
             ->addImport($this->getTranslatableMessageObjectTypeDefinition());
 
         $ifDtoIsNullStatement = $this->generateIfDtoPropertyNullStatement(
@@ -303,6 +320,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         $returnPhpEnumType = $this->getValidateMethodResponsePhpTypeEnum();
 
         $dtoValidatorAbstractClassDefinition
+            ->addImport($this->getValidateMethodResponseObjectTypeDefinition())
             ->addImport($this->getTranslatableMessageObjectTypeDefinition());
 
         $ifDtoIsNullStatement = $this->generateIfDtoPropertyNullStatement(
@@ -357,6 +375,8 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             "\$".$valueParameter->getParameterName(),
         );
 
+        $dtoValidatorAbstractClassDefinition->addImport($this->getValidateMethodResponseObjectTypeDefinition());
+
         $classMethodDefinition = new ClassMethodDefinition(
             $this->getRequireValueMethodName($dtoPropertyDefinition),
             $this->getValidateMethodResponsePhpTypeEnum(),
@@ -385,6 +405,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         $valueParameter = new FunctionParameterDefinition($dtoPropertyDefinition->getVariableName(), PhpTypeEnum::mixedType());
 
         $dtoValidatorAbstractClassDefinition
+            ->addImport($this->getValidateMethodResponseObjectTypeDefinition())
             ->addImport($this->getTranslatableMessageObjectTypeDefinition());
 
         /*
@@ -442,15 +463,17 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         ClassPropertyDefinition $dtoPropertyDefinition,
     ) {
         $tableName = Str::upper(Str::snake(Str::singular($dtoClassDefinition->getOriginatingBlueprint()->getName())));
-        $propertyNameUpperSnakeCase = Str::upper(Str::snake($dtoPropertyDefinition->getVariableName()));
+        $propertyNameUpperSnakeCase = Str::upper(Str::snake(Str::singular(
+            $dtoPropertyDefinition->getForeignKeyBlueprint()->getReferencedTableBlueprint()->getName()
+        )));
 
-        $constantName = sprintf("%s_%s_REQUIRED",
+        $constantName = sprintf("%s_%s_DATA_REQUIRED",
             $tableName,
             $propertyNameUpperSnakeCase
         );
 
         $constantValue = sprintf(
-            "VALIDATION.%s.%s.REQUIRED",
+            "VALIDATION.%s.%s.DATA_REQUIRED",
             $tableName,
             $propertyNameUpperSnakeCase
         );
@@ -815,13 +838,13 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             );
         }
 
-        if ($dtoClassDefinition->getClassName() === 'AccountDto') {
-            echo sprintf("%s: is a %s\n",
-                $dtoPropertyDefinition->getColumnBlueprint()
-                    ->getUniqueName(),
-                $dtoPropertyDefinition->getColumnBlueprint()
-                    ->getDataType());
-        }
+//        if ($dtoClassDefinition->getClassName() === 'AccountDto') {
+//            echo sprintf("%s: is a %s\n",
+//                $dtoPropertyDefinition->getColumnBlueprint()
+//                    ->getUniqueName(),
+//                $dtoPropertyDefinition->getColumnBlueprint()
+//                    ->getDataType());
+//        }
 
         if ($dtoPropertyDefinition->getColumnBlueprint()->getIsUnsigned()) {
             $statements->addStatementDefinition(
@@ -1108,12 +1131,12 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         /*
          * Create required message constant
          */
-        $constantName = sprintf("%s_%s_POSITIVE_VALUE",
+        $constantName = sprintf("%s_%s_MUST_BE_POSITIVE_VALUE",
             $tableName,
             Str::upper(Str::snake($dtoPropertyDefinition->getVariableName()))
         );
 
-        $constantValue = sprintf("VALIDATION.%s.%s.POSITIVE_VALUE",
+        $constantValue = sprintf("VALIDATION.%s.%s.MUST_BE_POSITIVE_VALUE",
             $dtoClassNameAsUpperSnakeCase,
             Str::upper(Str::snake($dtoPropertyDefinition->getVariableName()))
         );
