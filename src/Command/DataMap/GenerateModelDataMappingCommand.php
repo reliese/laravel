@@ -17,9 +17,9 @@ class GenerateModelDataMappingCommand extends AbstractCodeGenerationCommand
     protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            (app(ModelDataMapAbstractClassGenerator::class)),
-            (app(ModelDataMapClassGenerator::class)),
-            (app(ModelDataMapAccessorGenerator::class)),
+            app(ModelDataMapAbstractClassGenerator::class),
+            app(ModelDataMapClassGenerator::class),
+            app(ModelDataMapAccessorGenerator::class),
         ];
     }
 

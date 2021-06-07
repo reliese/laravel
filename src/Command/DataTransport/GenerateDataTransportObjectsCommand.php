@@ -16,8 +16,8 @@ class GenerateDataTransportObjectsCommand extends AbstractCodeGenerationCommand
     protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            (app(DataTransportObjectAbstractClassGenerator::class)),
-            (app(DataTransportObjectClassGenerator::class)),
+            app(DataTransportObjectAbstractClassGenerator::class),
+            app(DataTransportObjectClassGenerator::class),
         ];
     }
 
