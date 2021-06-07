@@ -159,10 +159,11 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
      * @param ClassDefinition $dtoValidatorAbstractClassDefinition
      * @param ClassDefinition $dtoClassDefinition
      */
-    private function addRequireAndValidateMethods(ClassDefinition $dtoAbstractClassDefinition,
+    private function addRequireAndValidateMethods(
+        ClassDefinition $dtoAbstractClassDefinition,
         ClassDefinition $dtoValidatorAbstractClassDefinition,
-        ClassDefinition $dtoClassDefinition): void
-    {
+        ClassDefinition $dtoClassDefinition
+    ): void {
         foreach ($dtoAbstractClassDefinition->getProperties() as $dtoPropertyDefinition) {
             if (!$dtoPropertyDefinition->hasColumnBlueprint()) {
                 // unable to determine validation method w/o column blueprint
@@ -262,13 +263,14 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         ClassDefinition $dtoClassDefinition,
         ClassPropertyDefinition $dtoPropertyDefinition
     ) : ClassMethodDefinition {
-
-        if (array_key_exists($dtoPropertyDefinition->getVariableName(), $this->generatedRequireDtoPropertyMethods)) {
-            return $this->generatedRequireDtoPropertyMethods[$dtoPropertyDefinition->getVariableName()];
+        $memoKey = $dtoValidatorAbstractClassDefinition->getClassName().'::'.$dtoPropertyDefinition->getVariableName();
+        if (array_key_exists($memoKey, $this->generatedRequireDtoPropertyMethods)) {
+            return $this->generatedRequireDtoPropertyMethods[$memoKey];
         }
-
         $functionName = $this->getRequireDtoPropertyMethodName($dtoPropertyDefinition);
         $dtoParameter = $this->getNullableDtoFunctionParameterDefinition($dtoClassDefinition);
+echo sprintf("\n\nCreating %s(%s %s \n\n", $functionName, $dtoClassDefinition->getClassName(),
+$dtoParameter->getParameterName());
         $returnPhpEnumType = $this->getRequireMethodResponsePhpTypeEnum();
 
         $dtoValidatorAbstractClassDefinition
@@ -301,7 +303,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             ->appendBodyStatement($ifDtoIsNullStatement)
             ->appendBodyStatement($returnValidationResultStatement);
 
-        return $this->generatedRequireDtoPropertyMethods[$dtoPropertyDefinition->getVariableName()] = $requireDtoFunction;
+        return $this->generatedRequireDtoPropertyMethods[$memoKey] = $requireDtoFunction;
     }
 
 
@@ -310,9 +312,9 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         ClassDefinition $dtoClassDefinition,
         ClassPropertyDefinition $dtoPropertyDefinition
     ) : ClassMethodDefinition {
-
-        if (array_key_exists($dtoPropertyDefinition->getVariableName(), $this->generatedValidateDtoPropertyMethods)) {
-            return $this->generatedValidateDtoPropertyMethods[$dtoPropertyDefinition->getVariableName()];
+        $memoKey = $dtoValidatorAbstractClassDefinition->getClassName()."::".$dtoPropertyDefinition->getVariableName();
+        if (array_key_exists($memoKey, $this->generatedValidateDtoPropertyMethods)) {
+            return $this->generatedValidateDtoPropertyMethods[$memoKey];
         }
 
         $functionName = $this->getValidateDtoPropertyMethodName($dtoPropertyDefinition);
@@ -349,7 +351,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             ->appendBodyStatement($ifDtoIsNullStatement)
             ->appendBodyStatement($returnValidationResultStatement);
 
-        return $this->generatedValidateDtoPropertyMethods[$dtoPropertyDefinition->getVariableName()] = $validateDtoFunction;
+        return $this->generatedValidateDtoPropertyMethods[$memoKey] = $validateDtoFunction;
     }
 
 
@@ -358,8 +360,9 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         ClassDefinition $dtoClassDefinition,
         ClassPropertyDefinition $dtoPropertyDefinition
     ): ClassMethodDefinition {
-        if (array_key_exists($dtoPropertyDefinition->getVariableName(), $this->generatedRequireValueMethods)) {
-            return $this->generatedRequireValueMethods[$dtoPropertyDefinition->getVariableName()];
+        $memoKey = $dtoValidatorAbstractClassDefinition->getClassName().'::'.$dtoPropertyDefinition->getVariableName();
+        if (array_key_exists($memoKey, $this->generatedRequireValueMethods)) {
+            return $this->generatedRequireValueMethods[$memoKey];
         }
         $valueParameter = new FunctionParameterDefinition($dtoPropertyDefinition->getVariableName(), PhpTypeEnum::mixedType());
 
@@ -388,8 +391,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             ->appendBodyStatement($returnValidationResultStatement)
         ;
 
-        return $this->generatedRequireValueMethods[$dtoPropertyDefinition->getVariableName()]
-            = $classMethodDefinition;
+        return $this->generatedRequireValueMethods[$memoKey] = $classMethodDefinition;
     }
 
     private function generateValidateValueMethod(
@@ -398,8 +400,9 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         ClassPropertyDefinition $dtoPropertyDefinition
     ): ClassMethodDefinition
     {
-        if (array_key_exists($dtoPropertyDefinition->getVariableName(), $this->generatedValidateValueMethods)) {
-            return $this->generatedValidateValueMethods[$dtoPropertyDefinition->getVariableName()];
+        $memoKey = $dtoValidatorAbstractClassDefinition->getClassName().'::'.$dtoPropertyDefinition->getVariableName();
+        if (array_key_exists($memoKey, $this->generatedValidateValueMethods)) {
+            return $this->generatedValidateValueMethods[$memoKey];
         }
 
         $valueParameter = new FunctionParameterDefinition($dtoPropertyDefinition->getVariableName(), PhpTypeEnum::mixedType());
@@ -454,8 +457,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         }
         $classMethodDefinition->appendBodyStatement($this->getReturnIsValidStatement());
 
-        return $this->generatedValidateValueMethods[$dtoPropertyDefinition->getVariableName()]
-            = $classMethodDefinition;
+        return $this->generatedValidateValueMethods[$memoKey] = $classMethodDefinition;
     }
 
     private function generateRequireDtoValidationMessageConstant(
@@ -675,7 +677,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         string $valueStatement
     ): StatementDefinitionInterface {
 
-        $ifEmptyStatement = new RawStatementDefinition("if (\\empty($valueStatement))");
+        $ifEmptyStatement = new RawStatementDefinition("if (empty($valueStatement))");
 
         return (new StatementBlockDefinition($ifEmptyStatement))
             ->addStatementDefinition(
@@ -724,7 +726,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
                 ->addStatementDefinition($commentBlock)
                 ->addStatementDefinition(
                     (new StatementBlockDefinition(new RawStatementDefinition(
-                        sprintf("if (\is_null(\$%s))", $propertyValueParameter->getParameterName())
+                        sprintf("if (is_null(\$%s))", $propertyValueParameter->getParameterName())
                     )))
                         ->addStatementDefinition($this->getReturnIsValidStatement())
                 );
@@ -969,7 +971,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         /*
          * Create type message constant
          */
-        return new ClassConstantDefinition($constantName, $constantValue);
+        return new ClassConstantDefinition($constantName, $constantValue, VisibilityEnum::publicEnum());
     }
 
     /**
@@ -1113,7 +1115,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         /*
          * Create required message constant
          */
-        return new ClassConstantDefinition($constantName, $constantValue);
+        return new ClassConstantDefinition($constantName, $constantValue, VisibilityEnum::publicEnum());
     }
 
     /**
@@ -1141,6 +1143,6 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             Str::upper(Str::snake($dtoPropertyDefinition->getVariableName()))
         );
 
-        return new ClassConstantDefinition($constantName, $constantValue);
+        return new ClassConstantDefinition($constantName, $constantValue, VisibilityEnum::publicEnum());
     }
 }
