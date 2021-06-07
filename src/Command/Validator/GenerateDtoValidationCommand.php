@@ -4,8 +4,9 @@
 namespace Reliese\Command\Validator;
 
 use Reliese\Command\AbstractCodeGenerationCommand;
-use Reliese\Generator\DataTransport\DataTransportObjectAbstractClassGenerator;
-use Reliese\Generator\DataTransport\DataTransportObjectClassGenerator;
+use Reliese\Generator\Validator\DtoValidatorAbstractClassGenerator;
+use Reliese\Generator\Validator\DtoValidatorAccessorGenerator;
+use Reliese\Generator\Validator\DtoValidatorClassGenerator;
 
 /**
  * Class ValidatorCodeGenerationCommand
@@ -16,8 +17,9 @@ class GenerateDtoValidationCommand extends AbstractCodeGenerationCommand
     protected function initializeTableBasedCodeGenerators(): array
     {
         return [
-            app(DataTransportObjectClassGenerator::class),
-            app(DataTransportObjectAbstractClassGenerator::class),
+            app(DtoValidatorAbstractClassGenerator::class),
+            app(DtoValidatorClassGenerator::class),
+            app(DtoValidatorAccessorGenerator::class),
         ];
     }
 

@@ -65,6 +65,14 @@ class FunctionDefinition
     }
 
     /**
+     * @return bool
+     */
+    public function hasFunctionParameterDefinitions(): bool
+    {
+        return !empty($this->functionParameterDefinitions);
+    }
+
+    /**
      * @return FunctionParameterDefinition[]
      */
     public function getFunctionParameterDefinitions(): array

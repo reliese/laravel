@@ -840,13 +840,6 @@ $dtoParameter->getParameterName());
             );
         }
 
-//        if ($dtoClassDefinition->getClassName() === 'AccountDto') {
-//            echo sprintf("%s: is a %s\n",
-//                $dtoPropertyDefinition->getColumnBlueprint()
-//                    ->getUniqueName(),
-//                $dtoPropertyDefinition->getColumnBlueprint()
-//                    ->getDataType());
-//        }
 
         if ($dtoPropertyDefinition->getColumnBlueprint()->getIsUnsigned()) {
             $statements->addStatementDefinition(
@@ -1044,7 +1037,7 @@ $dtoParameter->getParameterName());
 
         $dtoValidatorAbstractClassDefinition->addConstant($propertyPositiveValueValidationMessageConstant);
 
-        $ifStatement = new RawStatementDefinition(sprintf("if (0 < %s)", $valueToTest));
+        $ifStatement = new RawStatementDefinition(sprintf("if (0 > %s)", $valueToTest));
 
         $returnStatement = new RawStatementDefinition(
             sprintf(
