@@ -269,8 +269,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         }
         $functionName = $this->getRequireDtoPropertyMethodName($dtoPropertyDefinition);
         $dtoParameter = $this->getNullableDtoFunctionParameterDefinition($dtoClassDefinition);
-echo sprintf("\n\nCreating %s(%s %s \n\n", $functionName, $dtoClassDefinition->getClassName(),
-$dtoParameter->getParameterName());
+
         $returnPhpEnumType = $this->getRequireMethodResponsePhpTypeEnum();
 
         $dtoValidatorAbstractClassDefinition

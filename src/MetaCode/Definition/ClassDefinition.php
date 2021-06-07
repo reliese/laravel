@@ -170,6 +170,22 @@ class ClassDefinition implements ImportableInterface, CodeDefinitionInterface, S
      */
     public function addMethodDefinition(ClassMethodDefinition $classMethodDefinition) : static
     {
+// The following debug code can be helpful when identifying why a method was added
+//        if ($classMethodDefinition->hasFunctionParameterDefinitions()) {
+//            $params = $classMethodDefinition->getFunctionParameterDefinitions();
+//            $param1 = \array_shift($params);
+//
+//            $trace = debug_backtrace();
+//            $caller = $trace[1];
+//
+//            echo sprintf("Added method: %s(%s %s) from %s::%s\n",
+//                $classMethodDefinition->getFunctionName(),
+//                $param1->getParameterType()->toTypeHint(),
+//                $param1->getParameterName(),
+//                $caller['class'],
+//                $caller['function'],
+//            );
+//        }
         $this->methods[$classMethodDefinition->getFunctionName()] = $classMethodDefinition;
         return $this;
     }
