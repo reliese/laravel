@@ -511,7 +511,7 @@ class Model
         $modelNameSpace = $this->getNamespace();
         
         if($this->placeModelInOwnDirectory()){
-            $baseNameSpace = Str::replaceFirst($className,'Base',$modelNameSpace);
+            $modelNameSpace = Str::replaceFirst($className,'Base',$modelNameSpace);
         }
     
         return $this->usesBaseFiles()

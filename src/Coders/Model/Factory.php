@@ -492,6 +492,13 @@ class Factory
 
         $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
 
+        if(!Str::endsWith($modelsDirectory,'Base')){
+            if($model->placeModelInOwnDirectory()){
+                $modelsDirectory = $this->path([$modelsDirectory,$model->getClassName()]);
+            }
+
+        }
+
         if (! $this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
         }
