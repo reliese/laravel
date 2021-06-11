@@ -512,6 +512,7 @@ class Model
         
         if($this->placeModelInOwnDirectory()){
             $modelNameSpace = Str::replaceFirst($className,'Base',$modelNameSpace);
+            $baseNameSpace = Str::replaceFirst('\\'.$className.'\\Base','\\Base',$baseNameSpace);
         }
     
         return $this->usesBaseFiles()
