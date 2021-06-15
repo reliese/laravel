@@ -51,6 +51,7 @@ class BelongsTo implements Relation
     {
         switch ($this->parent->getRelationNameStrategy()) {
             case 'foreign_key':
+            case 'foreign_key_field_name':
                 $relationName = RelationHelper::stripSuffixFromForeignKey(
                     $this->parent->usesSnakeAttributes(),
                     $this->otherKey(),
