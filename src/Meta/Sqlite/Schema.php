@@ -36,7 +36,7 @@ class Schema implements \Reliese\Meta\Schema
      * Mapper constructor.
      *
      * @param string $schema
-     * @param \Illuminate\Database\MySqlConnection $connection
+     * @param \Illuminate\Database\SQLiteConnection $connection
      */
     public function __construct($schema, $connection)
     {
@@ -194,12 +194,12 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @param \Illuminate\Database\Connection $connection
-     *
+     * @deprecated use \Reliese\Meta\Sqlite\Database::getSchemaNames
      * @return array
      */
     public static function schemas(Connection $connection)
     {
-        return ['database'];
+        return (new Database($connection))->getSchemaNames();
     }
 
     /**
