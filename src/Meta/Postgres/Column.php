@@ -194,7 +194,9 @@ class Column implements \Reliese\Meta\Column
     private function defaultIsNextVal(Fluent $attributes)
     {
         $value = $this->get('column_default', $this->get('generation_expression', null));
+        $isIdentity = $this->get('is_identity');
+        $identityGeneration =  $this->get('identity_generation');
 
-        return preg_match('/nextval\(/i', $value);
+        return preg_match('/nextval\(/i', $value) || ($isIdentity === 'YES' && $identityGeneration === 'BY DEFAULT');
     }
 }
