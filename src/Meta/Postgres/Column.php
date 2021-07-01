@@ -28,12 +28,12 @@ class Column implements \Reliese\Meta\Column
      * @todo check these
      */
     public static $mappings = [
-        'string' => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext', 'json'],
-        'date' => ['datetime', 'year', 'date', 'time', 'timestamp'],
-        'int' => ['int', 'integer', 'tinyint', 'smallint', 'mediumint', 'bigint', 'bigserial', 'serial', 'smallserial', 'tinyserial', 'serial4', 'serial8'],
-        'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
-        'boolean' => ['boolean', 'bool', 'bit'],
-        'binary' => ['blob', 'longblob', 'jsonb'],
+      'string' => ['character varying', 'varchar', 'text', 'string', 'char', 'character','enum', 'tinytext', 'mediumtext', 'longtext', 'json'],
+      'date' => ['timestamp with time zone', 'timestamp without time zone', 'timestamptz', 'datetime', 'year', 'date', 'time', 'timestamp'],
+      'int' => ['int', 'integer', 'tinyint', 'smallint', 'mediumint', 'bigint', 'bigserial', 'serial', 'smallserial', 'tinyserial', 'serial4', 'serial8'],
+      'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
+      'boolean' => ['boolean', 'bool', 'bit'],
+      'binary' => ['blob', 'longblob', 'jsonb'],
     ];
 
     /**
