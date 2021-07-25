@@ -2,7 +2,7 @@
 
 namespace Tests\Behat\Contexts\Configuration;
 
-use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
+use Reliese\Configuration\Sections\DataTransportObjectGeneratorConfiguration;
 /**
  * Class DataTransportObjectGeneratorConfigurationContext
  */
@@ -20,9 +20,9 @@ class DataTransportObjectGeneratorConfigurationContext extends ConfigurationCont
          */
         return $this->dataTransportObjectGeneratorConfiguration
             ??= $this->getConfigurationContexts()
-                     ->getRelieseConfigurationContext()
-                     ->getRelieseConfiguration()
-                     ->getDataTransportGeneratorConfiguration();
+                     ->getConfigurationProfileContext()
+                     ->getConfigurationProfile()
+                     ->getDataTransportObjectGeneratorConfiguration();
     }
 
     public function getDataTransportObjectGeneratorConfiguration(): DataTransportObjectGeneratorConfiguration

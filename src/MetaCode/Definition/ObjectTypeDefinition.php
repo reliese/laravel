@@ -2,6 +2,7 @@
 
 namespace Reliese\MetaCode\Definition;
 
+use Reliese\MetaCode\Enum\PhpTypeEnum;
 class ObjectTypeDefinition implements ImportableInterface
 {
     /**
@@ -62,5 +63,13 @@ class ObjectTypeDefinition implements ImportableInterface
     public function getClassNamespace(): string
     {
         return $this->typeNamespace;
+    }
+
+    /**
+     * @return PhpTypeEnum
+     */
+    public function toPhpTypeEnum(): PhpTypeEnum
+    {
+        return PhpTypeEnum::objectOfType($this->getFullyQualifiedName());
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Tests\Behat\Contexts\Configuration;
 
-use Reliese\Configuration\DatabaseBlueprintConfiguration;
+use Reliese\Configuration\Sections\DatabaseBlueprintConfiguration;
 use Tests\Behat\Contexts\FeatureContext;
 use Tests\Test;
 
@@ -17,8 +17,8 @@ class DatabaseBlueprintConfigurationContext extends FeatureContext
     {
         return $this->databaseBlueprintConfiguration
             ??= $this->getConfigurationContexts()
-                            ->getRelieseConfigurationContext()
-                            ->getRelieseConfiguration()
+                            ->getConfigurationProfileContext()
+                            ->getConfigurationProfile()
                             ->getDatabaseBlueprintConfiguration();
     }
 

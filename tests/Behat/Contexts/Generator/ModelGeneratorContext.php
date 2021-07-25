@@ -25,7 +25,7 @@ class ModelGeneratorContext extends GeneratorContexts
     public function givenAModelGeneratorIsCreated()
     {
         $this->modelGenerator = new ModelGenerator(
-            $this->getConfigurationContexts()->getRelieseConfigurationContext()->getRelieseConfiguration()
+            $this->getConfigurationContexts()->getConfigurationProfileContext()->getConfigurationProfile()
         );
     }
 

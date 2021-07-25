@@ -9,7 +9,10 @@ use Reliese\Generator\Model\ModelAbstractClassGenerator;
 use Reliese\Generator\WithGetClassDefinition;
 use Reliese\Generator\WithGetObjectTypeDefinition;
 use Reliese\Generator\WithGetPhpFileDefinitions;
+use Reliese\MetaCode\Definition\ClassConstantDefinition;
 use Reliese\MetaCode\Definition\ClassDefinition;
+use Reliese\MetaCode\Definition\Expression\ClassConstantReference;
+use Reliese\MetaCode\Definition\ObjectTypeDefinition;
 /**
  * Class ModelClassGenerator
  */
@@ -65,5 +68,13 @@ class ModelClassGenerator implements ColumnBasedCodeGeneratorInterface
         ;
 
         return $classDefinition;
+    }
+
+    public function getModelTableConstantClassReference(ColumnOwnerInterface $columnOwner): ClassConstantReference
+    {
+        return new ClassConstantReference(
+            $this->getObjectTypeDefinition($columnOwner),
+            'TABLE_NAME'
+        );
     }
 }

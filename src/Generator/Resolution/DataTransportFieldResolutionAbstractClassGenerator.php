@@ -2,6 +2,7 @@
 
 namespace Reliese\Generator\Resolution;
 
+use app\DataTransport\Objects\PrimaryDatabase\NotificationGroupDto;
 use Reliese\Blueprint\ColumnOwnerInterface;
 use Reliese\Configuration\WithConfigurationProfile;
 use Reliese\Database\WithPhpTypeMap;
@@ -105,20 +106,27 @@ class DataTransportFieldResolutionAbstractClassGenerator implements ColumnBasedC
             AbstractEnum::abstractEnum()
         );
 
-//        $serviceObjectTypeDefinition = new ObjectTypeDefinition('\app\Services\Identity\PersonService');
-//        $serviceAccessorTraitTypeDefinition = new ObjectTypeDefinition('\app\ServiceAccessors\Identity\WithPersonService');
-//
-//        $serviceAccessorTrait = new ClassTraitDefinition(
-//            $this->getObjectTypeDefinition($columnOwner)
-//        );
-//
-//        $abstractClassDefinition->addMethodDefinition(
-//            $this->generateResolvePrimaryKeyMethod()
-//        );
-//
-//        $abstractClassDefinition->addMethodDefinition(
-//            $this->generateResolveForeignKeyMethod()
-//        );
+        foreach ($columnOwner->)
+
+
+/*
+ public function resolveNotificationGroupId(NotificationSubscriberDto $notificationSubscriberDto)
+ {
+    $notificationSubscriberDto->setNotificationGroupDto(
+        $notificationSubscriberDto->getNotificationGroupDto() ?? new NotificationGroupDto()
+      );
+      $notificationSubscriberDto->getNotificationGroupDto()->setId(
+        $notificationSubscriberDto->getNotificationGroupDto()->getId()
+        ?? $notificationSubscriberDto->getNotificationGroupId()
+      );
+      $this->getNotificationGroupService()->getKeyResolver()->resolveExternalKey(
+        $notificationSubscriberDto->getNotificationGroupDto()
+      );
+      $notificationSubscriberDto->setNotificationGroupId(
+        $notificationSubscriberDto->getNotificationGroupDto()->getId()
+      );
+}
+*/
 
         return $abstractClassDefinition;
     }

@@ -2,7 +2,7 @@
 
 namespace Tests\Behat\Contexts\Configuration;
 
-use Reliese\Configuration\ModelGeneratorConfiguration;
+use Reliese\Configuration\Sections\ModelGeneratorConfiguration;
 use Tests\Behat\Contexts\FeatureContext;
 use Tests\Test;
 
@@ -19,7 +19,7 @@ class ModelGeneratorConfigurationContext extends FeatureContext
             ->setPath(__DIR__.DIRECTORY_SEPARATOR.'void')
             ->setNamespace('App\Models')
             ->setClassSuffix('')
-            ->setParentClassPrefix('Abstract')
+            ->setGeneratedClassPrefix('Abstract')
             ->setParent(\Illuminate\Database\Eloquent\Model::class)
         ;
     }
@@ -31,8 +31,8 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     {
         return $this->modelGeneratorConfiguration
             ??= $this->getConfigurationContexts()
-                     ->getRelieseConfigurationContext()
-                     ->getRelieseConfiguration()
+                     ->getConfigurationProfileContext()
+                     ->getConfigurationProfile()
                      ->getModelGeneratorConfiguration();
     }
 
@@ -63,9 +63,9 @@ class ModelGeneratorConfigurationContext extends FeatureContext
     /**
      * @Given /^ModelGeneratorConfiguration abstract class prefix is "([^"]*)"$/
      */
-    public function givenModelGeneratorConfigurationParentClassPrefixIs($prefix)
+    public function givenModelGeneratorConfigurationGeneratedClassPrefixIs($prefix)
     {
-        $this->getModelGeneratorConfiguration()->setParentClassPrefix($prefix);
+        $this->getModelGeneratorConfiguration()->setGeneratedClassPrefix($prefix);
     }
 
     /**

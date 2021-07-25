@@ -29,11 +29,13 @@ use Reliese\MetaCode\Definition\ObjectTypeDefinition;
 use Reliese\MetaCode\Definition\RawStatementDefinition;
 use Reliese\MetaCode\Definition\StatementBlockDefinition;
 use Reliese\MetaCode\Definition\StatementDefinitionCollection;
+use Reliese\MetaCode\Definition\StatementDefinitionInterface;
 use Reliese\MetaCode\Definition\TryBlockDefinition;
 use Reliese\MetaCode\Enum\AbstractEnum;
 use Reliese\MetaCode\Enum\InstanceEnum;
 use Reliese\MetaCode\Enum\PhpTypeEnum;
 use Reliese\MetaCode\Enum\VisibilityEnum;
+use Reliese\MetaCode\Format\IndentationProvider;
 use Reliese\MetaCode\Tool\ClassNameTool;
 use Symfony\Component\Translation\TranslatableMessage;
 
@@ -121,6 +123,16 @@ class DataAccessAbstractClassGenerator implements ColumnBasedCodeGeneratorInterf
 
         $abstractClassDefinition->addMethodDefinition(
             $this->generateUpdateMethod($columnOwner, $abstractClassDefinition));
+
+        if ($columnOwner->hasAllColumnNames(['id', 'external_key'])) {
+            $abstractClassDefinition->addMethodDefinition(
+                $this->generateFetchExternalKeyByIdMethodDefinition($columnOwner, $abstractClassDefinition)
+            );
+
+            $abstractClassDefinition->addMethodDefinition(
+                $this->generateFetchIdByExternalKeyMethodDefinition($columnOwner, $abstractClassDefinition)
+            );
+        }
 
         return $abstractClassDefinition;
     }
@@ -508,7 +520,7 @@ class DataAccessAbstractClassGenerator implements ColumnBasedCodeGeneratorInterf
 
         $logExceptionObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\Log\LogException');
 
-        $returnTypeObjectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\MethodResponses\FetchMethodResponse');
+        $returnTypeObjectTypeDefinition = $this->getFetchMethodResponseObjectTypeDefinition($classDefinition);
 
         $dtoTypeObjectTypeDefinition
             = $this->getDataTransportObjectClassGenerator()->getObjectTypeDefinition($columnOwner);
@@ -521,7 +533,6 @@ class DataAccessAbstractClassGenerator implements ColumnBasedCodeGeneratorInterf
         $classDefinition
             ->addImport($logMessageObjectTypeDefinition)
             ->addImport($logExceptionObjectTypeDefinition)
-            ->addImport($returnTypeObjectTypeDefinition)
             ->addImport($dtoTypeObjectTypeDefinition)
             ->addImport($modelObjectTypeDefinition)
             ->addImport($modelDataMapTraitObjectTypeDefinition)
@@ -723,4 +734,160 @@ class DataAccessAbstractClassGenerator implements ColumnBasedCodeGeneratorInterf
             $methodFailedConstantName)));
     }
 
+    private function generateFetchIdByExternalKeyMethodDefinition(
+        ColumnOwnerInterface $columnOwner,
+        ClassDefinition $classDefinition
+    ): ClassMethodDefinition
+    {
+        /*
+          public function fetchIdByExternalKey(string $externalKey, &$id): FetchMethodResponse
+          {
+            $queryResult = DB::table(NotificationGroup::TABLE_NAME)
+              ->where('external_key', '=', $externalKey)
+              ->pluck('id');
+
+            if (empty($queryResult)) {
+              return FetchMethodResponse::notFound();
+            }
+            $id = intval($queryResult->first());
+            return FetchMethodResponse::found();
+          }
+        */
+
+        $dbObjectTypeDefinition = $this->getDbObjectTypeDefinition();
+        $classDefinition->addImport($dbObjectTypeDefinition);
+
+        $returnTypeObjectTypeDefinition = $this->getFetchMethodResponseObjectTypeDefinition($classDefinition);
+
+        $parameters = [
+            $filterParameter = new FunctionParameterDefinition('externalKey', PhpTypeEnum::stringType(), false),
+            $outputParameter = new FunctionParameterDefinition('id', PhpTypeEnum::nullableIntType(), true),
+        ];
+
+        $queryStatement = new RawStatementDefinition(
+            sprintf(
+                "\$queryResult = %s::table(%s)->where('external_key', '=', \$%s)->pluck('id');",
+                $dbObjectTypeDefinition->getImportableName(),
+                $this->getModelClassGenerator()->getModelTableConstantClassReference($columnOwner)->toPhpCode(IndentationProvider::NoIndentation()),
+                $filterParameter->getParameterName()
+            )
+        );
+
+        $ifNotFoundBlock = (new StatementBlockDefinition(
+            new RawStatementDefinition("if (empty(\$queryResult))")
+        ))->addStatementDefinition($this->generateFetchNotFoundStatement());
+
+        $outputParameterAssignmentStatement = new RawStatementDefinition(
+            \sprintf("\$%s = \intval(\$queryResult->first());", $outputParameter->getParameterName())
+        );
+
+        $classMethodDefinition = new ClassMethodDefinition(
+            'fetchIdByExternalKey',
+            $returnTypeObjectTypeDefinition->toPhpTypeEnum(),
+            $parameters
+        );
+
+        $classMethodDefinition
+            ->appendBodyStatement($queryStatement)
+            ->appendBodyStatement($ifNotFoundBlock)
+            ->appendBodyStatement($outputParameterAssignmentStatement)
+            ->appendBodyStatement($this->generateFetchFoundStatement())
+        ;
+
+        return $classMethodDefinition;
+    }
+
+    /**
+     * @param ClassDefinition $classDefinition
+     *
+     * @return ClassMethodDefinition
+     */
+    private function generateFetchExternalKeyByIdMethodDefinition(
+        ColumnOwnerInterface $columnOwner,
+        ClassDefinition $classDefinition
+    ): ClassMethodDefinition
+    {
+
+        /*
+          public function fetchExternalKeyById(int $id, &$externalKey): FetchMethodResponse
+          {
+            $queryResult = DB::table(NotificationGroup::TABLE_NAME)
+              ->where('id', '=', $id)
+              ->pluck('external_key');
+
+            if (empty($queryResult)) {
+              return FetchMethodResponse::notFound();
+            }
+            $externalKey = $queryResult->first();
+            return FetchMethodResponse::found();
+          }
+         */
+
+        $dbObjectTypeDefinition = $this->getDbObjectTypeDefinition();
+        $classDefinition->addImport($dbObjectTypeDefinition);
+
+        $returnTypeObjectTypeDefinition = $this->getFetchMethodResponseObjectTypeDefinition($classDefinition);
+
+        $parameters = [
+            $filterParameter = new FunctionParameterDefinition('id', PhpTypeEnum::intType(), false),
+            $outputParameter = new FunctionParameterDefinition('externalKey', PhpTypeEnum::nullableStringType(), true),
+        ];
+
+        $queryStatement = new RawStatementDefinition(
+            sprintf(
+            "\$queryResult = %s::table(%s)->where('id', '=', \$%s)->pluck('external_key');",
+                $dbObjectTypeDefinition->getImportableName(),
+                $this->getModelClassGenerator()->getModelTableConstantClassReference($columnOwner)->toPhpCode(IndentationProvider::NoIndentation()),
+                $filterParameter->getParameterName()
+            )
+        );
+
+        $ifNotFoundBlock = (new StatementBlockDefinition(
+            new RawStatementDefinition("if (empty(\$queryResult))")
+        ))->addStatementDefinition($this->generateFetchNotFoundStatement());
+
+        $outputParameterAssignmentStatement = new RawStatementDefinition(
+            \sprintf("\$%s = \$queryResult->first();", $outputParameter->getParameterName())
+        );
+
+        $classMethodDefinition = new ClassMethodDefinition(
+            'fetchExternalKeyById',
+            $returnTypeObjectTypeDefinition->toPhpTypeEnum(),
+            $parameters
+        );
+
+        $classMethodDefinition
+            ->appendBodyStatement($queryStatement)
+            ->appendBodyStatement($ifNotFoundBlock)
+            ->appendBodyStatement($outputParameterAssignmentStatement)
+            ->appendBodyStatement($this->generateFetchFoundStatement())
+        ;
+
+        return $classMethodDefinition;
+    }
+
+    /**
+     * @return ObjectTypeDefinition
+     */
+    private function getFetchMethodResponseObjectTypeDefinition(ClassDefinition $classDefinition): ObjectTypeDefinition
+    {
+        $objectTypeDefinition = new ObjectTypeDefinition('\app\Patterns\MethodResponses\FetchMethodResponse');
+        $classDefinition->addImport($objectTypeDefinition);
+        return $objectTypeDefinition;
+    }
+
+    private function generateFetchNotFoundStatement(): StatementDefinitionInterface
+    {
+        return new RawStatementDefinition("return FetchMethodResponse::notFound();");
+    }
+
+    private function generateFetchFoundStatement(): StatementDefinitionInterface
+    {
+        return new RawStatementDefinition("return FetchMethodResponse::Found();");
+    }
+
+    private function getDbObjectTypeDefinition(): ObjectTypeDefinition
+    {
+        return new ObjectTypeDefinition("\Illuminate\Support\Facades\DB");
+    }
 }

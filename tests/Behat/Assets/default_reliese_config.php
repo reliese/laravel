@@ -1,15 +1,15 @@
 <?php
-use Reliese\Analyser\Doctrine\MySqlDoctrineDatabaseAssistant;
-use Reliese\Configuration\CodeFormattingConfiguration;
-use Reliese\Configuration\DatabaseAnalyserConfiguration;
-use Reliese\Configuration\DatabaseBlueprintConfiguration;
-use Reliese\Configuration\DataTransportObjectGeneratorConfiguration;
-use Reliese\Configuration\ModelDataMapGeneratorConfiguration;
-use Reliese\Configuration\DataAccessGeneratorConfiguration;
-use Reliese\Configuration\DataAttributeGeneratorConfiguration;
-use Reliese\Configuration\DataTransportCollectionGeneratorConfiguration;
-use Reliese\Configuration\ModelGeneratorConfiguration;
-use Reliese\Configuration\ValidatorGeneratorConfiguration;
+use Reliese\Analyser\Doctrine\MySqlDatabaseVendorAdapter;
+use Reliese\Configuration\Sections\CodeFormattingConfiguration;
+use Reliese\Configuration\Sections\DatabaseAnalyserConfiguration;
+use Reliese\Configuration\Sections\DatabaseBlueprintConfiguration;
+use Reliese\Configuration\Sections\DataTransportObjectGeneratorConfiguration;
+use Reliese\Configuration\Sections\ModelDataMapGeneratorConfiguration;
+use Reliese\Configuration\Sections\DataAccessClassGeneratorConfiguration;
+use Reliese\Configuration\Sections\DataAttributeGeneratorConfiguration;
+use Reliese\Configuration\Sections\DataTransportCollectionGeneratorConfiguration;
+use Reliese\Configuration\Sections\ModelGeneratorConfiguration;
+use Reliese\Configuration\Sections\ValidatorGeneratorConfiguration;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +51,7 @@ return [
             |
             */
             'ConnectionName' => 'DB_CONNECTION',
-            'DoctrineDatabaseAssistantClass' => MySqlDoctrineDatabaseAssistant::class,
+            'DoctrineDatabaseAssistantClass' => MySqlDatabaseVendorAdapter::class,
         ],
         // endregion Database Analyser Configuration
 
@@ -160,7 +160,7 @@ return [
             | Parent Class Prefix
             |--------------------------------------------------------------------------
             */
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
 
             /*
             |--------------------------------------------------------------------------
@@ -536,12 +536,12 @@ return [
         // endregion Model Generator Config
 
         // region Data Access Generator Config
-        DataAccessGeneratorConfiguration::class => [
+        DataAccessClassGeneratorConfiguration::class => [
             'Path' => $appRoot.'/DataAccess/PrimaryDatabase',
             'Namespace' => 'app\DataAccess\PrimaryDatabase',
             //'ClassPrefix' => '',
             'ClassSuffix' => 'DataAccess',
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
         ],
         // endregion Data Access Generator Config
 
@@ -551,7 +551,7 @@ return [
             'Namespace' => 'App\DataAttribute\Objects',
             'ClassPrefix' => 'With',
             'ClassSuffix' => 'Trait',
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
         ],
         // endregion Data Attribute Generator Config
 
@@ -560,7 +560,7 @@ return [
             'Path' => $appRoot.'/DataTransportObjects',
             'Namespace' => 'App\DataTransportObjects',
             'ClassSuffix' => 'Dto',
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
             'UseValueStateTracking' => true,
             'ObservableProperties' => [
                 'BeforeChange' => false,
@@ -574,7 +574,7 @@ return [
             'Path' => $appRoot.'/DataTransport/Collections',
             'Namespace' => 'App\DataTransport\Collections',
             'ClassSuffix' => 'Dto',
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
         ],
         // endregion Data Transport Collection Generator Config
 
@@ -583,7 +583,7 @@ return [
             'Path' => $appRoot.'/DataMaps/PrimaryDatabase',
             'Namespace' => 'App\DataMaps\PrimaryDatabase',
             'ClassSuffix' => 'Map',
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
         ],
         // endregion Data Map Generator Config
 
@@ -592,7 +592,7 @@ return [
             'Path' => $appRoot.'/Validators',
             'Namespace' => 'App\Validators',
             'ClassSuffix' => 'Validator',
-            'ParentClassPrefix' => 'Abstract',
+            'GeneratedClassPrefix' => 'Abstract',
         ],
         // endregion Validator Generator Config
     ]

@@ -10,7 +10,7 @@ default:
         - \Tests\Behat\Contexts\Configuration\DatabaseBlueprintConfigurationContext
         - \Tests\Behat\Contexts\Configuration\DataTransportObjectGeneratorConfigurationContext
         - \Tests\Behat\Contexts\Configuration\ModelGeneratorConfigurationContext
-        - \Tests\Behat\Contexts\Configuration\RelieseConfigurationContext
+        - \Tests\Behat\Contexts\Configuration\ConfigurationProfileContext
         - \Tests\Behat\Contexts\ClassDefinitionContext
         - \Tests\Behat\Contexts\FeatureContext
         - \Tests\Behat\Contexts\Generator\GeneratorContexts

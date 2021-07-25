@@ -26,14 +26,14 @@ class ConfigurationContexts extends FeatureContext
             = $environment->getContext(DataTransportObjectGeneratorConfigurationContext::class);
         $this->modelGeneratorConfigurationContext
             = $environment->getContext(ModelGeneratorConfigurationContext::class);
-        $this->relieseConfigurationContext
-            = $environment->getContext(RelieseConfigurationContext::class);
+        $this->configurationProfileContext
+            = $environment->getContext(ConfigurationProfileContext::class);
     }
 
     private ?DatabaseBlueprintConfigurationContext $databaseBlueprintConfigurationContext = null;
     private ?DataTransportObjectGeneratorConfigurationContext $dataTransportGeneratorConfigurationContext = null;
     private ?ModelGeneratorConfigurationContext $modelGeneratorConfigurationContext = null;
-    private ?RelieseConfigurationContext $relieseConfigurationContext = null;
+    private ?ConfigurationProfileContext $configurationProfileContext = null;
 
     /**
      * @return DataTransportObjectGeneratorConfigurationContext
@@ -58,11 +58,11 @@ class ConfigurationContexts extends FeatureContext
     }
 
     /**
-     * @return RelieseConfigurationContext
+     * @return ConfigurationProfileContext
      */
-    public function getRelieseConfigurationContext(): RelieseConfigurationContext
+    public function getConfigurationProfileContext(): ConfigurationProfileContext
     {
-        return $this->relieseConfigurationContext;
+        return $this->configurationProfileContext;
     }
 
     private ?string $temporarySystemDirectory = null;

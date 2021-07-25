@@ -703,6 +703,11 @@ class PhpTypeEnum
         return $this->isObject() || $this->isNullableObject();
     }
 
+    public function isAnyBool()
+    {
+        return $this->isBool() || $this->isNullableBool();
+    }
+
     private function setContainedTypeName(string $containedTypeName) : PhpTypeEnum
     {
         $this->containedTypeName = $containedTypeName;

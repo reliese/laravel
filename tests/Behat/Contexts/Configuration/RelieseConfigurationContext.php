@@ -2,26 +2,26 @@
 
 namespace Tests\Behat\Contexts\Configuration;
 
-use Reliese\Configuration\RelieseConfiguration;
+use Reliese\Configuration\ConfigurationProfile;
 use Tests\Test;
 /**
- * Class RelieseConfigurationContext
+ * Class ConfigurationProfileContext
  */
-class RelieseConfigurationContext extends ConfigurationContexts
+class ConfigurationProfileContext extends ConfigurationContexts
 {
-    private ?\Reliese\Configuration\RelieseConfiguration $relieseConfiguration = null;
+    private ?\Reliese\Configuration\ConfigurationProfile $configurationProfile = null;
 
     /**
-     * @return \Reliese\Configuration\RelieseConfiguration
+     * @return \Reliese\Configuration\ConfigurationProfile
      */
-    public function getRelieseConfiguration(): \Reliese\Configuration\RelieseConfiguration
+    public function getConfigurationProfile(): \Reliese\Configuration\ConfigurationProfile
     {
 
-        return $this->relieseConfiguration ??= (new \Reliese\Configuration\RelieseConfigurationFactory(
+        return $this->configurationProfile ??= (new \Reliese\Configuration\ConfigurationProfileFactory(
             "",
             "",
             $this->loadDefaultRelieseConfigFile(),
-        ))->getRelieseConfiguration('default');
+        ))->getConfigurationProfile('default');
     }
 
     private function loadDefaultRelieseConfigFile()

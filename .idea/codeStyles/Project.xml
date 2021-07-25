@@ -43,13 +43,12 @@
       <option name="BLANK_LINES_BEFORE_IMPORTS" value="0" />
       <option name="BLANK_LINES_AFTER_IMPORTS" value="0" />
       <option name="BLANK_LINES_AROUND_FIELD" value="1" />
-      <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
       <option name="ALIGN_MULTILINE_FOR" value="false" />
       <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
       <option name="CALL_PARAMETERS_WRAP" value="5" />
       <option name="METHOD_PARAMETERS_WRAP" value="5" />
-      <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
+      <option name="METHOD_CALL_CHAIN_WRAP" value="2" />
       <option name="PARENTHESES_EXPRESSION_LPAREN_WRAP" value="true" />
       <option name="PARENTHESES_EXPRESSION_RPAREN_WRAP" value="true" />
       <option name="BINARY_OPERATION_WRAP" value="5" />
@@ -69,6 +68,58 @@
       <option name="WRAP_ON_TYPING" value="1" />
       <arrangement>
         <tokens>
+          <token id="modifiers" name="modifiers">
+            <rules>
+              <rule>
+                <match>
+                  <AND>
+                    <PUBLIC>true</PUBLIC>
+                    <STATIC>true</STATIC>
+                  </AND>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PROTECTED>true</PROTECTED>
+                    <STATIC>true</STATIC>
+                  </AND>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PRIVATE>true</PRIVATE>
+                    <STATIC>true</STATIC>
+                  </AND>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PUBLIC>true</PUBLIC>
+                    <STATIC>false</STATIC>
+                  </AND>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PROTECTED>true</PROTECTED>
+                    <STATIC>false</STATIC>
+                  </AND>
+                </match>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PRIVATE>true</PRIVATE>
+                    <STATIC>false</STATIC>
+                  </AND>
+                </match>
+              </rule>
+            </rules>
+          </token>
           <token id="visibility_then_name" name="visibility_then_name">
             <rules>
               <rule>
@@ -86,6 +137,64 @@
               <rule>
                 <match>
                   <PRIVATE>true</PRIVATE>
+                </match>
+                <order>BY_NAME</order>
+              </rule>
+            </rules>
+          </token>
+          <token id="modifier_visibility_then_name" name="modifier_visibility_then_name">
+            <rules>
+              <rule>
+                <match>
+                  <AND>
+                    <PUBLIC>true</PUBLIC>
+                    <STATIC>true</STATIC>
+                  </AND>
+                </match>
+                <order>BY_NAME</order>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PROTECTED>true</PROTECTED>
+                    <STATIC>true</STATIC>
+                  </AND>
+                </match>
+                <order>BY_NAME</order>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PRIVATE>true</PRIVATE>
+                    <STATIC>true</STATIC>
+                  </AND>
+                </match>
+                <order>BY_NAME</order>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PUBLIC>true</PUBLIC>
+                    <STATIC>false</STATIC>
+                  </AND>
+                </match>
+                <order>BY_NAME</order>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PROTECTED>true</PROTECTED>
+                    <STATIC>false</STATIC>
+                  </AND>
+                </match>
+                <order>BY_NAME</order>
+              </rule>
+              <rule>
+                <match>
+                  <AND>
+                    <PRIVATE>true</PRIVATE>
+                    <STATIC>false</STATIC>
+                  </AND>
                 </match>
                 <order>BY_NAME</order>
               </rule>
@@ -164,116 +273,6 @@
               <rule>
                 <match>
                   <PRIVATE>true</PRIVATE>
-                </match>
-              </rule>
-            </rules>
-          </token>
-          <token id="modifier_visibility_then_name" name="modifier_visibility_then_name">
-            <rules>
-              <rule>
-                <match>
-                  <AND>
-                    <PUBLIC>true</PUBLIC>
-                    <STATIC>true</STATIC>
-                  </AND>
-                </match>
-                <order>BY_NAME</order>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PROTECTED>true</PROTECTED>
-                    <STATIC>true</STATIC>
-                  </AND>
-                </match>
-                <order>BY_NAME</order>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PRIVATE>true</PRIVATE>
-                    <STATIC>true</STATIC>
-                  </AND>
-                </match>
-                <order>BY_NAME</order>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PUBLIC>true</PUBLIC>
-                    <STATIC>false</STATIC>
-                  </AND>
-                </match>
-                <order>BY_NAME</order>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PROTECTED>true</PROTECTED>
-                    <STATIC>false</STATIC>
-                  </AND>
-                </match>
-                <order>BY_NAME</order>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PRIVATE>true</PRIVATE>
-                    <STATIC>false</STATIC>
-                  </AND>
-                </match>
-                <order>BY_NAME</order>
-              </rule>
-            </rules>
-          </token>
-          <token id="modifiers" name="modifiers">
-            <rules>
-              <rule>
-                <match>
-                  <AND>
-                    <PUBLIC>true</PUBLIC>
-                    <STATIC>true</STATIC>
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PROTECTED>true</PROTECTED>
-                    <STATIC>true</STATIC>
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PRIVATE>true</PRIVATE>
-                    <STATIC>true</STATIC>
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PUBLIC>true</PUBLIC>
-                    <STATIC>false</STATIC>
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PROTECTED>true</PROTECTED>
-                    <STATIC>false</STATIC>
-                  </AND>
-                </match>
-              </rule>
-              <rule>
-                <match>
-                  <AND>
-                    <PRIVATE>true</PRIVATE>
-                    <STATIC>false</STATIC>
-                  </AND>
                 </match>
               </rule>
             </rules>

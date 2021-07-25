@@ -30,4 +30,18 @@ interface ColumnOwnerInterface extends SchemaMemberInterface
      * @return string[]
      */
     public function getColumnNames(): array;
+
+    /**
+     * @param string $columnName
+     *
+     * @return bool
+     */
+    public function hasColumnName(string $columnName): bool;
+
+    /**
+     * @param array $columnNames
+     *
+     * @return bool
+     */
+    public function hasAllColumnNames(array $columnNames): bool;
 }

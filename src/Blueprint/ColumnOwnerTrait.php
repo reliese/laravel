@@ -69,4 +69,28 @@ trait ColumnOwnerTrait
         return \array_keys($this->columnBlueprints);
     }
 
+    /**
+     * @param string $columnName
+     *
+     * @return bool
+     */
+    public function hasColumnName(string $columnName): bool
+    {
+        return \in_array($columnName, $this->getColumnNames());
+    }
+
+    /**
+     * @param array $columnNames
+     *
+     * @return bool
+     */
+    public function hasAllColumnNames(array $columnNames): bool
+    {
+        foreach ($columnNames as $columnName) {
+            if (!$this->hasColumnName($columnName)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

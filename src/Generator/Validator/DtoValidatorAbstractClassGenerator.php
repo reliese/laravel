@@ -230,7 +230,22 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             $returnIsInvalidStatement
                 = $this->generateReturnInvalidWithSimpleMessageConstant($requireDtoValidationMessageIndexConstant);
 
+            $dtoPropertyTypeDefinition = $dtoPropertyDefinition->getPhpTypeEnum()->toObjectTypeDefinition();
+            $dtoAbstractClassDefinition->addImport(
+                $dtoPropertyTypeDefinition
+            );
 
+            $ifIsValidBlock = new StatementBlockDefinition(
+                new RawStatementDefinition(
+                    sprintf(
+                        "if (\$%s->%s() instanceOf %s)",
+                        $dtoParameter->getParameterName(),
+                        $dtoPropertyDefinition->getGetterMethodName(),
+                        $dtoPropertyTypeDefinition->getFullyQualifiedName()
+                    )
+                )
+            );
+            $ifIsValidBlock->addStatementDefinition($this->getReturnIsValidStatement());
 
             $methodDefinition = new ClassMethodDefinition(
                 $this->getRequireDtoMethodName($dtoPropertyDefinition),
@@ -238,8 +253,8 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
                 [$dtoParameter]
             );
             $methodDefinition
-                ->appendBodyStatement(new RawStatementDefinition('/*incomplete*/'))
-                ->appendBodyStatement($this->getReturnIsValidStatement());
+                ->appendBodyStatement($ifIsValidBlock)
+                ->appendBodyStatement($returnIsInvalidStatement);
 
             $dtoValidatorAbstractClassDefinition
                 ->addConstant($requireDtoValidationMessageIndexConstant)
@@ -523,7 +538,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         ClassPropertyDefinition $dtoPropertyDefinition
     ): string {
         return sprintf(
-            "require%s", Str::Studly($dtoPropertyDefinition->getVariableName())
+            "requireDto%s", Str::Studly($dtoPropertyDefinition->getVariableName())
         );
     }
 
@@ -676,7 +691,12 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
         string $valueStatement
     ): StatementDefinitionInterface {
 
-        $ifEmptyStatement = new RawStatementDefinition("if (empty($valueStatement))");
+        $additionalCheck = "";
+        if ($dtoPropertyDefinition->getPhpTypeEnum()->isAnyBool()) {
+            $additionalCheck = " && false !== $valueStatement";
+        }
+
+        $ifEmptyStatement = new RawStatementDefinition("if (empty($valueStatement)$additionalCheck)");
 
         return (new StatementBlockDefinition($ifEmptyStatement))
             ->addStatementDefinition(
@@ -741,7 +761,7 @@ class DtoValidatorAbstractClassGenerator implements ColumnBasedCodeGeneratorInte
             ->addStatementDefinition(
                 (new StatementBlockDefinition(
                     new RawStatementDefinition(
-                        sprintf("if (empty(\$%s))", $propertyValueParameter->getParameterName())
+                        sprintf("if (is_null(\$%s))", $propertyValueParameter->getParameterName())
                     )
                 ))
                     ->addStatementDefinition(
