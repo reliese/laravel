@@ -91,9 +91,11 @@ abstract class HasOneOrMany implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->parent->getRecordName().'_id';
+        return true;
 
-        return $defaultForeignKey != $this->foreignKey() || $this->needsLocalKey();
+        // $defaultForeignKey = $this->parent->getRecordName().'_id';
+
+        // return $defaultForeignKey != $this->foreignKey() || $this->needsLocalKey();
     }
 
     /**

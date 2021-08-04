@@ -165,9 +165,11 @@ class BelongsToMany implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->parentRecordName().'_id';
+        return true;
 
-        return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
+        // $defaultForeignKey = $this->parentRecordName().'_id';
+
+        // return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
     }
 
     /**
