@@ -185,9 +185,11 @@ class BelongsToMany implements Relation
      */
     protected function needsOtherKey()
     {
-        $defaultOtherKey = $this->referenceRecordName().'_id';
+        return true;
 
-        return $this->otherKey() != $defaultOtherKey;
+        // $defaultOtherKey = $this->referenceRecordName().'_id';
+
+        // return $this->otherKey() != $defaultOtherKey;
     }
 
     /**
