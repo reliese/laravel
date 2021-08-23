@@ -163,6 +163,11 @@ class Model
     protected $relationNameStrategy = '';
 
     /**
+     * @var bool
+     */
+    protected $definesReturnTypes = false;
+
+    /**
      * ModelClass constructor.
      *
      * @param \Reliese\Meta\Blueprint $blueprint
@@ -209,6 +214,8 @@ class Model
 
         // Relation name settings
         $this->withRelationNameStrategy($this->config('relation_name_strategy', $this->getDefaultRelationNameStrategy()));
+
+        $this->definesReturnTypes = $this->config('enable_return_types', false);
 
         return $this;
     }
@@ -1248,5 +1255,13 @@ class Model
     public function fillableInBaseFiles(): bool
     {
         return $this->config('fillable_in_base_files', false);
+    }
+
+    /**
+     * @return bool
+     */
+    public function definesReturnTypes()
+    {
+        return $this->definesReturnTypes;
     }
 }

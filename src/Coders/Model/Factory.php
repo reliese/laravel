@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Reliese\Support\Classify;
 
 class Factory
 {
@@ -480,7 +480,14 @@ class Factory
         }
 
         foreach ($model->getRelations() as $constraint) {
-            $body .= $this->class->method($constraint->name(), $constraint->body(), ['before' => "\n"]);
+            $body .= $this->class->method(
+                $constraint->name(),
+                $constraint->body(),
+                [
+                    'before' => "\n",
+                    'returnType' => $model->definesReturnTypes() ? $constraint->returnType() : null,
+                ]
+            );
         }
 
         // Make sure there not undesired line breaks

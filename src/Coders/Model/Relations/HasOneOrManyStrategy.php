@@ -60,4 +60,14 @@ class HasOneOrManyStrategy implements Relation
     {
         return $this->relation->body();
     }
+
+    /**
+     * @return string
+     */
+    public function returnType()
+    {
+        return get_class($this->relation) === HasMany::class ?
+            \Illuminate\Database\Eloquent\Relations\HasMany::class :
+            \Illuminate\Database\Eloquent\Relations\HasOne::class;
+    }
 }
