@@ -18,6 +18,7 @@ use Reliese\Command\DataMap\GenerateModelDataMappingCommand;
 use Reliese\Command\DataTransport\GenerateDataTransportObjectsCommand;
 use Reliese\Command\GenerateAllCommand;
 use Reliese\Command\Model\ModelGenerateCommand;
+use Reliese\Command\Model\OldModelGenerateCommand;
 use Reliese\Command\Validator\GenerateDtoValidationCommand;
 use Reliese\Configuration\ConfigurationProfile;
 use Reliese\Configuration\ConfigurationProfileFactory;
@@ -72,6 +73,7 @@ class RelieseServiceProvider extends ServiceProvider
 
             $this->commands([
                 CodeModelsCommand::class,
+                OldModelGenerateCommand::class,
                 ModelGenerateCommand::class,
 //                NewModelGenerateCommand::class,
                 ShowBlueprintCommand::class,
