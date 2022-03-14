@@ -421,6 +421,18 @@ return [
         |
         */
         'fillable_in_base_files' => false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate return types for relation methods.
+        |--------------------------------------------------------------------------
+        | When enable_return_types is set to true, return type declarations are added
+        | to all generated relation methods for your models.
+        |
+        | NOTE: This requires PHP 7.0 or later.
+        |
+        */
+        'enable_return_types' => false,
     ],
 
     /*
