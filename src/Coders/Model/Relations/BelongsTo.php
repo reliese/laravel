@@ -128,6 +128,14 @@ class BelongsTo implements Relation
     }
 
     /**
+     * @return string
+     */
+    public function returnType()
+    {
+        return \Illuminate\Database\Eloquent\Relations\BelongsTo::class;
+    }
+
+    /**
      * @return bool
      */
     protected function needsForeignKey()
