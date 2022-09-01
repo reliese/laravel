@@ -40,7 +40,7 @@ class WhoDidIt
      */
     public function updating(Eloquent $model)
     {
-        $model->udpated_by = $this->doer();
+        $model->updated_by = $this->doer();
     }
 
     /**
