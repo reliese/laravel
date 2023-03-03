@@ -459,10 +459,6 @@ class Factory
             $body .= $this->class->field('casts', $model->getCasts(), ['before' => "\n"]);
         }
 
-        if ($model->hasDates()) {
-            $body .= $this->class->field('dates', $model->getDates(), ['before' => "\n"]);
-        }
-
         if ($model->hasHidden() && $model->doesNotUseBaseFiles()) {
             $body .= $this->class->field('hidden', $model->getHidden(), ['before' => "\n"]);
         }
