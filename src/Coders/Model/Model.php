@@ -70,11 +70,6 @@ class Model
     /**
      * @var array
      */
-    protected $dates = [];
-
-    /**
-     * @var array
-     */
     protected $hints = [];
 
     /**
@@ -267,12 +262,8 @@ class Model
             $cast = 'string';
         }
 
-        // Track dates
-        if ($cast == 'date') {
-            $this->dates[] = $propertyName;
-        }
-        // Track attribute casts
-        elseif ($cast != 'string') {
+        // Track attribute casts, ignoring timestamps
+        if ($cast != 'string' && !in_array($propertyName, [$this->CREATED_AT, $this->UPDATED_AT])) {
             $this->casts[$propertyName] = $cast;
         }
 
@@ -1001,7 +992,12 @@ class Model
      */
     public function getDates()
     {
-        return array_diff($this->dates, [$this->CREATED_AT, $this->UPDATED_AT]);
+        return array_diff(
+            array_filter($this->casts, function (string $cast) {
+                return $cast === 'date';
+            }),
+            [$this->CREATED_AT, $this->UPDATED_AT]
+        );
     }
 
     /**
