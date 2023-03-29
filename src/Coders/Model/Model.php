@@ -455,13 +455,11 @@ class Model
      */
     public function withNamespace($namespace)
     {
-        $tableNamespaces = collect(
+        $this->namespace = collect(
             explode('__', $this->blueprint->table())
         )->slice(0, -1)->map(function ($particle) {
             return Str::studly($particle);
-        })->join('\\');
-
-        $this->namespace = $namespace . '\\' . $tableNamespaces;
+        })->prepend($namespace)->join('\\');
 
         return $this;
     }
