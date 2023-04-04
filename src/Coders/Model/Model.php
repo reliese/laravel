@@ -352,7 +352,7 @@ class Model
             case 'collection':
                 $type = '\Illuminate\Support\Collection';
                 break;
-            case 'date':
+            case 'datetime':
                 $type = '\Carbon\Carbon';
                 break;
             case 'binary':
@@ -994,7 +994,7 @@ class Model
     {
         return array_diff(
             array_filter($this->casts, function (string $cast) {
-                return $cast === 'date';
+                return $cast === 'datetime';
             }),
             [$this->CREATED_AT, $this->UPDATED_AT]
         );
