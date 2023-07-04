@@ -161,7 +161,7 @@ return [
         | Base Files
         |--------------------------------------------------------------------------
         |
-        | By default, your models will be generated in your models' path, but
+        | By default, your models will be generated in your models path, but
         | when you generate them again they will be replaced by new ones.
         | You may want to customize your models and, at the same time, be
         | able to generate them as your tables change. For that, you
@@ -254,7 +254,7 @@ return [
         |--------------------------------------------------------------------------
         |
         | You may want to specify which of your table fields should be cast as
-        | something different from a string. For instance, you may want a
+        | something other than a string. For instance, you may want a
         | text field be cast as an array or and object.
         |
         | You may define column patterns which will be cast using the value
@@ -284,13 +284,7 @@ return [
             'failed_jobs',
             'password_resets',
             'personal_access_tokens',
-            'notifications',
-            'nova_field_attachments',
-            'nova_notifications',
-            'nova_pending_field_attachments',
-            'telescope_entries',
-            'telescope_entries_tags',
-            'telescope_monitoring',
+            'password_reset_tokens',
         ],
 
         /*
