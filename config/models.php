@@ -170,7 +170,7 @@ return [
         |
         */
 
-        'base_files' => false,
+        'base_files' => true,
 
         /*
         |--------------------------------------------------------------------------
@@ -183,7 +183,7 @@ return [
         |
         */
 
-        'snake_attributes' => true,
+        'snake_attributes' => false,
 
         /*
         |--------------------------------------------------------------------------
@@ -245,7 +245,8 @@ return [
         */
 
         'guarded' => [
-            // 'created_by', 'updated_by'
+            'created_by',
+            'updated_by',
         ],
 
         /*
@@ -281,6 +282,12 @@ return [
 
         'except' => [
             'migrations',
+            'failed_jobs',
+            'permissions',
+            'roles',
+            'role_has_permissions',
+            'model_has_roles',
+            'model_has_permissions',
         ],
 
         /*
@@ -389,7 +396,7 @@ return [
          | that helps to avoid typos in strings when typing field names and allows to use
          | code competition with available model's field names.
          */
-        'with_property_constants' => false,
+        'with_property_constants' => true,
 
         /*
         |--------------------------------------------------------------------------
@@ -420,7 +427,7 @@ return [
         | if you want the $fillable to be generated in base files
         |
         */
-        'fillable_in_base_files' => false,
+        'fillable_in_base_files' => true,
 
         /*
         |--------------------------------------------------------------------------
@@ -432,7 +439,7 @@ return [
         | NOTE: This requires PHP 7.0 or later.
         |
         */
-        'enable_return_types' => false,
+        'enable_return_types' => true,
     ],
 
     /*
