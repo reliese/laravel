@@ -416,6 +416,17 @@ return [
         'override_pluralize_for' => [
 
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Move $hidden property to base files
+        |--------------------------------------------------------------------------
+        | When base_files is true you can set hidden_in_base_files to true
+        | if you want the $hidden to be generated in base files
+        |
+        */
+        'hidden_in_base_files' => false,
+
         /*
         |--------------------------------------------------------------------------
         | Move $fillable property to base files

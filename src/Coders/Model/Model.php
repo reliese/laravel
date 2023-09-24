@@ -1256,6 +1256,14 @@ class Model
     /**
      * @return bool
      */
+    public function hiddenInBaseFiles(): bool
+    {
+        return $this->config('hidden_in_base_files', false);
+    }
+
+    /**
+     * @return bool
+     */
     public function definesReturnTypes()
     {
         return $this->definesReturnTypes;
