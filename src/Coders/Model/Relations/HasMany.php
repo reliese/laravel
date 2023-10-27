@@ -17,7 +17,7 @@ class HasMany extends HasOneOrMany
      */
     public function hint()
     {
-        return '\\'.Collection::class.'|'.$this->related->getQualifiedUserClassName().'[]';
+        return '\\' . Collection::class . '|' . $this->related->getQualifiedUserClassName() . '[]';
     }
 
     /**
@@ -26,6 +26,9 @@ class HasMany extends HasOneOrMany
     public function name()
     {
         switch ($this->parent->getRelationNameStrategy()) {
+            case 'related_with_foreign_key_and_local_key':
+                $relationName = $this->related->getClassName();
+                break;
             case 'foreign_key':
                 $relationName = RelationHelper::stripSuffixFromForeignKey(
                     $this->parent->usesSnakeAttributes(),

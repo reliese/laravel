@@ -50,6 +50,9 @@ class BelongsTo implements Relation
     public function name()
     {
         switch ($this->parent->getRelationNameStrategy()) {
+            case 'related_with_foreign_key_and_local_key':
+                $relationName = $this->related->getClassName();
+                break;
             case 'foreign_key':
                 $relationName = RelationHelper::stripSuffixFromForeignKey(
                     $this->parent->usesSnakeAttributes(),
@@ -77,20 +80,20 @@ class BelongsTo implements Relation
     {
         $body = 'return $this->belongsTo(';
 
-        $body .= $this->related->getQualifiedUserClassName().'::class';
+        $body .= $this->related->getQualifiedUserClassName() . '::class';
 
         if ($this->needsForeignKey()) {
             $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->parent->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
+                ? $this->parent->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
                 : $this->foreignKey();
-            $body .= ', '.Dumper::export($foreignKey);
+            $body .= ', ' . Dumper::export($foreignKey);
         }
 
         if ($this->needsOtherKey()) {
             $otherKey = $this->related->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->otherKey())
+                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->otherKey())
                 : $this->otherKey();
-            $body .= ', '.Dumper::export($otherKey);
+            $body .= ', ' . Dumper::export($otherKey);
         }
 
         $body .= ')';
@@ -100,10 +103,10 @@ class BelongsTo implements Relation
             // or a composite unique key. Otherwise it should be a has-many relationship which is not
             // supported at the moment. @todo: Improve relationship resolution.
             foreach ($this->command->references as $index => $column) {
-                $body .= "\n\t\t\t\t\t->where(".
-                    Dumper::export($this->qualifiedOtherKey($index)).
-                    ", '=', ".
-                    Dumper::export($this->qualifiedForeignKey($index)).
+                $body .= "\n\t\t\t\t\t->where(" .
+                    Dumper::export($this->qualifiedOtherKey($index)) .
+                    ", '=', " .
+                    Dumper::export($this->qualifiedForeignKey($index)) .
                     ')';
             }
         }
@@ -140,7 +143,11 @@ class BelongsTo implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->related->getRecordName().'_id';
+        if ($this->parent->config('relation_name_strategy') === 'related_with_foreign_key_and_local_key') {
+            return true;
+        }
+
+        $defaultForeignKey = $this->related->getRecordName() . '_id';
 
         return $defaultForeignKey != $this->foreignKey() || $this->needsOtherKey();
     }
@@ -162,7 +169,7 @@ class BelongsTo implements Relation
      */
     protected function qualifiedForeignKey($index = 0)
     {
-        return $this->parent->getTable().'.'.$this->foreignKey($index);
+        return $this->parent->getTable() . '.' . $this->foreignKey($index);
     }
 
     /**
@@ -170,6 +177,10 @@ class BelongsTo implements Relation
      */
     protected function needsOtherKey()
     {
+        if ($this->parent->config('relation_name_strategy') === 'related_with_foreign_key_and_local_key') {
+            return true;
+        }
+
         $defaultOtherKey = $this->related->getPrimaryKey();
 
         return $defaultOtherKey != $this->otherKey();
@@ -192,7 +203,7 @@ class BelongsTo implements Relation
      */
     protected function qualifiedOtherKey($index = 0)
     {
-        return $this->related->getTable().'.'.$this->otherKey($index);
+        return $this->related->getTable() . '.' . $this->otherKey($index);
     }
 
     /**

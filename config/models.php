@@ -341,9 +341,7 @@ return [
         |     'billing_invoices' => 'Invoice',
         */
 
-        'model_names' => [
-
-        ],
+        'model_names' => [],
 
         /*
         |--------------------------------------------------------------------------
@@ -370,10 +368,13 @@ return [
         |               Where the foreign key matches the related table name, it behaves as per the 'related' strategy.
         |                   (post.user_id --> user.id)
         |                       generates Post::user() and User::posts()
+        |
+        | 'related_with_foreign_key_and_local_key'    set foreign_key and set local_key in relation.
         */
 
         'relation_name_strategy' => 'related',
         // 'relation_name_strategy' => 'foreign_key',
+        // 'relation_name_strategy' => 'related_with_foreign_key_and_local_key',
 
         /*
          |--------------------------------------------------------------------------
@@ -413,9 +414,7 @@ return [
         | You can enable pluralization for certain tables
         |
         */
-        'override_pluralize_for' => [
-
-        ],
+        'override_pluralize_for' => [],
         /*
         |--------------------------------------------------------------------------
         | Move $fillable property to base files
@@ -493,18 +492,18 @@ return [
     |
     */
 
-//    'connections' => [
-//        'read_only_external' => [
-//            'parent' => \App\Models\ReadOnlyModel::class,
-//            'connection' => true,
-//            'users' => [
-//                'connection' => false,
-//            ],
-//            'my_other_database' => [
-//                'password_resets' => [
-//                    'connection' => false,
-//                ]
-//            ]
-//        ],
-//    ],
+    //    'connections' => [
+    //        'read_only_external' => [
+    //            'parent' => \App\Models\ReadOnlyModel::class,
+    //            'connection' => true,
+    //            'users' => [
+    //                'connection' => false,
+    //            ],
+    //            'my_other_database' => [
+    //                'password_resets' => [
+    //                    'connection' => false,
+    //                ]
+    //            ]
+    //        ],
+    //    ],
 ];
