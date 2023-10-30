@@ -58,22 +58,22 @@ abstract class HasOneOrMany implements Relation
      */
     public function body()
     {
-        $body = 'return $this->'.$this->method().'(';
+        $body = 'return $this->' . $this->method() . '(';
 
-        $body .= $this->related->getQualifiedUserClassName().'::class';
+        $body .= $this->related->getQualifiedUserClassName() . '::class';
 
         if ($this->needsForeignKey()) {
             $foreignKey = $this->parent->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->foreignKey())
+                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->foreignKey())
                 : $this->foreignKey();
-            $body .= ', '.Dumper::export($foreignKey);
+            $body .= ', ' . Dumper::export($foreignKey);
         }
 
         if ($this->needsLocalKey()) {
             $localKey = $this->related->usesPropertyConstants()
-                ? $this->related->getQualifiedUserClassName().'::'.strtoupper($this->localKey())
+                ? $this->related->getQualifiedUserClassName() . '::' . strtoupper($this->localKey())
                 : $this->localKey();
-            $body .= ', '.Dumper::export($localKey);
+            $body .= ', ' . Dumper::export($localKey);
         }
 
         $body .= ');';
@@ -91,7 +91,11 @@ abstract class HasOneOrMany implements Relation
      */
     protected function needsForeignKey()
     {
-        $defaultForeignKey = $this->parent->getRecordName().'_id';
+        if ($this->parent->config('relation.options.show_key')) {
+            return true;
+        }
+
+        $defaultForeignKey = $this->parent->getRecordName() . '_id';
 
         return $defaultForeignKey != $this->foreignKey() || $this->needsLocalKey();
     }
@@ -109,6 +113,10 @@ abstract class HasOneOrMany implements Relation
      */
     protected function needsLocalKey()
     {
+        if ($this->parent->config('relation.options.show_key')) {
+            return true;
+        }
+
         return $this->parent->getPrimaryKey() != $this->localKey();
     }
 

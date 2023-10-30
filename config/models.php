@@ -341,9 +341,7 @@ return [
         |     'billing_invoices' => 'Invoice',
         */
 
-        'model_names' => [
-
-        ],
+        'model_names' => [],
 
         /*
         |--------------------------------------------------------------------------
@@ -374,6 +372,19 @@ return [
 
         'relation_name_strategy' => 'related',
         // 'relation_name_strategy' => 'foreign_key',
+
+        'relation' => [
+            'options' => [
+                /*
+                | 'true'        return $this->belongsTo(User::class, 'user_id', 'id'); (post.user_id --> user.id)
+                |               return $this->hasMany(Comment::class, 'post_id', 'id'); (comment.post_id --> post.id)
+                |
+                | 'false'       return $this->belongsTo(User::class); (post.user_id --> user.id)
+                |               return $this->hasMany(Comment::class); (comment.post_id --> post.id)
+                */
+                'show_key' => false, // default: false
+            ]
+        ],
 
         /*
          |--------------------------------------------------------------------------
@@ -413,9 +424,7 @@ return [
         | You can enable pluralization for certain tables
         |
         */
-        'override_pluralize_for' => [
-
-        ],
+        'override_pluralize_for' => [],
         /*
         |--------------------------------------------------------------------------
         | Move $fillable property to base files
@@ -493,18 +502,18 @@ return [
     |
     */
 
-//    'connections' => [
-//        'read_only_external' => [
-//            'parent' => \App\Models\ReadOnlyModel::class,
-//            'connection' => true,
-//            'users' => [
-//                'connection' => false,
-//            ],
-//            'my_other_database' => [
-//                'password_resets' => [
-//                    'connection' => false,
-//                ]
-//            ]
-//        ],
-//    ],
+    //    'connections' => [
+    //        'read_only_external' => [
+    //            'parent' => \App\Models\ReadOnlyModel::class,
+    //            'connection' => true,
+    //            'users' => [
+    //                'connection' => false,
+    //            ],
+    //            'my_other_database' => [
+    //                'password_resets' => [
+    //                    'connection' => false,
+    //                ]
+    //            ]
+    //        ],
+    //    ],
 ];

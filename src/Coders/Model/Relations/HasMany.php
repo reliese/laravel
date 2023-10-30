@@ -17,7 +17,7 @@ class HasMany extends HasOneOrMany
      */
     public function hint()
     {
-        return '\\'.Collection::class.'|'.$this->related->getQualifiedUserClassName().'[]';
+        return '\\' . Collection::class . '|' . $this->related->getQualifiedUserClassName() . '[]';
     }
 
     /**
