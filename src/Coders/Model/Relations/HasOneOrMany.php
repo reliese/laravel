@@ -91,7 +91,7 @@ abstract class HasOneOrMany implements Relation
      */
     protected function needsForeignKey()
     {
-        if ($this->parent->config('relation_name_strategy') === 'related_with_foreign_key_and_local_key') {
+        if ($this->parent->config('relation.options.show_key')) {
             return true;
         }
 
@@ -113,7 +113,7 @@ abstract class HasOneOrMany implements Relation
      */
     protected function needsLocalKey()
     {
-        if ($this->parent->config('relation_name_strategy') === 'related_with_foreign_key_and_local_key') {
+        if ($this->parent->config('relation.options.show_key')) {
             return true;
         }
 

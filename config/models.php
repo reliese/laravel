@@ -368,13 +368,23 @@ return [
         |               Where the foreign key matches the related table name, it behaves as per the 'related' strategy.
         |                   (post.user_id --> user.id)
         |                       generates Post::user() and User::posts()
-        |
-        | 'related_with_foreign_key_and_local_key'    set foreign_key and set local_key in relation.
         */
 
         'relation_name_strategy' => 'related',
         // 'relation_name_strategy' => 'foreign_key',
-        // 'relation_name_strategy' => 'related_with_foreign_key_and_local_key',
+
+        'relation' => [
+            'options' => [
+                /*
+                | 'true'        return $this->belongsTo(User::class, 'user_id', 'id'); (post.user_id --> user.id)
+                |               return $this->hasMany(Comment::class, 'post_id', 'id'); (comment.post_id --> post.id)
+                |
+                | 'false'       return $this->belongsTo(User::class); (post.user_id --> user.id)
+                |               return $this->hasMany(Comment::class); (comment.post_id --> post.id)
+                */
+                'show_key' => false, // default: false
+            ]
+        ],
 
         /*
          |--------------------------------------------------------------------------

@@ -50,9 +50,6 @@ class BelongsTo implements Relation
     public function name()
     {
         switch ($this->parent->getRelationNameStrategy()) {
-            case 'related_with_foreign_key_and_local_key':
-                $relationName = $this->related->getClassName();
-                break;
             case 'foreign_key':
                 $relationName = RelationHelper::stripSuffixFromForeignKey(
                     $this->parent->usesSnakeAttributes(),
@@ -143,7 +140,7 @@ class BelongsTo implements Relation
      */
     protected function needsForeignKey()
     {
-        if ($this->parent->config('relation_name_strategy') === 'related_with_foreign_key_and_local_key') {
+        if ($this->parent->config('relation.options.show_key')) {
             return true;
         }
 
@@ -177,7 +174,7 @@ class BelongsTo implements Relation
      */
     protected function needsOtherKey()
     {
-        if ($this->parent->config('relation_name_strategy') === 'related_with_foreign_key_and_local_key') {
+        if ($this->parent->config('relation.options.show_key')) {
             return true;
         }
 
