@@ -173,10 +173,6 @@ class BelongsToMany implements Relation
      */
     protected function needsForeignKey()
     {
-        if ($this->parent->config('relation.options.show_key')) {
-            return true;
-        }
-
         $defaultForeignKey = $this->parentRecordName() . '_id';
 
         return $this->foreignKey() != $defaultForeignKey || $this->needsOtherKey();
@@ -195,11 +191,6 @@ class BelongsToMany implements Relation
      */
     protected function needsOtherKey()
     {
-
-        if ($this->parent->config('relation.options.show_key')) {
-            return true;
-        }
-
         $defaultOtherKey = $this->referenceRecordName() . '_id';
 
         return $this->otherKey() != $defaultOtherKey;
