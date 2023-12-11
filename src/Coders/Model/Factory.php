@@ -493,6 +493,17 @@ class Factory
     }
 
     /**
+     * @param string $table
+     * @return array
+     */
+    protected function namespaces($table)
+    {
+        return collect(explode('__', $table))->slice(0, -1)->map(function ($particle) {
+            return Str::studly($particle);
+        })->all();
+    }
+
+    /**
      * @param \Reliese\Coders\Model\Model $model
      * @param array $custom
      *
@@ -500,7 +511,9 @@ class Factory
      */
     protected function modelPath(Model $model, $custom = [])
     {
-        $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $custom));
+        $namespaces = $this->namespaces($model->getTable());
+
+        $modelsDirectory = $this->path(array_merge([$this->config($model->getBlueprint(), 'path')], $namespaces, $custom));
 
         if (! $this->files->isDirectory($modelsDirectory)) {
             $this->files->makeDirectory($modelsDirectory, 0755, true);
