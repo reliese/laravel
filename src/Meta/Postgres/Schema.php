@@ -268,18 +268,12 @@ class Schema implements \Reliese\Meta\Schema
 
     /**
      * @param \Illuminate\Database\Connection $connection
-     *
+     * @deprecated use \Reliese\Meta\Postgres\Database::getSchemaNames
      * @return array
      */
     public static function schemas(Connection $connection)
     {
-        $schemas = $connection->getDoctrineSchemaManager()->listDatabases();
-
-        return array_diff($schemas, [
-            'postgres',
-            'template0',
-            'template1',
-        ]);
+        return (new Database($connection))->getSchemaNames();
     }
 
     /**
