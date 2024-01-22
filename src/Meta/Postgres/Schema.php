@@ -64,18 +64,18 @@ class Schema implements \Reliese\Meta\Schema
         // Note that "schema" refers to the database name,
         // not a pgsql schema.
         $this->connection->raw('\c '.$this->wrap($this->schema));
-        $tables = $this->fetchTables($this->schema);
+        $tables = $this->fetchTables();
         foreach ($tables as $table) {
-            $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
-            $this->fillColumns($blueprint);
-            $this->fillConstraints($blueprint);
-            $this->tables[$table] = $blueprint;
+            $this->loadTable($table);
+        }
+        $views = $this->fetchViews();
+        foreach ($views as $table) {
+            $this->loadTable($table, true);
         }
         $this->loaded = true;
     }
 
     /**
-     * @param string $schema
      *
      * @return array
      */
@@ -85,6 +85,20 @@ class Schema implements \Reliese\Meta\Schema
             'SELECT * FROM pg_tables where schemaname=\'public\''
         ));
         $names = array_column($rows, 'tablename');
+
+        return Arr::flatten($names);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    protected function fetchViews()
+    {
+        $rows = $this->arraify($this->connection->select(
+            'SELECT * FROM pg_views where schemaname=\'public\'',
+        ));
+        $names = array_column($rows, 'viewname');
 
         return Arr::flatten($names);
     }
@@ -349,5 +363,17 @@ class Schema implements \Reliese\Meta\Schema
         }
 
         return $references;
+    }
+
+    /**
+     * @param string $table
+     * @param bool $isView
+     */
+    protected function loadTable($table, $isView = false)
+    {
+        $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table, $isView);
+        $this->fillColumns($blueprint);
+        $this->fillConstraints($blueprint);
+        $this->tables[$table] = $blueprint;
     }
 }
