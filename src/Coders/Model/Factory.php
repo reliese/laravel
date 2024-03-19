@@ -7,12 +7,12 @@
 
 namespace Reliese\Coders\Model;
 
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Reliese\Meta\Blueprint;
-use Reliese\Support\Classify;
 use Reliese\Meta\SchemaManager;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Database\DatabaseManager;
+use Reliese\Support\Classify;
 
 class Factory
 {
@@ -319,6 +319,15 @@ class Factory
                 $namespacePieces = explode('\\', $usedClass);
                 $className = array_pop($namespacePieces);
 
+                /**
+                 * Avoid breaking same-model relationships when using base classes
+                 *
+                 * @see https://github.com/reliese/laravel/issues/209
+                 */
+                if ($model->usesBaseFiles() && $usedClass === $model->getQualifiedUserClassName()) {
+                    continue;
+                }
+
                 //When same class name but different namespace, skip it.
                 if (
                     $className == $model->getClassName() &&
@@ -450,11 +459,7 @@ class Factory
             $body .= $this->class->field('casts', $model->getCasts(), ['before' => "\n"]);
         }
 
-        if ($model->hasDates()) {
-            $body .= $this->class->field('dates', $model->getDates(), ['before' => "\n"]);
-        }
-
-        if ($model->hasHidden() && $model->doesNotUseBaseFiles()) {
+        if ($model->hasHidden() && ($model->doesNotUseBaseFiles() || $model->hiddenInBaseFiles())) {
             $body .= $this->class->field('hidden', $model->getHidden(), ['before' => "\n"]);
         }
 
@@ -471,7 +476,14 @@ class Factory
         }
 
         foreach ($model->getRelations() as $constraint) {
-            $body .= $this->class->method($constraint->name(), $constraint->body(), ['before' => "\n"]);
+            $body .= $this->class->method(
+                $constraint->name(),
+                $constraint->body(),
+                [
+                    'before' => "\n",
+                    'returnType' => $model->definesReturnTypes() ? $constraint->returnType() : null,
+                ]
+            );
         }
 
         // Make sure there not undesired line breaks
@@ -563,7 +575,7 @@ class Factory
     {
         $body = '';
 
-        if ($model->hasHidden()) {
+        if ($model->hasHidden() && !$model->hiddenInBaseFiles()) {
             $body .= $this->class->field('hidden', $model->getHidden());
         }
 

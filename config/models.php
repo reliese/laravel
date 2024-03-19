@@ -211,7 +211,7 @@ return [
         | TRUE: Schema name will be prepended on the table
         | FALSE:Table name will be set without schema name.
         | NULL: Table name will follow laravel pattern,
-        |   i.e if class name(plural) matches table name, then table name will not be added
+        |   i.e. if class name(plural) matches table name, then table name will not be added
         */
 
         'qualified_tables' => false,
@@ -253,11 +253,11 @@ return [
         | Casts
         |--------------------------------------------------------------------------
         |
-        | You may want to specify which of your table fields should be casted as
-        | something different than a string. For instance, you may want a
-        | text field be casted as an array or and object.
+        | You may want to specify which of your table fields should be cast as
+        | something other than a string. For instance, you may want a
+        | text field be cast as an array or and object.
         |
-        | You may define column patterns which will be casted using the value
+        | You may define column patterns which will be cast using the value
         | assigned. We have defined some fields for you. Feel free to
         | modify them to fit your needs.
         |
@@ -281,6 +281,10 @@ return [
 
         'except' => [
             'migrations',
+            'failed_jobs',
+            'password_resets',
+            'personal_access_tokens',
+            'password_reset_tokens',
         ],
 
         /*
@@ -412,15 +416,38 @@ return [
         'override_pluralize_for' => [
 
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Move $hidden property to base files
+        |--------------------------------------------------------------------------
+        | When base_files is true you can set hidden_in_base_files to true
+        | if you want the $hidden to be generated in base files
+        |
+        */
+        'hidden_in_base_files' => false,
+
         /*
         |--------------------------------------------------------------------------
         | Move $fillable property to base files
         |--------------------------------------------------------------------------
-        | When base_files is true you can set fillable_in_base_files to true 
+        | When base_files is true you can set fillable_in_base_files to true
         | if you want the $fillable to be generated in base files
         |
         */
         'fillable_in_base_files' => false,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate return types for relation methods.
+        |--------------------------------------------------------------------------
+        | When enable_return_types is set to true, return type declarations are added
+        | to all generated relation methods for your models.
+        |
+        | NOTE: This requires PHP 7.0 or later.
+        |
+        */
+        'enable_return_types' => false,
     ],
 
     /*

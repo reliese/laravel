@@ -38,4 +38,12 @@ class HasOne extends HasOneOrMany
     {
         return 'hasOne';
     }
+
+    /**
+     * @return string
+     */
+    public function returnType()
+    {
+        return \Illuminate\Database\Eloquent\Relations\HasOne::class;
+    }
 }
