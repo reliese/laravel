@@ -1,17 +1,21 @@
 {
-    "name": "reliese/laravel",
+    "name": "protocyber/reliese-laravel",
     "description": "Reliese Components for Laravel Framework code generation.",
     "keywords": ["reliese", "laravel"],
-    "homepage": "http://cristianllanos.com",
+    "homepage": "https://github.com/protocyber",
     "support": {
-        "issues": "https://github.com/reliese/laravel/issues",
-        "source": "https://github.com/reliese/laravel"
+        "issues": "https://github.com/protocyber/reliese-laravel/issues",
+        "source": "https://github.com/protocyber/reliese-laravel"
     },
     "license": "MIT",
     "authors": [
         {
             "name": "Cristian Llanos",
             "email": "cristianllanos@outlook.com"
+        },
+        {
+            "name": "Fitrah Muhammad",
+            "email": "fitrah.pro@gmail.com"
         }
     ],
     "require": {
