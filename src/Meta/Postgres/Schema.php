@@ -283,7 +283,8 @@ class Schema implements \Reliese\Meta\Schema
      */
     public static function schemas(Connection $connection)
     {
-        $schemas = $connection->getDoctrineSchemaManager()->listDatabases();
+        $schemas = $connection->select('SELECT schema_name FROM information_schema.schemata');
+        $schemas = array_column($schemas, 'schema_name');
 
         return array_diff($schemas, [
             'postgres',

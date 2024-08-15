@@ -1,6 +1,6 @@
 {
-    "name": "reliese/laravel",
-    "description": "Reliese Components for Laravel Framework code generation.",
+    "name": "jrodella/laravel_model_generator",
+    "description": "Reliese Components for Laravel Framework code generation. (This is a fork from: reliese/laravel)",
     "keywords": ["reliese", "laravel"],
     "homepage": "http://cristianllanos.com",
     "support": {
