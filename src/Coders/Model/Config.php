@@ -41,6 +41,7 @@ class Config
             "@connections.{$blueprint->connection()}.{$blueprint->schema()}.$key",
             "@connections.{$blueprint->connection()}.$key",
             "{$blueprint->qualifiedTable()}.$key",
+            "{$blueprint->table()}.$key", // <-- Added this line
             "{$blueprint->schema()}.$key",
             "*.$key",
         ];
