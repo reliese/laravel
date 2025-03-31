@@ -48,7 +48,7 @@ class WhoDidIt
      */
     protected function doer()
     {
-        if (app()->runningInConsole()) {
+        if (app()->runningInConsole() && (!$this->authenticated() || !app()->runningUnitTests())) {
             return 'CLI';
         }
 
