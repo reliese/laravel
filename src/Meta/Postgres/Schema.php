@@ -3,6 +3,7 @@
 namespace Reliese\Meta\Postgres;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Config;
 use Reliese\Meta\Blueprint;
 use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
@@ -34,6 +35,11 @@ class Schema implements \Reliese\Meta\Schema
     protected $tables = [];
 
     /**
+     * @var mixed|null
+     */
+    protected $schema_database = null;
+
+    /**
      * Mapper constructor.
      *
      * @param string $schema
@@ -41,6 +47,10 @@ class Schema implements \Reliese\Meta\Schema
      */
     public function __construct($schema, $connection)
     {
+        $this->schema_database = Config::get("database.connections.pgsql.schema");
+        if (!$this->schema_database){
+            $this->schema_database = 'public';
+        }
         $this->schema = $schema;
         $this->connection = $connection;
 
@@ -82,7 +92,7 @@ class Schema implements \Reliese\Meta\Schema
     protected function fetchTables()
     {
         $rows = $this->arraify($this->connection->select(
-            'SELECT * FROM pg_tables where schemaname=\'public\''
+            "SELECT * FROM pg_tables where schemaname='$this->schema_database'"
         ));
         $names = array_column($rows, 'tablename');
 
@@ -96,7 +106,7 @@ class Schema implements \Reliese\Meta\Schema
     {
         $rows = $this->arraify($this->connection->select(
             'SELECT * FROM information_schema.columns '.
-            'WHERE table_schema=\'public\''.
+            "WHERE table_schema='$this->schema_database'".
             'AND table_name='.$this->wrap($blueprint->table())
         ));
         foreach ($rows as $column) {
@@ -273,7 +283,8 @@ class Schema implements \Reliese\Meta\Schema
      */
     public static function schemas(Connection $connection)
     {
-        $schemas = $connection->getDoctrineSchemaManager()->listDatabases();
+        $schemas = $connection->select('SELECT datname FROM pg_database');
+        $schemas = array_column($schemas, 'datname');
 
         return array_diff($schemas, [
             'postgres',

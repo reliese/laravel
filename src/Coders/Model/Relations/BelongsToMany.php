@@ -137,6 +137,14 @@ class BelongsToMany implements Relation
     }
 
     /**
+     * @return string
+     */
+    public function returnType()
+    {
+        return \Illuminate\Database\Eloquent\Relations\BelongsToMany::class;
+    }
+
+    /**
      * @return bool
      */
     protected function needsPivotTable()

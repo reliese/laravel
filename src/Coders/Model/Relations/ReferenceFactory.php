@@ -73,7 +73,7 @@ class ReferenceFactory
             return false;
         }
 
-        $pivot = str_replace($firstRecord, '', $pivot);
+        $pivot = preg_replace("!$firstRecord!", '', $pivot, 1);
 
         foreach ($this->getRelatedBlueprint()->relations() as $reference) {
             if ($reference == $this->getRelatedReference()) {

@@ -20,7 +20,7 @@ class Column implements \Reliese\Meta\Column
      * @var array
      */
     protected $metas = [
-      'type', 'name', 'autoincrement', 'nullable', 'default', 'comment',
+        'type', 'name', 'autoincrement', 'nullable', 'default', 'comment',
     ];
 
     /**
@@ -28,8 +28,8 @@ class Column implements \Reliese\Meta\Column
      * @todo check these
      */
     public static $mappings = [
-        'string' => ['varchar', 'text', 'string', 'char', 'enum', 'tinytext', 'mediumtext', 'longtext', 'json'],
-        'date' => ['datetime', 'year', 'date', 'time', 'timestamp'],
+        'string' => ['character varying', 'varchar', 'text', 'string', 'char', 'character', 'enum', 'tinytext', 'mediumtext', 'longtext', 'json'],
+        'datetime' => ['timestamp with time zone', 'timestamp without time zone', 'timestamptz', 'datetime', 'year', 'date', 'time', 'timestamp'],
         'int' => ['int', 'integer', 'tinyint', 'smallint', 'mediumint', 'bigint', 'bigserial', 'serial', 'smallserial', 'tinyserial', 'serial4', 'serial8'],
         'float' => ['float', 'decimal', 'numeric', 'dec', 'fixed', 'double', 'real', 'double precision'],
         'boolean' => ['boolean', 'bool', 'bit'],
@@ -84,13 +84,12 @@ class Column implements \Reliese\Meta\Column
      */
     protected function parsePrecision($databaseType, Fluent $attributes)
     {
-        $precision = $this->get('numeric_precision', 'string');
-        $precision = explode(',', str_replace("'", '', $precision));
+        $precision = $this->get('numeric_precision', ''); // Default to empty string instead of 'string'
+        $precision = explode(',', str_replace("'", '', $precision ?? '')); // Ensure $precision is string
 
         // Check whether it's an enum
         if ($databaseType == 'enum') {
             //$attributes['enum'] = $precision; //todo
-
             return;
         }
 
@@ -194,7 +193,9 @@ class Column implements \Reliese\Meta\Column
     private function defaultIsNextVal(Fluent $attributes)
     {
         $value = $this->get('column_default', $this->get('generation_expression', null));
+        $isIdentity = $this->get('is_identity');
+        $identityGeneration =  $this->get('identity_generation');
 
-        return preg_match('/nextval\(/i', $value);
+        return preg_match('/nextval\(/i', $value ?? '') || ($isIdentity === 'YES' && $identityGeneration === 'BY DEFAULT');
     }
 }

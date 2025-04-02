@@ -10,6 +10,7 @@ namespace Reliese\Meta;
 use ArrayIterator;
 use RuntimeException;
 use IteratorAggregate;
+use Traversable; // Added this line
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Database\SQLiteConnection;
 use Illuminate\Database\PostgresConnection;
@@ -28,6 +29,7 @@ class SchemaManager implements IteratorAggregate
         SQLiteConnection::class => SqliteSchema::class,
         PostgresConnection::class => PostgresSchema::class,
         \Larapack\DoctrineSupport\Connections\MySqlConnection::class => MySqlSchema::class,
+        \Staudenmeir\LaravelCte\Connections\MySqlConnection::class => MySqlSchema::class,
     ];
 
     /**
@@ -134,7 +136,7 @@ class SchemaManager implements IteratorAggregate
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->schemas);
     }

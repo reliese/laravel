@@ -144,7 +144,7 @@ class Schema implements \Reliese\Meta\Schema
         $key = [
             'name' => 'primary',
             'index' => '',
-            'columns' => $indexes['primary']->getColumns(),
+            'columns' => optional($indexes['primary']??null)->getColumns()?:[],
         ];
 
         $blueprint->withPrimaryKey(new Fluent($key));
