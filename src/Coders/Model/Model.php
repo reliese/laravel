@@ -455,7 +455,11 @@ class Model
      */
     public function withNamespace($namespace)
     {
-        $this->namespace = $namespace;
+        $this->namespace = collect(
+            explode('__', $this->blueprint->table())
+        )->slice(0, -1)->map(function ($particle) {
+            return Str::studly($particle);
+        })->prepend($namespace)->join('\\');
 
         return $this;
     }
@@ -754,9 +758,20 @@ class Model
 
     /**
      * @param string $table
+     * @return string
+     */
+    public function removeTableNamespaces($table)
+    {
+        return collect(explode('__', $table))->last();
+    }
+
+    /**
+     * @param string $table
      */
     public function removeTablePrefix($table)
     {
+        $table = $this->removeTableNamespaces($table);
+
         if (($this->shouldRemoveTablePrefix()) && (substr($table, 0, strlen($this->tablePrefix)) == $this->tablePrefix)) {
             $table = substr($table, strlen($this->tablePrefix));
         }
