@@ -142,7 +142,16 @@ class Schema implements \Reliese\Meta\Schema
             LEFT JOIN pg_attribute parent on parent.attnum = ANY (p.confkey)
                 AND parent.attrelid = p.confrelid
             LEFT JOIN pg_class parent_class on parent_class.oid = p.confrelid
-        WHERE child_class.relkind = \'r\'::char
+        WHERE child.attrelid in (
+                SELECT oid
+                FROM pg_class
+                WHERE relnamespace in (
+                    SELECT oid
+                    FROM pg_namespace
+                    WHERE nspname = \'public\'
+                )
+            )
+            AND child_class.relkind = \'r\'::char
             AND child_class.relname = \''.$blueprint->table().'\'
             AND child.attnum > 0
             AND contype IS NOT NULL
