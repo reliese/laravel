@@ -493,7 +493,12 @@ class Model
      */
     public function withParentClass($parent)
     {
-        $this->parentClass = '\\' . ltrim($parent, '\\');
+        $thisParentClass = '\\';
+        if (! is_null($parent)) {
+            $thisParentClass =  $thisParentClass . ltrim($parent, '\\');
+        }
+
+        $this->parentClass = $thisParentClass;
 
         return $this;
     }
