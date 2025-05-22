@@ -32,6 +32,15 @@ php artisan vendor:publish --tag=reliese-models
 php artisan config:clear
 ```
 
+You might encounter the following error message:
+*"No publishable resources for tag [reliese-models]."*
+
+In such cases, add the following line to the `'providers'` array in `config/app.php`:
+```
+\Reliese\Coders\CodersServiceProvider::class,
+```
+After updating the config cache, this should resolve the issue.
+
 ## Models
 
 ![Generating models with artisan](https://cdn-images-1.medium.com/max/800/1*hOa2QxORE2zyO_-ZqJ40sA.png "Making artisan code my Eloquent models")
