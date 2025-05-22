@@ -7,6 +7,8 @@
 
 namespace Reliese\Support;
 
+use Illuminate\Support\Str;
+
 class Dumper
 {
     /**
@@ -44,7 +46,12 @@ class Dumper
                 return "$key => ".static::export($value, $tabs + 1);
             }, $value, $keys);
 
-            return "[\n$indent".implode(",\n$indent", $array)."\n$closingIndent]";
+            return "[\n$indent".implode(",\n$indent", $array).",\n$closingIndent]";
+        }
+
+        // Supports class names for casts field
+        if ($tabs > 2 && class_exists($value) && strpos($value, "\\")) {
+            return "\\$value";
         }
 
         // Default variable exporting

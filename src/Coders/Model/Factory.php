@@ -311,11 +311,11 @@ class Factory
      */
     private function shortenAndExtractImportableDependencies(&$placeholder, $model)
     {
-        $qualifiedClassesPattern = '/([\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
+        $qualifiedClassesPattern = '/(?<is_assigning>=>)?[\s]*(?<class_name>[\\\\a-zA-Z0-9_]*\\\\[\\\\a-zA-Z0-9_]*)/';
         $matches = [];
         $importableDependencies = [];
         if (preg_match_all($qualifiedClassesPattern, $placeholder, $matches)) {
-            foreach ($matches[1] as $usedClass) {
+            foreach ($matches['class_name'] as $index => $usedClass) {
                 $namespacePieces = explode('\\', $usedClass);
                 $className = array_pop($namespacePieces);
 
@@ -334,6 +334,10 @@ class Factory
                     trim(implode('\\', $namespacePieces), '\\') != trim($model->getNamespace(), '\\')
                 ) {
                     continue;
+                }
+
+                if ($matches['is_assigning'][$index] !== "") {
+                    $className = "$className::class";
                 }
 
                 $importableDependencies[trim($usedClass, '\\')] = true;
