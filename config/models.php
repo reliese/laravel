@@ -492,32 +492,36 @@ return [
     //     ]
     // ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Connection Specifics
-    |--------------------------------------------------------------------------
-    |
-    | In this section you may define the default configuration for each model
-    | that will be generated from a specific connection. You can also nest
-    | database and table specific configurations.
-    |
-    | You may wish to use connection specific config for setting a parent
-    | model with a read only setup, or enforcing a different set of rules
-    | for a connection, e.g. using snake_case naming over CamelCase naming.
-    |
-    | This supports nesting with the following key configuration values, in
-    | reverse precedence order (i.e. the last one found becomes the value).
-    |
-    |       connections.{connection_name}.property
-    |       connections.{connection_name}.{database_name}.property
-    |       connections.{connection_name}.{table_name}.property
-    |       connections.{connection_name}.{database_name}.{table_name}.property
-    |
-    | These values will override those defined in the section above.
-    |
-    */
+    /**
+     *--------------------------------------------------------------------------
+     * Connection Specifics
+     *--------------------------------------------------------------------------
+     *
+     * In this section you may define the default configuration for each model
+     * that will be generated from a specific connection. You can also nest
+     * database and table specific configurations.
+     *
+     * You may wish to use connection specific config for setting a parent
+     * model with a read only setup, or enforcing a different set of rules
+     * for a connection, e.g. using snake_case naming over CamelCase naming.
+     *
+     * This supports nesting with the following key configuration values,
+     * in precedence order (i.e. the first one found becomes the value).
+     *
+     *       @connections.{connection_name}.{table_name}.property
+     *       @connections.{connection_name}.{database_name}.property
+     *       @connections.{connection_name}.property
+     *       {table_name}.property
+     *       {database_name}.property
+     *       *.property
+     *
+     * @see \Reliese\Coders\Model\Config::get()
+     *
+     * These values will override those defined in the section above.
+     *
+     */
 
-//    'connections' => [
+//    '@connections' => [
 //        'read_only_external' => [
 //            'parent' => \App\Models\ReadOnlyModel::class,
 //            'connection' => true,
