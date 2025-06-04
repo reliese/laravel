@@ -1,9 +1,12 @@
 <?php
 
+namespace Reliese\Tests\Coders\Model\Relations;
+
 use Illuminate\Support\Fluent;
-use PHPUnit\Framework\TestCase;
+use Mockery;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relations\BelongsTo;
+use Reliese\Tests\TestCase;
 
 class BelongsToTest extends TestCase
 {

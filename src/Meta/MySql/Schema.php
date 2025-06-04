@@ -39,7 +39,7 @@ class Schema implements \Reliese\Meta\Schema
      * @param string $schema
      * @param \Illuminate\Database\MySqlConnection $connection
      */
-    public function __construct($schema, $connection)
+    public function __construct($schema, $connection, $connectionName = '')
     {
         $this->schema = $schema;
         $this->connection = $connection;
@@ -268,7 +268,7 @@ class Schema implements \Reliese\Meta\Schema
      *
      * @return array
      */
-    public static function schemas(Connection $connection)
+    public static function schemas(Connection $connection, $connectionName)
     {
         $schemas = $connection->select('SELECT schema_name FROM information_schema.schemata');
         $schemas = array_column($schemas, 'schema_name');

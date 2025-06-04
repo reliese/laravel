@@ -24,6 +24,11 @@ class Blueprint
     /**
      * @var string
      */
+    protected $schemaname;
+
+    /**
+     * @var string
+     */
     protected $table;
 
     /**
@@ -63,11 +68,12 @@ class Blueprint
      * @param string $schema
      * @param string $table
      */
-    public function __construct($connection, $schema, $table, $isView = false)
+    public function __construct($connection, $schema, $table, $isView = false, $schemaname = '')
     {
         $this->connection = $connection;
-        $this->schema = $schema;
-        $this->table = $table;
+        $this->schema = $schema;            // DATABASE
+        $this->schemaname = $schemaname;    // (real) SCHEMA
+        $this->table = $table;              // TABLE
         $this->isView = $isView;
     }
 
@@ -77,6 +83,14 @@ class Blueprint
     public function schema()
     {
         return $this->schema;
+    }
+
+    /**
+     * @return string
+     */
+    public function schemaname()
+    {
+        return $this->schemaname;
     }
 
     /**
@@ -92,7 +106,13 @@ class Blueprint
      */
     public function qualifiedTable()
     {
-        return $this->schema().'.'.$this->table();
+        $schemaname = $this->schemaname();
+        $table = $this->table();
+        if ('' !== $schemaname) {
+            return sprintf('%s.%s', $schemaname, $table);
+        }
+
+        return sprintf('%s.%s', $this->schema(), $table);
     }
 
     /**

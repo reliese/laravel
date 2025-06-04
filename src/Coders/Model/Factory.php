@@ -96,7 +96,7 @@ class Factory
      */
     public function on($connection = null)
     {
-        $this->schemas = new SchemaManager($this->db->connection($connection));
+        $this->schemas = new SchemaManager($this->db->connection($connection), $connection);
 
         return $this;
     }

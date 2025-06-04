@@ -2,7 +2,6 @@
 
 namespace Reliese\Meta\Postgres;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Reliese\Meta\Blueprint;
 use Illuminate\Support\Fluent;
@@ -35,9 +34,9 @@ class Schema implements \Reliese\Meta\Schema
     protected $tables = [];
 
     /**
-     * @var mixed|null
+     * @var array
      */
-    protected $schema_database = null;
+    protected $schemanames = [];
 
     /**
      * Mapper constructor.
@@ -45,12 +44,18 @@ class Schema implements \Reliese\Meta\Schema
      * @param string $schema
      * @param \Illuminate\Database\PostgresConnection $connection
      */
-    public function __construct($schema, $connection)
+    public function __construct($schema, $connection, $connectionName = 'pgsql')
     {
-        $this->schema_database = Config::get("database.connections.pgsql.schema");
-        if (!$this->schema_database){
-            $this->schema_database = 'public';
+        $this->schemanames = Config::get(sprintf('database.connections.%s.search_path', $connectionName));
+        if (!$this->schemanames) {
+            $this->schemanames = [
+                Config::get(sprintf('database.connections.%s.schema', $connectionName)),
+            ];
         }
+        if (!$this->schemanames) {
+            $this->schemanames = ['public'];
+        }
+
         $this->schema = $schema;
         $this->connection = $connection;
 
@@ -74,9 +79,10 @@ class Schema implements \Reliese\Meta\Schema
         // Note that "schema" refers to the database name,
         // not a pgsql schema.
         $this->connection->raw('\c '.$this->wrap($this->schema));
-        $tables = $this->fetchTables($this->schema);
-        foreach ($tables as $table) {
-            $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
+        $tableDatas = $this->fetchTables();
+        foreach ($tableDatas as $tableData) {
+            $table = $tableData['tablename'];
+            $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table, false, $tableData['schemaname']);
             $this->fillColumns($blueprint);
             $this->fillConstraints($blueprint);
             $this->tables[$table] = $blueprint;
@@ -92,11 +98,18 @@ class Schema implements \Reliese\Meta\Schema
     protected function fetchTables()
     {
         $rows = $this->arraify($this->connection->select(
-            "SELECT * FROM pg_tables where schemaname='$this->schema_database'"
+            'SELECT * FROM pg_tables ' .
+            "WHERE schemaname IN ('" . implode("', '", $this->schemanames) . "')"
         ));
-        $names = array_column($rows, 'tablename');
+        $names = [];
+        foreach ($rows as $row) {
+            $names[] = [
+                'tablename' => $row['tablename'],
+                'schemaname' => $row['schemaname'],
+            ];
+        }
 
-        return Arr::flatten($names);
+        return $names;
     }
 
     /**
@@ -105,9 +118,9 @@ class Schema implements \Reliese\Meta\Schema
     protected function fillColumns(Blueprint $blueprint)
     {
         $rows = $this->arraify($this->connection->select(
-            'SELECT * FROM information_schema.columns '.
-            "WHERE table_schema='$this->schema_database'".
-            'AND table_name='.$this->wrap($blueprint->table())
+            'SELECT * FROM information_schema.columns ' .
+            "WHERE table_schema IN ('" . implode("', '", $this->schemanames) . "')" .
+            'AND table_name = '.$this->wrap($blueprint->table())
         ));
         foreach ($rows as $column) {
             $blueprint->withColumn(
@@ -281,16 +294,11 @@ class Schema implements \Reliese\Meta\Schema
      *
      * @return array
      */
-    public static function schemas(Connection $connection)
+    public static function schemas(Connection $connection, string $connectionName = 'pgsql')
     {
-        $schemas = $connection->select('SELECT datname FROM pg_database');
-        $schemas = array_column($schemas, 'datname');
-
-        return array_diff($schemas, [
-            'postgres',
-            'template0',
-            'template1',
-        ]);
+        return [
+            Config::get(sprintf('database.connections.%s.database', $connectionName))
+        ];
     }
 
     /**
@@ -299,6 +307,14 @@ class Schema implements \Reliese\Meta\Schema
     public function schema()
     {
         return $this->schema;
+    }
+
+    /**
+     * @return array
+     */
+    public function schemanames()
+    {
+        return $this->schemanames;
     }
 
     /**
@@ -334,7 +350,7 @@ class Schema implements \Reliese\Meta\Schema
     }
 
     /**
-     * @return \Illuminate\Database\MySqlConnection
+     * @return \Illuminate\Database\PostgresConnection
      */
     public function connection()
     {

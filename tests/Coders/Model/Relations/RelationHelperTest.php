@@ -1,8 +1,9 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Reliese\Coders\Model\Relations\RelationHelper;
+namespace Reliese\Tests\Coders\Model\Relations;
 
+use Reliese\Coders\Model\Relations\RelationHelper;
+use Reliese\Tests\TestCase;
 class RelationHelperTest extends TestCase
 {
     public function provideKeys()
