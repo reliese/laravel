@@ -1,10 +1,18 @@
 <?php
 
+namespace Reliese\Tests\Coders\Console\Model;
+
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Fluent;
+use Mockery;
+use Reliese\Coders\Model\Config;
 use Reliese\Coders\Model\Factory;
 use Reliese\Coders\Model\Model;
 use Reliese\Coders\Model\Relations\BelongsTo;
 use Reliese\Meta\Blueprint;
+use Reliese\Support\Classify;
+use Reliese\Tests\TestCase;
 
 class ModelTest extends TestCase
 {
@@ -56,10 +64,10 @@ class ModelTest extends TestCase
         $model = new Model(
             new Blueprint('test', 'test', 'test'),
             new Factory(
-                \Mockery::mock(\Illuminate\Database\DatabaseManager::class),
-                \Mockery::mock(Illuminate\Filesystem\Filesystem::class),
-                \Mockery::mock(\Reliese\Support\Classify::class),
-                new \Reliese\Coders\Model\Config()
+                Mockery::mock(DatabaseManager::class),
+                Mockery::mock(Filesystem::class),
+                Mockery::mock(Classify::class),
+                new Config()
             )
         );
 
@@ -93,10 +101,10 @@ class ModelTest extends TestCase
         $model = new Model(
             $baseBlueprint,
             new Factory(
-                \Mockery::mock(\Illuminate\Database\DatabaseManager::class),
-                \Mockery::mock(Illuminate\Filesystem\Filesystem::class),
-                \Mockery::mock(\Reliese\Support\Classify::class),
-                new \Reliese\Coders\Model\Config()
+                Mockery::mock(DatabaseManager::class),
+                Mockery::mock(Filesystem::class),
+                Mockery::mock(Classify::class),
+                new Config()
             )
         );
 

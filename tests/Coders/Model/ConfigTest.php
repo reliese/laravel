@@ -1,8 +1,11 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+namespace Reliese\Tests\Coders\Model;
+
+use Mockery;
 use Reliese\Coders\Model\Config;
 use Reliese\Meta\Blueprint;
+use Reliese\Tests\TestCase;
 
 class ConfigTest extends TestCase
 {
