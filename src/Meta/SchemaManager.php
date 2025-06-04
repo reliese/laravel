@@ -73,6 +73,7 @@ class SchemaManager implements IteratorAggregate
         /**
          * @see \Reliese\Meta\Postgres\Schema::schemas()
          * @see \Reliese\Meta\MySql\Schema::schemas()
+         * @see \Reliese\Meta\Sqlite\Schema::schemas()
          */
         $schemas = forward_static_call([$this->getMapper(), 'schemas'], $this->connection, $this->connectionName);
 
