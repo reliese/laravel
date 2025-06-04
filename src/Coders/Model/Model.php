@@ -352,6 +352,7 @@ class Model
             case 'collection':
                 $type = '\Illuminate\Support\Collection';
                 break;
+            case 'date':
             case 'datetime':
                 $type = '\Carbon\Carbon';
                 break;
