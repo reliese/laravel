@@ -274,6 +274,13 @@ class Model
             }
         }
 
+        foreach ($this->config('comment_casts', []) as $needle => $casting) {
+            if (Str::contains($column->comment, $needle)) {
+                $this->casts[$propertyName] = $cast = $casting;
+                break;
+            }
+        }
+
         if ($this->isHidden($column->name)) {
             $this->hidden[] = $propertyName;
         }

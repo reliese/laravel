@@ -269,6 +269,25 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Comment Casts
+        |--------------------------------------------------------------------------
+        |
+        | As an alternative to the column casts, you may want to specify casts
+        | using comments in your database table columns.
+        |
+        | You may define strings that should be contained in comments,
+        | which will be cast using the value assigned. Please note that
+        | these are case sensitive. We have defined some fields for you.
+        | Feel free to modify them to fit your needs.
+        |
+        */
+
+        'comment_casts' => [
+            '{{json}}' => 'json',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
         | Excluded Tables
         |--------------------------------------------------------------------------
         |
