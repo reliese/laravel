@@ -289,6 +289,21 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Exclude Partition Children (PostgreSQL)
+        |--------------------------------------------------------------------------
+        |
+        | When using PostgreSQL table partitioning, child partition tables
+        | (e.g. users_p000, users_p001) are automatically created. These
+        | tables share the same schema as the parent table and should not
+        | generate separate models. Enable this option to automatically
+        | exclude partition child tables by querying pg_inherits.
+        |
+        */
+
+        'exclude_partition_children' => false,
+
+        /*
+        |--------------------------------------------------------------------------
         | Specified Tables
         |--------------------------------------------------------------------------
         |

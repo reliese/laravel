@@ -56,18 +56,15 @@ class SchemaManager implements IteratorAggregate
     }
 
     /**
-     * Load all schemas from this connection.
+     * Validate mapping exists. Schemas are lazy-loaded by make() on demand
+     * to avoid eagerly loading all databases (which causes unnecessary queries
+     * and memory usage, especially in PostgreSQL where each schema loads all
+     * table metadata on construction).
      */
     public function boot()
     {
         if (! $this->hasMapping()) {
             throw new RuntimeException("There is no Schema Mapper registered for [{$this->type()}] connection.");
-        }
-
-        $schemas = forward_static_call([$this->getMapper(), 'schemas'], $this->connection);
-
-        foreach ($schemas as $schema) {
-            $this->make($schema);
         }
     }
 

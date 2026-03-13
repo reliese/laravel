@@ -71,9 +71,6 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function load()
     {
-        // Note that "schema" refers to the database name,
-        // not a pgsql schema.
-        $this->connection->raw('\c '.$this->wrap($this->schema));
         $tables = $this->fetchTables($this->schema);
         foreach ($tables as $table) {
             $blueprint = new Blueprint($this->connection->getName(), $this->schema, $table);
@@ -91,9 +88,22 @@ class Schema implements \Reliese\Meta\Schema
      */
     protected function fetchTables()
     {
-        $rows = $this->arraify($this->connection->select(
-            "SELECT * FROM pg_tables where schemaname='$this->schema_database'"
-        ));
+        $excludePartitions = Config::get('models.*.exclude_partition_children', false);
+
+        if ($excludePartitions) {
+            $rows = $this->arraify($this->connection->select(
+                "SELECT t.tablename FROM pg_tables t
+                 JOIN pg_class c ON c.relname = t.tablename
+                     AND c.relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '$this->schema_database')
+                 WHERE t.schemaname = '$this->schema_database'
+                     AND NOT EXISTS (SELECT 1 FROM pg_inherits i WHERE i.inhrelid = c.oid)"
+            ));
+        } else {
+            $rows = $this->arraify($this->connection->select(
+                "SELECT * FROM pg_tables where schemaname='$this->schema_database'"
+            ));
+        }
+
         $names = array_column($rows, 'tablename');
 
         return Arr::flatten($names);
