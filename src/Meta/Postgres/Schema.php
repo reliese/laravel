@@ -200,7 +200,7 @@ class Schema implements \Reliese\Meta\Schema
     protected function fillIndexes($indexes, Blueprint $blueprint)
     {
         foreach ($indexes as $row) {
-            $pattern = '/\s*(UNIQUE)?\s*(KEY|INDEX)\s+(\w+)\s+\(([^\)]+)\)/mi';
+            $pattern = '/\s*(UNIQUE)?\s*(KEY|INDEX)\s+(\w+)\s+.*?\(([^\)]+)\)/mi';
             if (preg_match($pattern, $row['indexdef'], $setup) == false) {
                 continue;
             }
